@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  price       Decimal
+  imageUrl    String?
+  category    String?
+  variants    Variant[]
+  discounts   Discount[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Variant {
+  id        Int       @id @default(autoincrement())
+  name      String    // e.g., "Small/Red"
+  sku       String    @unique
+  stock     Int       @default(0)
+  productId Int
+  product   Product   @relation(fields: [productId], references: [id])
+  orderItems OrderItem[]
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  status          String      @default("CREATED") // CREATED, PAID, SHIPPED, DELIVERED, RETURNED
+  total           Decimal
+  items           OrderItem[]
+  customerName    String
+  customerAddress String
+  customerEmail   String
+  customerPhone   String    @default("")
+  paymentMethod   String    @default("CREDIT_CARD")
+  couponCode      String?
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  variantId Int
+  variant   Variant @relation(fields: [variantId], references: [id])
+  quantity  Int
+  price     Decimal // Snapshot price at time of order
+}
+
+model StoreSettings {
+  id          Int      @id @default(1)
+  storeName   String   @default("My Store")
+  description String?
+  email       String?
+  phone       String?
+  address     String?
+  currency    String   @default("USD")
+  updatedAt   DateTime @updatedAt
+}
+
+model Discount {
+  id           Int       @id @default(autoincrement())
+  name         String
+  type         String    // PERCENTAGE or FIXED
+  value        Decimal
+  active       Boolean   @default(true)
+  productId    Int?      // If null, it's a cart-level discount
+  product      Product?  @relation(fields: [productId], references: [id])
+  minCartValue Decimal?  // Only applicable if productId is null
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Coupon {
+  id           Int       @id @default(autoincrement())
+  code         String    @unique
+  type         String    // PERCENTAGE or FIXED
+  value        Decimal
+  minCartValue Decimal?
+  active       Boolean   @default(true)
+  usageLimit   Int?      // Null means unlimited
+  usedCount    Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}

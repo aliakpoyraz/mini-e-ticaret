@@ -1,0 +1,123 @@
+"use client";
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { updateDiscount, deleteDiscount } from '../../actions';
+import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+
+export default function EditDiscountForm({ discount, products }: { discount: any, products: any[] }) {
+    const router = useRouter();
+    const [isDeleting, setIsDeleting] = useState(false);
+    const updateDiscountWithId = updateDiscount.bind(null, discount.id);
+
+    const [conditionType, setConditionType] = useState(discount.productId ? 'PRODUCT' : discount.minCartValue ? 'CART' : 'NONE');
+
+    return (
+        <div className="max-w-3xl mx-auto space-y-6">
+            <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <Link
+                        href="/admin/discounts"
+                        className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+                    >
+                        <ArrowLeft size={20} className="text-slate-500" />
+                    </Link>
+                    <div>
+                        <h1 className="text-2xl font-bold text-slate-900">İndirimi Düzenle</h1>
+                        <p className="text-sm text-slate-500">{discount.name} indirimini güncelliyorsunuz.</p>
+                    </div>
+                </div>
+                <button
+                    onClick={async () => {
+                        if (confirm('Bu indirimi silmek istediğinize emin misiniz?')) {
+                            setIsDeleting(true);
+                            await deleteDiscount(discount.id);
+                        }
+                    }}
+                    disabled={isDeleting}
+                    className="flex items-center gap-2 text-red-600 hover:bg-red-50 px-4 py-2 rounded-xl transition-colors font-medium text-sm"
+                >
+                    <Trash2 size={18} />
+                    {isDeleting ? 'Siliniyor...' : 'Sil'}
+                </button>
+            </div>
+
+            <form action={updateDiscountWithId} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 space-y-8">
+                <div>
+                    <h2 className="text-lg font-bold text-slate-900 mb-4">Temel Bilgiler</h2>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-900 mb-1">İndirim Adı</label>
+                            <input name="name" type="text" defaultValue={discount.name} required className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm" />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-900 mb-1">İndirim Türü</label>
+                                <select name="type" defaultValue={discount.type} className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm appearance-none cursor-pointer" style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundPosition: "right 0.5rem center", backgroundRepeat: "no-repeat", backgroundSize: "1.5em 1.5em", paddingRight: "2.5rem" }}>
+                                    <option value="PERCENTAGE">Yüzdelik (%)</option>
+                                    <option value="FIXED">Sabit Tutar (₺)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-900 mb-1">İndirim Değeri</label>
+                                <input name="value" type="number" step="0.01" defaultValue={Number(discount.value)} required className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="border-t border-slate-100 pt-8">
+                    <h2 className="text-lg font-bold text-slate-900 mb-4">İndirim Koşulu</h2>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-900 mb-1">Koşul Tipi</label>
+                            <select name="conditionType" value={conditionType} onChange={(e) => setConditionType(e.target.value)} className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm appearance-none cursor-pointer" style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundPosition: "right 0.5rem center", backgroundRepeat: "no-repeat", backgroundSize: "1.5em 1.5em", paddingRight: "2.5rem" }}>
+                                <option value="NONE">Koşulsuz (Tüm siparişlere uygulanır, genel kampanya)</option>
+                                <option value="PRODUCT">Ürüne Özel (Sadece seçili üründe geçerli olur)</option>
+                                <option value="CART">Sepet Alt Limiti (Sepet tutarı bir değeri geçtiğinde)</option>
+                            </select>
+                        </div>
+
+                        <div className="flex flex-col gap-4 mt-4">
+                            {conditionType === 'PRODUCT' && (
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-1">Hedef Ürün</label>
+                                    <select name="productId" defaultValue={discount.productId || ""} className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm appearance-none cursor-pointer" style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundPosition: "right 0.5rem center", backgroundRepeat: "no-repeat", backgroundSize: "1.5em 1.5em", paddingRight: "2.5rem" }}>
+                                        <option value="">-- Ürün Seçin --</option>
+                                        {products.map((p) => (
+                                            <option key={p.id} value={p.id}>{p.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+                            {conditionType === 'CART' && (
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-1">Minimum Sepet Tutarı (₺)</label>
+                                    <input name="minCartValue" type="number" step="0.01" defaultValue={discount.minCartValue ? Number(discount.minCartValue) : ''} className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="border-t border-slate-100 pt-8">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" name="active" defaultChecked={discount.active} className="w-5 h-5 rounded border-gray-300 text-brand-600 focus:ring-brand-500 cursor-pointer" />
+                        <div>
+                            <span className="block text-sm font-bold text-slate-900">Aktif</span>
+                            <span className="block text-xs text-slate-500 mt-0.5">Bu indirim müşteriler tarafından kullanılabilir.</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div className="pt-6 flex justify-end">
+                    <button type="submit" className="bg-slate-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors flex items-center gap-2">
+                        <Save size={18} /> Değişiklikleri Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+}
