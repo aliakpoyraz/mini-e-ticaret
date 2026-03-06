@@ -10,18 +10,18 @@ export default function HeroSlider() {
             <div className="absolute top-0 right-0 w-2/3 h-full bg-slate-100/50 skew-x-[-12deg] translate-x-32" />
 
             <div className="container mx-auto px-6 relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div className="space-y-8 animate-fade-in-up">
-                    <h1 className="text-6xl md:text-7xl font-bold text-slate-900 tracking-tight leading-[1.1]">
-                        Rahatlığın <br /> Geleceği.
+                <div className="space-y-6 md:space-y-8 animate-fade-in-up">
+                    <h1 className="text-5xl md:text-7xl font-bold text-slate-900 tracking-tight leading-[1.1]">
+                        Rahatlığın <br className="hidden sm:block" /> Geleceği.
                     </h1>
                     <p className="text-xl text-slate-600 max-w-md leading-relaxed">
                         Yeni koleksiyonumuzu deneyimleyin. Birinci sınıf materyaller, minimalist tasarım ve rahatlığın kolaylığa bürünmüş hali.
                     </p>
-                    <div className="flex gap-4">
-                        <Link href="/products" className="group flex items-center gap-2 bg-black text-white px-8 py-4 rounded-full font-medium hover:bg-slate-800 transition-all shadow-xl shadow-black/10">
+                    <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                        <Link href="/products" className="group flex items-center justify-center gap-2 bg-black text-white px-8 py-4 rounded-full font-medium hover:bg-slate-800 transition-all shadow-xl shadow-black/10 text-center">
                             Hemen Alışveriş Yap <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                         </Link>
-                        <Link href="/products?category=new" className="flex items-center gap-2 px-8 py-4 rounded-full font-medium text-slate-900 hover:bg-slate-200 transition-all">
+                        <Link href="/products?category=new" className="flex items-center justify-center gap-2 px-8 py-4 rounded-full font-medium text-slate-900 hover:bg-slate-200 transition-all text-center">
                             Daha Fazla Bilgi
                         </Link>
                     </div>

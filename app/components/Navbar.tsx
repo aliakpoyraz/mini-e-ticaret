@@ -17,6 +17,7 @@ export default function Navbar({ storeName = "Store." }: { storeName?: string })
     const [searchQuery, setSearchQuery] = useState('');
     const [mounted, setMounted] = useState(false);
     const [user, setUser] = useState<{ id: string, firstName?: string, lastName?: string, role?: string } | null>(null);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isCheckingUser, setIsCheckingUser] = useState(true);
 
     useEffect(() => {
@@ -43,6 +44,11 @@ export default function Navbar({ storeName = "Store." }: { storeName?: string })
             setSearchQuery('');
         }
     };
+
+    // Yönlendirme sonrası mobil menüyü kapatmak için
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [pathname]);
 
     // Admin sayfalarında Navbar'ı gizle
     if (pathname.startsWith('/admin')) return null;
@@ -122,11 +128,83 @@ export default function Navbar({ storeName = "Store." }: { storeName?: string })
                         )}
                     </div>
 
-                    <button className="md:hidden text-slate-600 hover:text-slate-900 transition-colors">
+                    <button onClick={() => setIsMobileMenuOpen(true)} className="md:hidden text-slate-600 hover:text-slate-900 transition-colors">
                         <Menu size={20} strokeWidth={1.5} />
                     </button>
                 </div>
             </div>
+
+            {/* Mobil Menü (Drawer) */}
+            {mounted && isMobileMenuOpen && createPortal(
+                <div className="fixed inset-0 z-[120] flex animate-fade-in md:hidden">
+                    {/* Arkaplan */}
+                    <div
+                        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    />
+
+                    {/* Drawer */}
+                    <div className="fixed inset-y-0 right-0 w-[85vw] max-w-sm bg-white shadow-2xl flex flex-col pt-20 pb-6 px-6 transform transition-transform animate-slide-left">
+                        <button
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors"
+                        >
+                            <X size={24} strokeWidth={2} />
+                        </button>
+
+                        <div className="flex flex-col gap-6 text-lg font-bold text-slate-900 mt-4">
+                            <Link href="/products" className="py-2 border-b border-slate-100 hover:text-brand-600 transition-colors">
+                                Ürünler
+                            </Link>
+                            <Link href="/track-order" className="py-2 border-b border-slate-100 hover:text-brand-600 transition-colors">
+                                Sipariş Takibi
+                            </Link>
+                            <Link href="/contact" className="py-2 border-b border-slate-100 hover:text-brand-600 transition-colors">
+                                İletişim
+                            </Link>
+                        </div>
+
+                        <div className="mt-auto pt-8">
+                            {isCheckingUser ? (
+                                <div className="h-12 bg-slate-100 animate-pulse rounded-xl w-full"></div>
+                            ) : user ? (
+                                <div className="flex flex-col gap-3">
+                                    <div className="text-sm font-medium text-slate-500 mb-2">
+                                        Merhaba, {user.firstName || 'Kullanıcı'}
+                                    </div>
+                                    {user.role === 'ADMIN' ? (
+                                        <Link href="/admin" className="w-full py-3 px-4 bg-brand-50 text-brand-700 rounded-xl font-bold flex items-center justify-center border border-brand-100">
+                                            Admin Paneli
+                                        </Link>
+                                    ) : (
+                                        <Link href="/account" className="w-full py-3 px-4 bg-slate-50 text-slate-900 rounded-xl font-bold flex items-center justify-center border border-slate-200">
+                                            Hesabım
+                                        </Link>
+                                    )}
+                                    <button
+                                        onClick={() => {
+                                            fetch('/api/auth/logout', { method: 'POST' }).then(() => { window.location.reload() })
+                                        }}
+                                        className="w-full py-3 px-4 text-red-600 font-bold hover:bg-red-50 rounded-xl transition-colors"
+                                    >
+                                        Çıkış Yap
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col gap-3">
+                                    <Link href="/login" className="w-full py-3 px-4 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl font-bold flex items-center justify-center">
+                                        Giriş Yap
+                                    </Link>
+                                    <Link href="/register" className="w-full py-3 px-4 bg-slate-900 text-white rounded-xl font-bold flex items-center justify-center">
+                                        Kayıt Ol
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
 
             {/* Arama arayüzü */}
             {mounted && isSearchOpen && createPortal(
