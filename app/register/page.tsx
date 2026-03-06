@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import ReCAPTCHA from 'react-google-recaptcha';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const INPUT_CLASS = "w-full px-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 rounded-2xl outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400";
 const INPUT_ERROR_CLASS = "w-full px-4 py-3.5 bg-red-50 border border-red-400 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 rounded-2xl outline-none transition-all text-sm text-slate-900 placeholder:text-red-300";
@@ -195,8 +195,8 @@ export default function RegisterPage() {
 
                         <div className="flex justify-center mt-4">
                             <ReCAPTCHA
-                                sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-                                onChange={(token) => setCaptchaToken(token || '')}
+                                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+                                onChange={(value) => setCaptchaToken(value || '')}
                             />
                         </div>
                     </div>
