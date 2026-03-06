@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Search, Home } from 'lucide-react';
+export const dynamic = 'force-dynamic';
 
 export default function NotFound() {
     return (
