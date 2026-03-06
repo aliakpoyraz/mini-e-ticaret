@@ -79,12 +79,12 @@ export default async function AdminOrdersPage() {
                     <table className="w-full text-left">
                         <thead className="bg-slate-50/50 border-b border-slate-100">
                             <tr>
-                                <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider w-[100px]">Sipariş</th>
-                                <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider min-w-[200px]">Müşteri</th>
-                                <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider min-w-[240px]">Teslimat</th>
-                                <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Ödeme</th>
-                                <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Toplam</th>
-                                <th className="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Durum</th>
+                                <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider w-[80px]">Sipariş</th>
+                                <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Müşteri</th>
+                                <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Teslimat</th>
+                                <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Ödeme</th>
+                                <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Toplam</th>
+                                <th className="px-4 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Durum</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
@@ -92,20 +92,20 @@ export default async function AdminOrdersPage() {
                                 const paymentMethod = order.paymentMethod || 'UNKNOWN';
                                 return (
                                     <tr key={order.id} className="hover:bg-slate-50 transition-colors group">
-                                        <td className="px-8 py-5 font-bold text-slate-900 align-top text-sm">
+                                        <td className="px-4 py-4 font-bold text-slate-900 align-top text-sm">
                                             <Link href={`/admin/orders/${order.id}`} className="hover:text-blue-600 transition-colors">
                                                 #{order.id}
                                             </Link>
                                         </td>
-                                        <td className="px-8 py-5 align-top">
+                                        <td className="px-4 py-4 align-top">
                                             <div className="flex flex-col gap-1.5">
                                                 <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
-                                                    <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                                                    <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
                                                         <User size={12} />
                                                     </div>
-                                                    {order.customerName}
+                                                    <span className="truncate max-w-[150px]">{order.customerName}</span>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-slate-500 text-xs pl-8">
+                                                <div className="flex items-center gap-2 text-slate-500 text-xs pl-8 truncate max-w-[150px]">
                                                     {order.customerEmail}
                                                 </div>
                                                 <div className="flex items-center gap-2 text-slate-500 text-xs pl-8">
@@ -113,34 +113,34 @@ export default async function AdminOrdersPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-5 align-top">
+                                        <td className="px-4 py-4 align-top">
                                             <div className="flex gap-3 items-start">
                                                 <MapPin size={16} className="text-slate-300 shrink-0 mt-0.5" />
-                                                <span className="text-sm font-medium text-slate-600 leading-relaxed max-w-[280px]">
+                                                <span className="text-sm font-medium text-slate-600 leading-relaxed max-w-[200px] break-words">
                                                     {order.customerAddress}
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-5 align-top">
-                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${paymentMethod === 'CREDIT_CARD' ? 'bg-indigo-50 text-indigo-700 border-indigo-100' :
+                                        <td className="px-4 py-4 align-top">
+                                            <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-bold border ${paymentMethod === 'CREDIT_CARD' ? 'bg-indigo-50 text-indigo-700 border-indigo-100' :
                                                 paymentMethod === 'CASH_ON_DELIVERY' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                                                     'bg-slate-50 text-slate-600 border-slate-100'
                                                 }`}>
                                                 {paymentMethod === 'CREDIT_CARD' && <CreditCard size={12} />}
-                                                {paymentMethod === 'CREDIT_CARD' ? 'Kredi Kartı' : paymentMethod === 'CASH_ON_DELIVERY' ? 'Kapıda Ödeme' : paymentMethod.replace(/_/g, ' ')}
+                                                {paymentMethod === 'CREDIT_CARD' ? 'Kredi Kartı' : paymentMethod === 'CASH_ON_DELIVERY' ? 'Kap. Ödeme' : paymentMethod.replace(/_/g, ' ')}
                                             </span>
                                         </td>
-                                        <td className="px-8 py-5 align-top">
-                                            <div className="font-bold text-slate-900 text-sm">
+                                        <td className="px-4 py-4 align-top">
+                                            <div className="font-bold text-slate-900 text-sm whitespace-nowrap">
                                                 {Number(order.total).toFixed(2)} ₺
                                             </div>
-                                            <div className="text-xs text-slate-400 mt-1 font-medium">
+                                            <div className="text-xs text-slate-400 mt-1 font-medium whitespace-nowrap">
                                                 {order.items.length} ürün
                                             </div>
                                         </td>
-                                        <td className="px-8 py-5 text-right align-top">
-                                            <div className="flex flex-col items-end gap-3">
-                                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border ${order.status === 'PAID' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                                        <td className="px-4 py-4 text-right align-top">
+                                            <div className="flex flex-col items-end gap-3 min-w-[220px]">
+                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border whitespace-nowrap ${order.status === 'PAID' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                                                     order.status === 'SHIPPED' ? 'bg-blue-50 text-blue-700 border-blue-100' :
                                                         order.status === 'DELIVERED' ? 'bg-purple-50 text-purple-700 border-purple-100' :
                                                             'bg-slate-50 text-slate-700 border-slate-100'
@@ -153,18 +153,18 @@ export default async function AdminOrdersPage() {
                                                     <select
                                                         name="status"
                                                         defaultValue={order.status}
-                                                        className="bg-white border border-slate-200 text-slate-700 text-xs rounded-lg p-1.5 pr-6 focus:ring-2 focus:ring-slate-900 focus:outline-none cursor-pointer font-medium appearance-none"
-                                                        style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundPosition: "right 0.25rem center", backgroundRepeat: "no-repeat", backgroundSize: "1.25em 1.25em" }}
+                                                        className="bg-white border border-slate-200 text-slate-700 text-xs rounded-lg p-1.5 pr-5 focus:ring-2 focus:ring-slate-900 focus:outline-none cursor-pointer font-medium appearance-none min-w-[120px]"
+                                                        style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundPosition: "right 0.25rem center", backgroundRepeat: "no-repeat", backgroundSize: "1em 1em" }}
                                                     >
-                                                        <option value="CREATED">Oluşturuldu</option>
+                                                        <option value="CREATED">Oluş.tu</option>
                                                         <option value="PAID">Ödendi</option>
-                                                        <option value="SHIPPED">Kargolandı</option>
-                                                        <option value="DELIVERED">Teslim Edildi</option>
-                                                        <option value="RETURN_REQUESTED">İade Talep Edildi</option>
-                                                        <option value="RETURNED">İade Edildi</option>
-                                                        <option value="RETURN_REJECTED">İade Reddedildi</option>
+                                                        <option value="SHIPPED">Kargolndı</option>
+                                                        <option value="DELIVERED">Teslim E.</option>
+                                                        <option value="RETURN_REQUESTED">İade İ.</option>
+                                                        <option value="RETURNED">İade E.</option>
+                                                        <option value="RETURN_REJECTED">İade Red</option>
                                                     </select>
-                                                    <button type="submit" className="text-white bg-slate-900 hover:bg-black text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shadow-sm">
+                                                    <button type="submit" className="text-white bg-slate-900 hover:bg-black text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors shadow-sm whitespace-nowrap">
                                                         Kaydet
                                                     </button>
                                                 </form>
