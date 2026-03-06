@@ -1,15 +1,19 @@
 import { PrismaClient } from '@prisma/client';
 import { Package, Truck, CheckCircle2, Clock } from 'lucide-react';
 import Link from 'next/link';
+import { getSession } from '@/app/lib/auth';
 
 const prisma = new PrismaClient();
 
 export default async function TrackOrderPage({
     searchParams,
 }: {
-    searchParams: Promise<{ id?: string }>;
+    searchParams: Promise<{ id?: string, email?: string }>;
 }) {
-    const { id: orderId } = await searchParams;
+    const { id: orderId, email: orderEmail } = await searchParams;
+    const session = await getSession();
+    const isLoggedIn = !!session;
+
     let order = null;
     let error = null;
 
@@ -33,7 +37,19 @@ export default async function TrackOrderPage({
                 });
 
                 if (!order) {
-                    error = "Sipariş bulunamadı. Lütfen numaranızı kontrol edin.";
+                    error = "Sipariş bulunamadı. Lütfen bilgileri kontrol edin.";
+                } else {
+                    let isAuthorized = false;
+                    if (isLoggedIn && order.userId === session.userId) {
+                        isAuthorized = true;
+                    } else if (!isLoggedIn && orderEmail && order.customerEmail === orderEmail) {
+                        isAuthorized = true;
+                    }
+
+                    if (!isAuthorized) {
+                        error = "Bu siparişi görüntüleme yetkiniz yok veya e-posta adresi eşleşmedi.";
+                        order = null;
+                    }
                 }
             }
         } catch (e) {
@@ -123,21 +139,33 @@ export default async function TrackOrderPage({
                 <p className="text-slate-500 text-center mb-10">Siparişinizin güncel durumunu öğrenmek için sipariş numaranızı girin.</p>
 
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
-                    <form className="flex flex-col sm:flex-row gap-4" action="/track-order">
-                        <input
-                            type="text"
-                            name="id"
-                            placeholder="Sipariş Numaranız (Örn: 123)"
-                            defaultValue={orderId || ''}
-                            required
-                            className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
-                        />
-                        <button
-                            type="submit"
-                            className="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors"
-                        >
-                            Sorgula
-                        </button>
+                    <form className="flex flex-col gap-4" action="/track-order">
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <input
+                                type="text"
+                                name="id"
+                                placeholder="Sipariş Numaranız (Örn: 123)"
+                                defaultValue={orderId || ''}
+                                required
+                                className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                            />
+                            {!isLoggedIn && (
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="Sipariş E-postanız"
+                                    defaultValue={orderEmail || ''}
+                                    required
+                                    className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                                />
+                            )}
+                            <button
+                                type="submit"
+                                className="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors whitespace-nowrap"
+                            >
+                                Sorgula
+                            </button>
+                        </div>
                     </form>
                 </div>
 

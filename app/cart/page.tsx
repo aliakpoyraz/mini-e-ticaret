@@ -23,8 +23,15 @@ export default function CartPage() {
     const router = useRouter();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
 
+    const [isGuest, setIsGuest] = useState<boolean | null>(null);
+    const [userData, setUserData] = useState<{ firstName: string, lastName: string, email: string, phone: string } | null>(null);
+    const [showLoginPrompt, setShowLoginPrompt] = useState(true);
+    const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+    const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+
     const [formData, setFormData] = useState({
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
         phoneCode: '90',
         phone: '',
@@ -48,14 +55,75 @@ export default function CartPage() {
     const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
     useEffect(() => {
+        // Indirimleri getir
         fetch('/api/discounts/cart')
             .then(res => res.json())
             .then(data => setCartDiscounts(data))
             .catch(err => console.error(err));
+
+        // Kullanıcı oturumunu kontrol et
+        fetch('/api/auth/me')
+            .then(res => {
+                if (res.ok) {
+                    setIsGuest(false);
+                    return res.json();
+                } else {
+                    setIsGuest(true);
+                    return null;
+                }
+            })
+            .then(data => {
+                if (data && data.user) {
+                    const sessionUser = data.user;
+                    // fetch full profile for phone
+                    fetch('/api/user/profile')
+                        .then(r => r.json())
+                        .then(profileData => {
+                            const profile = profileData.user || sessionUser;
+                            const rawPhone = profile.phone || '';
+                            // Strip leading zero, keep only digits for the phone input
+                            const cleanPhone = rawPhone.startsWith('0') ? rawPhone.slice(1) : rawPhone;
+
+                            setUserData({
+                                firstName: profile.firstName || '',
+                                lastName: profile.lastName || '',
+                                email: profile.email || '',
+                                phone: cleanPhone
+                            });
+
+                            setFormData(prev => ({
+                                ...prev,
+                                firstName: profile.firstName || '',
+                                lastName: profile.lastName || '',
+                                email: profile.email || '',
+                                phone: cleanPhone
+                            }));
+                        })
+                        .catch(() => { });
+
+                    // Fetch saved addresses
+                    fetch('/api/user/addresses')
+                        .then(r => r.json())
+                        .then(addrData => {
+                            if (addrData.addresses && addrData.addresses.length > 0) {
+                                setSavedAddresses(addrData.addresses);
+                                const def = addrData.addresses.find((a: any) => a.isDefault) || addrData.addresses[0];
+                                setSelectedAddressId(def.id);
+                                setFormData(prev => ({
+                                    ...prev,
+                                    city: def.city || 'İstanbul',
+                                    addressDetail: def.address || ''
+                                }));
+                            }
+                        })
+                        .catch(() => { });
+                }
+            })
+            .catch(err => console.error(err));
     }, []);
 
     const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const shipping = 0; // Şimdilik kargo ücretsiz
+    const shipping = 0; // kargo ücretsiz
 
     let discountAmount = 0;
     let appliedDiscountName = '';
@@ -137,6 +205,26 @@ export default function CartPage() {
                 alert('Lütfen son kullanma tarihini AA/YY formatında girin.');
                 return;
             }
+
+            const expiryParts = cardData.expiryDate.split('/');
+            if (expiryParts.length === 2) {
+                const month = parseInt(expiryParts[0], 10);
+                const year = parseInt(expiryParts[1], 10);
+                const currentYear = new Date().getFullYear() % 100;
+
+                if (month < 1 || month > 12) {
+                    alert('Lütfen geçerli bir ay girin (01-12).');
+                    return;
+                }
+                if (year < currentYear || year > currentYear + 20) {
+                    alert('Lütfen geçerli bir yıl girin.');
+                    return;
+                }
+            } else {
+                alert('Lütfen son kullanma tarihini AA/YY formatında girin.');
+                return;
+            }
+
             if (cardData.cvv.length < 3) {
                 alert('Lütfen geçerli bir CVV girin.');
                 return;
@@ -145,8 +233,17 @@ export default function CartPage() {
 
         setIsCheckingOut(true);
 
-        const fullAddress = `${formData.addressDetail}, ${formData.city}, Türkiye`;
-        const fullPhone = `+${formData.phoneCode} ${formData.phone}`;
+        const customerName = `${formData.firstName} ${formData.lastName}`.trim() || formData.firstName;
+        let customerAddress = `${formData.addressDetail}, ${formData.city}, Türkiye`;
+
+        // Use selected saved address if logged in
+        if (!isGuest && selectedAddressId) {
+            const sel = savedAddresses.find(a => a.id === selectedAddressId);
+            if (sel) {
+                customerAddress = `${sel.address}, ${sel.city}, ${sel.country}`;
+            }
+        }
+        const fullPhone = `+90 ${formData.phone}`;
 
         try {
             const res = await fetch('/api/orders', {
@@ -154,10 +251,10 @@ export default function CartPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     items: items,
-                    customerName: formData.name,
+                    customerName: customerName,
                     customerEmail: formData.email,
                     customerPhone: fullPhone,
-                    customerAddress: fullAddress,
+                    customerAddress: customerAddress,
                     paymentMethod: formData.paymentMethod,
                     couponCode: appliedCoupon?.code
                 })
@@ -196,7 +293,7 @@ export default function CartPage() {
     }
 
     return (
-        <div className="container mx-auto px-6 py-12 max-w-7xl">
+        <div className="container mx-auto px-6 pt-28 pb-12 max-w-7xl">
             <h1 className="text-3xl font-bold mb-8 text-slate-900 tracking-tight">Ödeme Yap</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -226,21 +323,29 @@ export default function CartPage() {
                                         <p className="text-slate-500 text-sm mb-2">{item.variantName}</p>
 
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3 bg-slate-50 rounded-lg p-1">
-                                                <button
-                                                    onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
-                                                    disabled={item.quantity <= 1}
-                                                    className="w-8 h-8 flex items-center justify-center bg-white rounded-md text-slate-600 shadow-sm hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                                                >
-                                                    -
-                                                </button>
-                                                <span className="text-sm font-bold text-slate-900 w-4 text-center">{item.quantity}</span>
-                                                <button
-                                                    onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                                                    className="w-8 h-8 flex items-center justify-center bg-white rounded-md text-slate-600 shadow-sm hover:text-slate-900 transition"
-                                                >
-                                                    +
-                                                </button>
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-3 bg-slate-50 rounded-lg p-1 w-fit">
+                                                    <button
+                                                        onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                                                        disabled={item.quantity <= 1}
+                                                        className="w-8 h-8 flex items-center justify-center bg-white rounded-md text-slate-600 shadow-sm hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <span className="text-sm font-bold text-slate-900 w-4 text-center">{item.quantity}</span>
+                                                    <button
+                                                        onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
+                                                        disabled={item.quantity >= item.stock}
+                                                        className="w-8 h-8 flex items-center justify-center bg-white rounded-md text-slate-600 shadow-sm hover:text-slate-900 focus:outline-none disabled:opacity-30 disabled:cursor-not-allowed transition"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                                {item.quantity >= item.stock && (
+                                                    <span className="text-[10px] text-orange-600 font-bold uppercase tracking-tight animate-fade-in pl-1">
+                                                        Maks. Stok ({item.stock})
+                                                    </span>
+                                                )}
                                             </div>
                                             <button
                                                 onClick={() => removeFromCart(item.variantId)}
@@ -332,23 +437,51 @@ export default function CartPage() {
 
                 <div>
                     <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-lg shadow-slate-200/50 sticky top-24">
+                        {isGuest && (
+                            <div className="mb-8 p-4 bg-brand-50 border border-brand-100 rounded-xl">
+                                <h3 className="text-brand-900 font-bold mb-2">Daha Hızlı Ödeme İçin</h3>
+                                <p className="text-brand-700 text-sm mb-4">Kayıtlı adreslerinizi kullanmak ve siparişinizi kolayca takip etmek için giriş yapın.</p>
+                                <div className="flex gap-3">
+                                    <button onClick={() => router.push('/login?redirect=/cart')} className="bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-brand-700 transition">
+                                        Giriş Yap
+                                    </button>
+                                    <button onClick={() => router.push('/register?redirect=/cart')} className="bg-white text-brand-600 px-5 py-2 rounded-lg text-sm font-bold border border-brand-200 hover:bg-brand-50 transition">
+                                        Kayıt Ol
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
                             <Wallet className="text-brand-600" /> Müşteri Bilgileri
                         </h2>
 
                         <form onSubmit={handleCheckout} className="space-y-5">
-                            <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
-                                    <User size={16} className="text-slate-400" /> Ad Soyad
-                                </label>
-                                <input
-                                    name="name"
-                                    required
-                                    placeholder="Ahmet Yılmaz"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    className="w-full border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 text-slate-900 font-medium placeholder:font-normal placeholder:text-slate-400"
-                                />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+                                        <User size={16} className="text-slate-400" /> Ad
+                                    </label>
+                                    <input
+                                        name="firstName"
+                                        required
+                                        placeholder="Ahmet"
+                                        value={formData.firstName}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ\s]/g, '') }))}
+                                        className="w-full border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 text-slate-900 font-medium placeholder:font-normal placeholder:text-slate-400"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-2">&nbsp;Soyad</label>
+                                    <input
+                                        name="lastName"
+                                        required
+                                        placeholder="Yılmaz"
+                                        value={formData.lastName}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ\s]/g, '') }))}
+                                        className="w-full border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 text-slate-900 font-medium placeholder:font-normal placeholder:text-slate-400"
+                                    />
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -370,25 +503,22 @@ export default function CartPage() {
                                     <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
                                         <Phone size={16} className="text-slate-400" /> Telefon
                                     </label>
-                                    <div className="flex gap-3">
-                                        <div className="relative group shrink-0">
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold pointer-events-none transition-colors group-focus-within:text-brand-600">+</div>
-                                            <input
-                                                type="number"
-                                                name="phoneCode"
-                                                value={formData.phoneCode}
-                                                onChange={handleInputChange}
-                                                className="w-20 border border-slate-200 p-3 pl-6 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 text-slate-900 font-bold text-center appearance-none"
-                                            />
-                                        </div>
+                                    <div className="flex items-center border border-slate-200 rounded-xl bg-slate-50/50 focus-within:ring-2 focus-within:ring-brand-500 transition overflow-hidden">
+                                        <span className="pl-4 pr-2 text-sm font-semibold text-slate-500 whitespace-nowrap select-none">+90</span>
                                         <input
                                             name="phone"
                                             type="tel"
+                                            inputMode="numeric"
                                             required
-                                            placeholder="555 123 4567"
+                                            maxLength={10}
+                                            placeholder="5321234567"
                                             value={formData.phone}
-                                            onChange={handleInputChange}
-                                            className="flex-1 w-full min-w-0 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 text-slate-900 font-medium placeholder:font-normal placeholder:text-slate-400"
+                                            onChange={(e) => {
+                                                const raw = e.target.value.replace(/\D/g, '');
+                                                const cleaned = raw.startsWith('0') ? raw.slice(1) : raw;
+                                                setFormData(prev => ({ ...prev, phone: cleaned.slice(0, 10) }));
+                                            }}
+                                            className="flex-1 px-2 py-3 bg-transparent outline-none text-sm text-slate-900 font-medium placeholder:font-normal placeholder:text-slate-400"
                                         />
                                     </div>
                                 </div>
@@ -399,42 +529,78 @@ export default function CartPage() {
                                     <MapPin size={16} className="text-slate-400" /> Teslimat Adresi
                                 </label>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">ÜLKE</label>
-                                        <input
-                                            value="Türkiye"
-                                            readOnly
-                                            className="w-full border border-slate-200 p-3 rounded-xl bg-slate-100 text-slate-500 font-medium cursor-not-allowed select-none"
-                                        />
+                                {/* Saved Address Selector for logged-in users */}
+                                {!isGuest && savedAddresses.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {savedAddresses.map((addr) => (
+                                            <label
+                                                key={addr.id}
+                                                className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${selectedAddressId === addr.id
+                                                    ? 'border-brand-500 bg-brand-50 ring-1 ring-brand-500'
+                                                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                                                    }`}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="savedAddress"
+                                                    className="mt-1 accent-brand-600"
+                                                    checked={selectedAddressId === addr.id}
+                                                    onChange={() => setSelectedAddressId(addr.id)}
+                                                />
+                                                <div>
+                                                    <div className="font-bold text-sm text-slate-900">{addr.title}</div>
+                                                    <div className="text-slate-600 text-xs mt-0.5">{addr.address}, {addr.city}</div>
+                                                </div>
+                                            </label>
+                                        ))}
+                                        <a href="/account/addresses" className="text-xs font-semibold text-brand-600 hover:text-brand-700 pl-1 inline-block">
+                                            + Yeni adres ekle
+                                        </a>
                                     </div>
+                                ) : (
                                     <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">ŞEHİR</label>
-                                        <select
-                                            name="city"
-                                            value={formData.city}
-                                            onChange={handleInputChange}
-                                            className="w-full border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 text-slate-900 font-medium appearance-none cursor-pointer"
-                                            style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundPosition: "right 0.75rem center", backgroundRepeat: "no-repeat", backgroundSize: "1.5em 1.5em", paddingRight: "2.5rem" }}
-                                        >
-                                            {TURKISH_CITIES.map(city => (
-                                                <option key={city} value={city}>{city}</option>
-                                            ))}
-                                        </select>
+                                        <div className="grid grid-cols-2 gap-4 mb-4">
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">ÜLKE</label>
+                                                <input
+                                                    value="Türkiye"
+                                                    readOnly
+                                                    className="w-full border border-slate-200 p-3 rounded-xl bg-slate-100 text-slate-500 font-medium cursor-not-allowed select-none"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">ŞEHİR</label>
+                                                <select
+                                                    name="city"
+                                                    value={formData.city}
+                                                    onChange={handleInputChange}
+                                                    className="w-full border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 text-slate-900 font-medium appearance-none cursor-pointer"
+                                                    style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundPosition: "right 0.75rem center", backgroundRepeat: "no-repeat", backgroundSize: "1.5em 1.5em", paddingRight: "2.5rem" }}
+                                                >
+                                                    {TURKISH_CITIES.map(city => (
+                                                        <option key={city} value={city}>{city}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">ADRES DETAYLARI</label>
+                                            <textarea
+                                                name="addressDetail"
+                                                required={selectedAddressId === null}
+                                                placeholder="Sokak, Bina No, Kapı No..."
+                                                value={formData.addressDetail}
+                                                onChange={handleInputChange}
+                                                className="w-full border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 min-h-[80px] resize-none text-slate-900 font-medium placeholder:font-normal placeholder:text-slate-400"
+                                            />
+                                        </div>
+                                        {!isGuest && savedAddresses.length === 0 && (
+                                            <p className="text-xs text-brand-600 mt-2">
+                                                <a href="/account/addresses" className="font-semibold hover:underline">Hesabım</a>'a giderek adres kaydedebilirsiniz.
+                                            </p>
+                                        )}
                                     </div>
-                                </div>
-
-                                <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">ADRES DETAYLARI</label>
-                                    <textarea
-                                        name="addressDetail"
-                                        required
-                                        placeholder="Sokak, Bina No, Kapı No..."
-                                        value={formData.addressDetail}
-                                        onChange={handleInputChange}
-                                        className="w-full border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 min-h-[80px] resize-none text-slate-900 font-medium placeholder:font-normal placeholder:text-slate-400"
-                                    />
-                                </div>
+                                )}
                             </div>
 
                             <div>

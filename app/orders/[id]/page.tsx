@@ -3,8 +3,12 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CheckCircle, Package, User, MapPin, CreditCard, ArrowRight, Home, Phone } from 'lucide-react';
 
+import { getSession } from '@/app/lib/auth';
+
 export default async function OrderPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
+    const session = await getSession();
+
     const order = await prisma.order.findUnique({
         where: { id: parseInt(id) },
         include: { items: { include: { variant: { include: { product: true } } } } }
@@ -14,10 +18,31 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         notFound();
     }
 
+    // Güvenlik: Siparişin bu kullanıcıya ait olup olmadığını kontrol et
+    // Eğer sipariş bir kullanıcıya bağlıysa ve o kullanıcı oturum açmış kullanıcı değilse (admin hariç) erişimi engelle
+    const isAdmin = session?.role === 'ADMIN';
+    const isOwner = session?.userId === (order as any).userId;
+    const isAnonymousMatching = !(order as any).userId && session === null;
+
+    // Detaylı kontrol: Siparişin bir userId'si varsa, session'daki userId ile eşleşmeli (veya admin olmalı)
+    if ((order as any).userId && !isOwner && !isAdmin) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <div className="text-center p-8 bg-white rounded-3xl shadow-xl max-w-md">
+                    <h1 className="text-2xl font-bold text-red-600 mb-4">Yetkisiz Erişim</h1>
+                    <p className="text-slate-600 mb-6">Bu siparişi görüntüleme yetkiniz bulunmamaktadır.</p>
+                    <Link href="/" className="inline-block px-6 py-3 bg-slate-900 text-white rounded-xl font-bold">
+                        Ana Sayfaya Dön
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
     const paymentMethod = order.paymentMethod || 'UNKNOWN';
 
     return (
-        <div className="min-h-screen bg-slate-50 py-12">
+        <div className="min-h-screen bg-slate-50 py-24">
             <div className="container mx-auto px-4 max-w-3xl">
 
                 <div className="text-center mb-10">
