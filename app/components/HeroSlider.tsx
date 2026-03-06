@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 
 export default function HeroSlider() {
     return (
-        <div className="relative h-[600px] w-full bg-slate-50 flex items-center overflow-hidden">
+        <div className="relative h-[600px] w-full bg-slate-50 flex items-center overflow-hidden pt-28 pb-12">
             <div className="absolute top-0 right-0 w-2/3 h-full bg-slate-100/50 skew-x-[-12deg] translate-x-32" />
 
             <div className="container mx-auto px-6 relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">

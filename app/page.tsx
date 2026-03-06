@@ -2,17 +2,32 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import HeroSlider from './components/HeroSlider';
 import Footer from './components/Footer';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
+import FavoriteButton from './components/FavoriteButton';
+import QuickAddToCartButton from './components/QuickAddToCartButton';
+import { getSession } from '@/app/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const featuredProducts = await prisma.product.findMany({
+  const session = await getSession();
+  let userFavorites: number[] = [];
+  if (session) {
+    const favorites = await (prisma as any).favorite.findMany({
+      where: { userId: session.userId }
+    });
+    userFavorites = favorites.map((f: any) => f.productId);
+  }
+
+  const featuredProducts = await (prisma as any).product.findMany({
     take: 4,
     include: {
       variants: true,
       discounts: {
         where: { active: true }
+      },
+      reviews: {
+        where: { status: 'APPROVED' }
       }
     },
     orderBy: { id: 'desc' }
@@ -85,6 +100,21 @@ export default async function Home() {
                       </span>
                     ) : null}
                   </div>
+                  <FavoriteButton
+                    productId={product.id}
+                    initialIsFavorite={userFavorites.includes(product.id)}
+                    className="absolute top-4 right-4 z-20"
+                  />
+                  <QuickAddToCartButton
+                    product={{
+                      id: product.id,
+                      name: product.name,
+                      price: finalPrice,
+                      imageUrl: product.imageUrl
+                    }}
+                    variants={product.variants}
+                    className="absolute bottom-4 right-4 z-20"
+                  />
                 </div>
                 <div className="flex justify-between items-start">
                   <div>
