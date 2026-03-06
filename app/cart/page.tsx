@@ -457,7 +457,7 @@ export default function CartPage() {
                         </h2>
 
                         <form onSubmit={handleCheckout} className="space-y-5">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
                                         <User size={16} className="text-slate-400" /> Ad
@@ -607,7 +607,7 @@ export default function CartPage() {
                                 <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
                                     <CreditCard size={16} className="text-slate-400" /> Ödeme Yöntemi
                                 </label>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <label className={`border rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${formData.paymentMethod === 'CREDIT_CARD' ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-sm ring-1 ring-brand-500' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}>
                                         <input
                                             type="radio"
@@ -618,7 +618,7 @@ export default function CartPage() {
                                             onChange={handleInputChange}
                                         />
                                         <CreditCard size={24} />
-                                        <span className="text-xs font-bold uppercase tracking-wider">Kredi Kartı</span>
+                                        <span className="text-xs font-bold uppercase tracking-wider text-center">Kredi Kartı</span>
                                     </label>
                                     <label className={`border rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${formData.paymentMethod === 'CASH_ON_DELIVERY' ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-sm ring-1 ring-brand-500' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}>
                                         <input
@@ -630,7 +630,7 @@ export default function CartPage() {
                                             onChange={handleInputChange}
                                         />
                                         <Wallet size={24} />
-                                        <span className="text-xs font-bold uppercase tracking-wider">Kapıda Ödeme</span>
+                                        <span className="text-xs font-bold uppercase tracking-wider text-center">Kapıda Ödeme</span>
                                     </label>
                                 </div>
                             </div>
