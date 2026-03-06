@@ -5,24 +5,75 @@ import { Package, ShoppingCart, DollarSign, TrendingUp, AlertCircle, ArrowUpRigh
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
-    const products = await prisma.product.findMany({
-        include: { variants: true },
-        orderBy: { createdAt: 'desc' },
-        take: 5 // Panelde sadece son 5 ürünü göster
-    });
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const firstDayOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-    const productsCount = await prisma.product.count();
+    const [
+        productsCount,
+        ordersCount,
+        recentProducts,
+        recentOrders,
+        allOrders,
+        monthlyOrders,
+        lastMonthlyOrders,
+        todayOrdersCount,
+        lowStockCount
+    ] = await Promise.all([
+        prisma.product.count(),
+        prisma.order.count(),
+        prisma.product.findMany({
+            include: { variants: true },
+            orderBy: { createdAt: 'desc' },
+            take: 5
+        }),
+        prisma.order.findMany({
+            orderBy: { createdAt: 'desc' },
+            take: 5
+        }),
+        prisma.order.findMany({
+            where: { status: { notIn: ['CANCELLED', 'RETURNED'] } },
+            select: { total: true }
+        }),
+        prisma.order.findMany({
+            where: {
+                createdAt: { gte: firstDayOfMonth },
+                status: { notIn: ['CANCELLED', 'RETURNED'] }
+            },
+            select: { total: true }
+        }),
+        prisma.order.findMany({
+            where: {
+                createdAt: {
+                    gte: firstDayOfLastMonth,
+                    lt: firstDayOfMonth
+                },
+                status: { notIn: ['CANCELLED', 'RETURNED'] }
+            },
+            select: { total: true }
+        }),
+        prisma.order.count({
+            where: { createdAt: { gte: todayStart } }
+        }),
+        prisma.variant.count({
+            where: { stock: { lt: 10 } }
+        })
+    ]);
 
-    const orders = await prisma.order.findMany({
-        orderBy: { createdAt: 'desc' },
-        take: 5
-    });
+    // Toplam Gelir
+    const totalRevenue = allOrders.reduce((acc, order) => acc + Number(order.total), 0);
 
-    const ordersCount = await prisma.order.count();
+    // Bu ayın geliri ve büyüme oranı
+    const thisMonthRevenue = monthlyOrders.reduce((acc, order) => acc + Number(order.total), 0);
+    const lastMonthRevenue = lastMonthlyOrders.reduce((acc, order) => acc + Number(order.total), 0);
 
-    // Gelir hesaplaması
-    const allOrders = await prisma.order.findMany({ select: { total: true } });
-    const revenue = allOrders.reduce((acc, order) => acc + Number(order.total), 0);
+    let growth = 0;
+    if (lastMonthRevenue > 0) {
+        growth = ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
+    } else if (thisMonthRevenue > 0) {
+        growth = 100;
+    }
 
     const STATUS_LABELS: Record<string, string> = {
         'CREATED': 'Oluşturuldu',
@@ -47,14 +98,16 @@ export default async function AdminPage() {
                     <div className="flex justify-between items-start">
                         <div>
                             <p className="text-slate-500 text-sm font-medium mb-1">Toplam Gelir</p>
-                            <h3 className="text-3xl font-bold text-slate-900">{revenue.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</h3>
+                            <h3 className="text-3xl font-bold text-slate-900">{totalRevenue.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</h3>
                         </div>
                         <div className="bg-green-50 p-3 rounded-xl text-green-600 group-hover:bg-green-100 transition-colors">
                             <DollarSign size={24} />
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
-                        <TrendingUp size={16} /> +12.5% <span className="text-slate-400 font-normal">geçen aydan</span>
+                    <div className={`flex items-center gap-2 text-sm font-medium ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <TrendingUp size={16} className={growth < 0 ? 'rotate-180' : ''} />
+                        {growth >= 0 ? '+' : ''}{growth.toFixed(1)}%
+                        <span className="text-slate-400 font-normal ml-1">geçen aydan</span>
                     </div>
                 </div>
 
@@ -69,7 +122,7 @@ export default async function AdminPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-purple-600 font-medium">
-                        <ArrowUpRight size={16} /> +4 yeni <span className="text-slate-400 font-normal">bugün</span>
+                        <ArrowUpRight size={16} /> +{todayOrdersCount} yeni <span className="text-slate-400 font-normal">bugün</span>
                     </div>
                 </div>
 
@@ -83,8 +136,12 @@ export default async function AdminPage() {
                             <Package size={24} />
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                        Stok durumu iyi
+                    <div className={`flex items-center gap-2 text-sm font-medium ${lowStockCount > 0 ? 'text-amber-600' : 'text-slate-500'}`}>
+                        {lowStockCount > 0 ? (
+                            <><AlertCircle size={16} /> {lowStockCount} ürün düşük stokta</>
+                        ) : (
+                            'Stok durumu iyi'
+                        )}
                     </div>
                 </div>
             </div>
@@ -108,7 +165,7 @@ export default async function AdminPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
-                                {orders.map(order => (
+                                {recentOrders.map(order => (
                                     <tr key={order.id} className="hover:bg-slate-50/50 transition-colors">
                                         <td className="px-6 py-4 font-medium text-slate-900">#{order.id}</td>
                                         <td className="px-6 py-4 text-slate-600">{order.customerName}</td>
@@ -145,7 +202,7 @@ export default async function AdminPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
-                                {products.map(product => (
+                                {recentProducts.map(product => (
                                     <tr key={product.id} className="hover:bg-slate-50/50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">

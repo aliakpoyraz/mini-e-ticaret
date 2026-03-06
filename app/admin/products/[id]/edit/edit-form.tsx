@@ -12,19 +12,32 @@ type Variant = {
     stock: number;
 };
 
+type ProductImage = {
+    id: number;
+    url: string;
+    order: number;
+};
+
 type Product = {
     id: number;
     name: string;
     description: string | null;
     price: number | any;
     imageUrl: string | null;
+    images?: ProductImage[];
     variants: Variant[];
 };
 
 export default function EditProductForm({ product }: { product: Product }) {
     const router = useRouter();
     const [uploading, setUploading] = useState(false);
-    const [imageUrl, setImageUrl] = useState(product.imageUrl || '');
+
+    // Initialize imageUrls from images relation, fallback to imageUrl
+    const initialImages = product.images && product.images.length > 0
+        ? product.images.map(img => img.url)
+        : (product.imageUrl ? [product.imageUrl] : []);
+
+    const [imageUrls, setImageUrls] = useState<string[]>(initialImages);
     const [variants, setVariants] = useState(product.variants);
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +54,7 @@ export default function EditProductForm({ product }: { product: Product }) {
             });
             const data = await res.json();
             if (data.url) {
-                setImageUrl(data.url);
+                setImageUrls([...imageUrls, data.url]);
             }
         } catch (error) {
             console.error(error);
@@ -49,6 +62,10 @@ export default function EditProductForm({ product }: { product: Product }) {
         } finally {
             setUploading(false);
         }
+    };
+
+    const removeImage = (index: number) => {
+        setImageUrls(imageUrls.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -59,7 +76,7 @@ export default function EditProductForm({ product }: { product: Product }) {
             name: formData.get('name'),
             description: formData.get('description'),
             price: parseFloat(formData.get('price') as string),
-            imageUrl: imageUrl,
+            imageUrls: imageUrls,
             variants: variants
         };
 
@@ -97,20 +114,27 @@ export default function EditProductForm({ product }: { product: Product }) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-1">Ürün Görseli</label>
-                        <div className="flex items-center gap-3">
-                            <label className={`flex-1 cursor-pointer bg-gray-50 border-2 border-dashed ${imageUrl ? 'border-brand-300 bg-brand-50' : 'border-gray-200'} rounded-lg p-2.5 flex flex-col items-center justify-center gap-1 hover:bg-gray-100 transition h-[42px]`}>
-                                <div className="flex items-center gap-2 text-gray-500">
+                        <label className="block text-sm font-semibold text-gray-900 mb-1">Ürün Görselleri</label>
+                        <div className="flex flex-wrap items-center gap-3">
+                            {imageUrls.map((url, idx) => (
+                                <div key={idx} className="relative w-16 h-16 rounded-lg bg-gray-100 border border-gray-200 shadow-sm shrink-0 group">
+                                    <img src={url} alt="Preview" className="w-full h-full object-cover rounded-lg" />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeImage(idx)}
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition shadow"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                                    </button>
+                                </div>
+                            ))}
+                            <label className={`cursor-pointer bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-1 hover:bg-gray-100 transition h-16 px-4 w-auto`}>
+                                <div className="flex flex-col items-center text-gray-500">
                                     <Upload size={16} />
-                                    <span className="text-xs font-medium">{uploading ? 'Yükleniyor...' : imageUrl ? 'Görseli Değiştir' : 'Görsel Yükle'}</span>
+                                    <span className="text-[10px] font-medium mt-1">{uploading ? 'Yükleniyor...' : 'Ekle'}</span>
                                 </div>
                                 <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
                             </label>
-                            {imageUrl && (
-                                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-gray-200 shadow-sm shrink-0">
-                                    <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>

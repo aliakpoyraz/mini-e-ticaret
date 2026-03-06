@@ -9,7 +9,7 @@ export default function AddProductPage() {
     const router = useRouter();
     const [variants, setVariants] = useState([{ name: '', sku: '', stock: 0 }]);
     const [uploading, setUploading] = useState(false);
-    const [imageUrl, setImageUrl] = useState('');
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
 
     const addVariant = () => {
         setVariants([...variants, { name: '', sku: '', stock: 0 }]);
@@ -33,7 +33,7 @@ export default function AddProductPage() {
             });
             const data = await res.json();
             if (data.url) {
-                setImageUrl(data.url);
+                setImageUrls([...imageUrls, data.url]);
             }
         } catch (error) {
             console.error(error);
@@ -41,6 +41,10 @@ export default function AddProductPage() {
         } finally {
             setUploading(false);
         }
+    };
+
+    const removeImage = (index: number) => {
+        setImageUrls(imageUrls.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -51,7 +55,7 @@ export default function AddProductPage() {
             name: formData.get('name'),
             description: formData.get('description'),
             price: parseFloat(formData.get('price') as string),
-            imageUrl: imageUrl,
+            imageUrls: imageUrls,
             variants: variants
         };
 
@@ -99,20 +103,27 @@ export default function AddProductPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-900 mb-1">Ürün Görseli</label>
-                            <div className="flex items-center gap-3">
-                                <label className={`flex-1 cursor-pointer bg-gray-50 border-2 border-dashed ${imageUrl ? 'border-brand-300 bg-brand-50' : 'border-gray-200'} rounded-lg p-2.5 flex flex-col items-center justify-center gap-1 hover:bg-gray-100 transition h-[42px]`}>
-                                    <div className="flex items-center gap-2 text-gray-500">
+                            <label className="block text-sm font-semibold text-gray-900 mb-1">Ürün Görselleri</label>
+                            <div className="flex flex-wrap items-center gap-3">
+                                {imageUrls.map((url, idx) => (
+                                    <div key={idx} className="relative w-16 h-16 rounded-lg bg-gray-100 border border-gray-200 shadow-sm shrink-0 group">
+                                        <img src={url} alt="Preview" className="w-full h-full object-cover rounded-lg" />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeImage(idx)}
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition shadow"
+                                        >
+                                            <X size={12} />
+                                        </button>
+                                    </div>
+                                ))}
+                                <label className={`cursor-pointer bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-1 hover:bg-gray-100 transition h-16 px-4 w-auto`}>
+                                    <div className="flex flex-col items-center text-gray-500">
                                         <Upload size={16} />
-                                        <span className="text-xs font-medium">{uploading ? 'Yükleniyor...' : imageUrl ? 'Görseli Değiştir' : 'Görsel Yükle'}</span>
+                                        <span className="text-[10px] font-medium mt-1">{uploading ? 'Yükleniyor...' : 'Ekle'}</span>
                                     </div>
                                     <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
                                 </label>
-                                {imageUrl && (
-                                    <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-gray-200 shadow-sm shrink-0">
-                                        <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>
