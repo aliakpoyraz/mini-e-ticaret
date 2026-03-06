@@ -21,19 +21,28 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, description, price, imageUrl, variants } = body;
+        const { name, description, price, imageUrls, variants } = body;
+
+        const mainImageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : null;
+
+        const imagesData = imageUrls && imageUrls.length > 0
+            ? imageUrls.map((url: string, index: number) => ({ url, order: index }))
+            : [];
 
         const product = await prisma.product.create({
             data: {
                 name,
                 description,
                 price,
-                imageUrl,
+                imageUrl: mainImageUrl, // Backward compatibility
+                images: {
+                    create: imagesData
+                },
                 variants: {
                     create: variants // { name, sku, stock } formatında dizi bekler
                 }
             },
-            include: { variants: true }
+            include: { variants: true, images: true }
         });
         return NextResponse.json(product);
     } catch (error: any) {

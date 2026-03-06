@@ -42,7 +42,8 @@ export default function AddToCartButton({ product, variants }: { product: Produc
             variantId: selectedVariant.id,
             variantName: selectedVariant.name,
             description: '',
-            quantity: 1
+            quantity: 1,
+            stock: selectedVariant.stock
         });
         setTimeout(() => {
             setIsLoading(false);
