@@ -43,9 +43,9 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Sidebar */}
                     <aside className="w-full md:w-64 lg:w-72 shrink-0">
-                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-                            <h2 className="text-xl font-bold text-slate-900 mb-6">Hesabım</h2>
-                            <nav className="space-y-2">
+                        <div className="bg-white rounded-3xl p-4 md:p-6 shadow-sm border border-slate-100">
+                            <h2 className="text-xl font-bold text-slate-900 mb-4 md:mb-6 hidden md:block">Hesabım</h2>
+                            <nav className="flex gap-2 overflow-x-auto pb-2 md:pb-0 md:flex-col md:space-y-2 snap-x scrollbar-hide">
                                 {navItems.map((item) => {
                                     const Icon = item.icon;
                                     const isActive = pathname.startsWith(item.href);
@@ -54,24 +54,24 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                                         <Link
                                             key={item.href}
                                             href={item.href}
-                                            className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${isActive
+                                            className={`flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-2xl transition-all whitespace-nowrap snap-start shrink-0 ${isActive
                                                 ? 'bg-slate-900 text-white font-medium shadow-md shadow-slate-900/10'
-                                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
+                                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium bg-slate-50 md:bg-transparent'
                                                 }`}
                                         >
                                             <Icon size={18} />
-                                            {item.name}
+                                            <span className="text-sm md:text-base">{item.name}</span>
                                         </Link>
                                     );
                                 })}
                             </nav>
 
-                            <div className="mt-8 pt-6 border-t border-slate-100">
+                            <div className="mt-4 md:mt-8 pt-4 md:pt-6 border-t border-slate-100">
                                 <button
                                     onClick={() => {
                                         fetch('/api/auth/logout', { method: 'POST' }).then(() => { window.location.href = '/' });
                                     }}
-                                    className="flex items-center gap-3 px-4 py-3 w-full text-left text-red-600 hover:bg-red-50 rounded-2xl transition-colors font-medium"
+                                    className="flex items-center justify-center md:justify-start gap-2 md:gap-3 px-4 py-2.5 md:py-3 w-full text-red-600 hover:bg-red-50 rounded-2xl transition-colors font-medium text-sm md:text-base"
                                 >
                                     <LogOut size={18} />
                                     Çıkış Yap
