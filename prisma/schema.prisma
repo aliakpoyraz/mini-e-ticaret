@@ -19,6 +19,9 @@ model Product {
   category    String?
   variants    Variant[]
   discounts   Discount[]
+  favorites   Favorite[]
+  images      ProductImage[]
+  reviews     Review[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -40,6 +43,8 @@ model Order {
   status          String      @default("CREATED") // CREATED, PAID, SHIPPED, DELIVERED, RETURNED
   total           Decimal
   items           OrderItem[]
+  userId          Int?
+  user            User?       @relation(fields: [userId], references: [id])
   customerName    String
   customerAddress String
   customerEmail   String
@@ -93,4 +98,70 @@ model Coupon {
   usedCount    Int       @default(0)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  password  String     
+  firstName String?
+  lastName  String?
+  phone     String?
+  role      String     @default("USER") // USER or ADMIN
+  isBanned  Boolean    @default(false)
+  favorites Favorite[]
+  orders    Order[]
+  addresses Address[]
+  reviews   Review[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Address {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  title     String   // e.g., "Ev", "İş"
+  address   String
+  city      String
+  country   String   @default("Türkiye")
+  zipCode   String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  order     Int      @default(0) // For sorting
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int      // 1-5
+  comment   String?
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  status    String   @default("APPROVED") // APPROVED, PENDING, REJECTED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
 }
