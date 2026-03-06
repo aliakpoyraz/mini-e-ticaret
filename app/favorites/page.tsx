@@ -25,7 +25,7 @@ export default async function FavoritesPage() {
     }
 
     const savedFavorites = await prisma.favorite.findMany({
-        where: { userId: session.userId },
+        where: { userId: Number(session.userId) },
         include: {
             product: {
                 include: {

@@ -59,7 +59,8 @@ export default function QuickAddToCartButton({ product, variants, className = ''
             variantId: variant.id,
             variantName: variant.name,
             description: '',
-            quantity: 1
+            quantity: 1,
+            stock: variant.stock
         });
         setTimeout(() => {
             setIsAdding(false);
@@ -125,8 +126,8 @@ export default function QuickAddToCartButton({ product, variants, className = ''
                                     onClick={() => v.stock > 0 && handleVariantSelect(v)}
                                     disabled={v.stock === 0 || isAdding}
                                     className={`px-5 py-2.5 rounded-xl text-sm font-bold border-2 transition-all ${v.stock === 0
-                                            ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed line-through'
-                                            : 'border-slate-200 bg-white text-slate-900 hover:border-slate-900 hover:bg-slate-900 hover:text-white'
+                                        ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed line-through'
+                                        : 'border-slate-200 bg-white text-slate-900 hover:border-slate-900 hover:bg-slate-900 hover:text-white'
                                         }`}
                                 >
                                     {v.name}

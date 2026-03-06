@@ -9,7 +9,7 @@ export async function GET() {
     }
 
     const favorites = await prisma.favorite.findMany({
-        where: { userId: session.userId },
+        where: { userId: Number(session.userId) },
         include: {
             product: {
                 include: {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         const existingFavorite = await prisma.favorite.findUnique({
             where: {
                 userId_productId: {
-                    userId: session.userId,
+                    userId: Number(session.userId),
                     productId: productId
                 }
             }
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
         } else {
             await prisma.favorite.create({
                 data: {
-                    userId: session.userId,
+                    userId: Number(session.userId),
                     productId: productId
                 }
             });

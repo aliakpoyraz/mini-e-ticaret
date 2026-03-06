@@ -56,7 +56,7 @@ export async function POST(
         // Re-verify eligibility on server side
         const purchase = await (prisma as any).order.findFirst({
             where: {
-                userId: session.userId,
+                userId: Number(session.userId),
                 items: {
                     some: {
                         variant: {
@@ -86,7 +86,7 @@ export async function POST(
         const review = await (prisma as any).review.upsert({
             where: {
                 userId_productId: {
-                    userId: session.userId,
+                    userId: Number(session.userId),
                     productId: productId
                 }
             },
@@ -97,7 +97,7 @@ export async function POST(
                 updatedAt: new Date()
             },
             create: {
-                userId: session.userId,
+                userId: Number(session.userId),
                 productId,
                 rating,
                 comment: finalComment,

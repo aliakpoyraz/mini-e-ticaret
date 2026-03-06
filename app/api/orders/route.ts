@@ -100,7 +100,7 @@ export async function POST(request: Request) {
 
             return await tx.order.create({
                 data: {
-                    userId: session?.userId || null,
+                    userId: session?.userId ? Number(session.userId) : null,
                     customerName,
                     customerAddress,
                     customerEmail,

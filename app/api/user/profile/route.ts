@@ -11,7 +11,7 @@ export async function GET() {
         }
 
         const user = await prisma.user.findUnique({
-            where: { id: session.userId },
+            where: { id: Number(session.userId) },
             select: {
                 id: true,
                 firstName: true,
@@ -42,7 +42,7 @@ export async function PUT(request: Request) {
         const data = await request.json();
         const { firstName, lastName, email, phone, currentPassword, newPassword } = data;
 
-        const user = await prisma.user.findUnique({ where: { id: session.userId } });
+        const user = await prisma.user.findUnique({ where: { id: Number(session.userId) } });
         if (!user) {
             return NextResponse.json({ error: 'Kullanıcı bulunamadı' }, { status: 404 });
         }
@@ -78,7 +78,7 @@ export async function PUT(request: Request) {
         }
 
         const updatedUser = await prisma.user.update({
-            where: { id: session.userId },
+            where: { id: Number(session.userId) },
             data: updateData,
             select: { id: true, firstName: true, lastName: true, email: true, phone: true }
         });

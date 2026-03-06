@@ -20,7 +20,7 @@ export async function GET(
         const existingReview = await prisma.review.findUnique({
             where: {
                 userId_productId: {
-                    userId: session.userId,
+                    userId: Number(session.userId),
                     productId: productId
                 }
             }
@@ -38,7 +38,7 @@ export async function GET(
         // An order that includes a variant of this product
         const purchase = await prisma.order.findFirst({
             where: {
-                userId: session.userId,
+                userId: Number(session.userId),
                 // Status could be anything that implies a successful intent/delivery
                 // For MVP, if they ordered it, they can review it.
                 items: {
