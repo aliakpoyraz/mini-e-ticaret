@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { setAuthCookie, signToken } from '@/app/lib/auth';
+import crypto from 'crypto';
+import { sendEmail } from '@/lib/resend';
+import { getWelcomeEmailHtml } from '@/lib/email-templates';
 
 export async function POST(request: Request) {
     try {
@@ -48,6 +51,7 @@ export async function POST(request: Request) {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+        const verificationToken = crypto.randomBytes(32).toString('hex');
 
         const user = await prisma.user.create({
             data: {
@@ -57,7 +61,18 @@ export async function POST(request: Request) {
                 password: hashedPassword,
                 phone,
                 role: 'USER',
+                verificationToken,
+                isVerified: false
             },
+        });
+
+        // Send Welcome/Verification Email
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const verificationUrl = `${baseUrl}/api/auth/verify-email?token=${verificationToken}`;
+        await sendEmail({
+            to: email,
+            subject: 'Hesabınızı Doğrulayın',
+            html: getWelcomeEmailHtml(firstName, verificationUrl)
         });
 
         const token = await signToken({ userId: user.id, email: user.email, role: user.role });

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/app/lib/auth';
+import { sendEmail } from '@/lib/resend';
+import { getOrderConfirmationEmailHtml } from '@/lib/email-templates';
 
 export async function POST(request: Request) {
     try {
@@ -114,6 +116,13 @@ export async function POST(request: Request) {
                     }
                 }
             });
+        });
+
+        // Send Order Confirmation Email
+        await sendEmail({
+            to: customerEmail,
+            subject: `Siparişiniz Alındı! #${order.id}`,
+            html: getOrderConfirmationEmailHtml(order.id, Number(order.total).toFixed(2), customerName)
         });
 
         return NextResponse.json(order);

@@ -7,17 +7,32 @@ import { Loader2, CheckCircle2 } from 'lucide-react';
 export default function ForgotPasswordPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
+    const [error, setError] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError('');
         setIsLoading(true);
 
-        // Dummy timeout for MVP presentation
-        setTimeout(() => {
+        try {
+            const res = await fetch('/api/auth/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            if (res.ok) {
+                setIsSuccess(true);
+            } else {
+                const data = await res.json();
+                setError(data.error || 'Bir hata oluştu.');
+            }
+        } catch (err) {
+            setError('Sunucu bağlantı hatası.');
+        } finally {
             setIsLoading(false);
-            setIsSuccess(true);
-        }, 1200);
+        }
     };
 
     return (
@@ -46,6 +61,11 @@ export default function ForgotPasswordPage() {
                                 E-posta adresinizi girin, sıfırlama bağlantısı gönderelim.
                             </p>
                         </div>
+                        {error && (
+                            <div className="mb-4 p-3 bg-red-50 text-red-600 text-xs font-medium rounded-xl text-center">
+                                {error}
+                            </div>
+                        )}
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
                                 <input

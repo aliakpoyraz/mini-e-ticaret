@@ -20,6 +20,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Hesabınız yasaklanmıştır. Lütfen yönetici ile iletişime geçin.' }, { status: 403 });
         }
 
+        if (!user.isVerified) {
+            return NextResponse.json({ error: 'Lütfen e-posta adresinizi doğrulayın.' }, { status: 403 });
+        }
+
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
             return NextResponse.json({ error: 'E-posta veya şifre hatalı' }, { status: 401 });

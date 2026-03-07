@@ -5,6 +5,8 @@ import { ArrowLeft, Printer, Mail, Phone, MapPin, User, Calendar, CreditCard } f
 import { revalidatePath } from 'next/cache';
 import StatusUpdateForm from './status-update-form';
 import PrintButton from './print-button';
+import { sendEmail } from '@/lib/resend';
+import { getOrderStatusUpdateEmailHtml } from '@/lib/email-templates';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,6 +57,20 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                 where: { id: orderId },
                 data: { status }
             });
+
+            // Send Status Update Email
+            const updatedOrder = await tx.order.findUnique({
+                where: { id: orderId }
+            });
+
+            if (updatedOrder) {
+                const statusLabel = STATUS_LABELS[status] || status;
+                await sendEmail({
+                    to: updatedOrder.customerEmail,
+                    subject: `Sipariş Durumu Güncellendi: ${statusLabel}`,
+                    html: getOrderStatusUpdateEmailHtml(updatedOrder.id, statusLabel, updatedOrder.customerName)
+                });
+            }
         });
 
         revalidatePath(`/admin/orders/${orderId}`);

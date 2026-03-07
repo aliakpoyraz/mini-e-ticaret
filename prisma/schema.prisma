@@ -110,6 +110,10 @@ model User {
   phone     String?
   role      String     @default("USER") // USER or ADMIN
   isBanned  Boolean    @default(false)
+  isVerified      Boolean    @default(false)
+  verificationToken String?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
   favorites Favorite[]
   orders    Order[]
   addresses Address[]
