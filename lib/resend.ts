@@ -24,15 +24,23 @@ export const sendEmail = async ({ to, subject, html }: SendEmailParams) => {
     }
 
     try {
-        const data = await resend.emails.send({
-            from: 'Store <onboarding@resend.dev>',
+        console.log(`Sending email to: ${to}, Subject: ${subject}`);
+        const { data, error } = await resend.emails.send({
+            from: 'onboarding@resend.dev',
             to,
             subject,
             html,
         });
+
+        if (error) {
+            console.error('Resend API Error:', error);
+            return { success: false, error };
+        }
+
+        console.log('Email sent successfully:', data);
         return { success: true, data };
     } catch (error) {
-        console.error('Email send error:', error);
+        console.error('Unexpected Email Error:', error);
         return { success: false, error };
     }
 };
