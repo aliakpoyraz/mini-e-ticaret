@@ -112,7 +112,7 @@ export default function AddToCartButton({ product, variants }: { product: Produc
 
                         <div className="flex flex-col gap-3">
                             <button
-                                onClick={() => router.push('/cart')}
+                                onClick={() => router.push('/sepet')}
                                 className="w-full flex items-center justify-between bg-slate-900 text-white px-6 py-3.5 rounded-2xl font-bold hover:bg-slate-800 transition-colors group"
                             >
                                 <span className="flex items-center gap-2">

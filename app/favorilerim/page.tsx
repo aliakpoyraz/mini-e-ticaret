@@ -16,7 +16,7 @@ export default async function FavoritesPage() {
                 <div className="bg-white p-10 rounded-3xl shadow-xl max-w-md w-full">
                     <h1 className="text-3xl font-bold text-slate-900 mb-4 tracking-tight">Favorileriniz</h1>
                     <p className="text-slate-500 mb-8">Favoriye aldığınız ürünleri görmek için giriş yapmalısınız.</p>
-                    <Link href="/login" className="inline-block bg-brand-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-brand-700 transition w-full shadow-lg shadow-brand-500/30">
+                    <Link href="/giris-yap" className="inline-block bg-brand-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-brand-700 transition w-full shadow-lg shadow-brand-500/30">
                         Giriş Yap
                     </Link>
                 </div>
@@ -24,20 +24,20 @@ export default async function FavoritesPage() {
         );
     }
 
-    const savedFavorites = await prisma.favorite.findMany({
-        where: { userId: Number(session.userId) },
+    const savedFavorites = await (prisma as any).favorite.findMany({
+        where: { userId: session.userId },
         include: {
             product: {
                 include: {
                     variants: true,
-                    discounts: {
-                        where: { active: true }
+                    reviews: {
+                        where: { status: 'APPROVED' }
                     }
                 }
             }
         },
         orderBy: { createdAt: 'desc' }
-    });
+    }) as any[];
 
     const products = savedFavorites.map(f => f.product).filter(Boolean);
 
@@ -65,7 +65,7 @@ export default async function FavoritesPage() {
                         <div className="text-6xl mb-6">🤍</div>
                         <h3 className="text-2xl font-bold text-slate-900 mb-4">Henüz favori ürününüz yok</h3>
                         <p className="text-slate-500 mb-8">Mağazayı keşfedin ve beğendiğiniz ürünleri favorilere ekleyin.</p>
-                        <Link href="/products" className="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-full font-bold hover:bg-blue-600 transition-colors shadow-lg">
+                        <Link href="/urunler" className="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-full font-bold hover:bg-blue-600 transition-colors shadow-lg">
                             <ArrowLeft size={20} /> Alışverişe Başla
                         </Link>
                     </div>
@@ -98,7 +98,7 @@ export default async function FavoritesPage() {
                             const isOutOfStock = totalStock === 0;
 
                             return (
-                                <Link href={`/products/${product.id}`} key={product.id} className="group block">
+                                <Link href={`/urunler/${product.id}`} key={product.id} className="group block">
                                     <div className="bg-slate-50 rounded-[2rem] overflow-hidden aspect-[3/4] mb-6 relative transition-transform duration-500 group-hover:-translate-y-1 shadow-sm group-hover:shadow-xl group-hover:shadow-slate-200/50">
                                         {product.imageUrl ? (
                                             <img

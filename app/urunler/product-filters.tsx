@@ -39,7 +39,7 @@ export default function ProductFilters() {
         if (sort !== 'newest') params.set('sort', sort); else params.delete('sort');
         params.delete('page');
 
-        router.push(`/products?${params.toString()}`);
+        router.push(`/urunler?${params.toString()}`);
     };
 
     const clearFilters = () => {
@@ -47,7 +47,7 @@ export default function ProductFilters() {
         setPriceMax('');
         setSearch('');
         setSort('newest');
-        router.push('/products');
+        router.push('/urunler');
     };
 
     return (
@@ -135,7 +135,7 @@ export default function ProductFilters() {
                                     onChange={() => {
                                         const params = new URLSearchParams(searchParams.toString());
                                         params.set('rating', star.toString());
-                                        router.push(`/products?${params.toString()}`);
+                                        router.push(`/urunler?${params.toString()}`);
                                     }}
                                     className="w-4 h-4 accent-slate-900"
                                 />

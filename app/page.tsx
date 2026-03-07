@@ -78,7 +78,7 @@ export default async function Home() {
             const isOutOfStock = totalStock === 0;
 
             return (
-              <Link href={`/products/${product.id}`} key={product.id} className="group block">
+              <Link href={`/urunler/${product.id}`} key={product.id} className="group block">
                 <div className="bg-slate-50 rounded-[2rem] overflow-hidden aspect-[3/4] mb-6 relative transition-transform duration-500 group-hover:-translate-y-1 shadow-sm group-hover:shadow-xl group-hover:shadow-slate-200/50">
                   {product.imageUrl ? (
                     <img
@@ -140,7 +140,7 @@ export default async function Home() {
         </div>
 
         <div className="mt-16 text-center">
-          <Link href="/products" className="inline-flex items-center gap-2 text-slate-900 font-bold hover:text-blue-600 transition-colors">
+          <Link href="/urunler" className="inline-flex items-center gap-2 text-slate-900 font-bold hover:text-blue-600 transition-colors">
             Tüm Ürünleri Gör <ArrowRight size={20} />
           </Link>
         </div>
@@ -154,7 +154,7 @@ export default async function Home() {
               <p className="text-xl text-slate-300 leading-relaxed">
                 Premium koleksiyonumuzla yaşam tarzınızı yükseltin. Kaliteye değer verenler için tasarlandı.
               </p>
-              <Link href="/products" className="inline-block bg-white text-slate-900 px-10 py-5 rounded-full font-bold hover:bg-slate-100 transition shadow-xl hover:shadow-2xl hover:-translate-y-1 transform duration-300">
+              <Link href="/urunler" className="inline-block bg-white text-slate-900 px-10 py-5 rounded-full font-bold hover:bg-slate-100 transition shadow-xl hover:shadow-2xl hover:-translate-y-1 transform duration-300">
                 Hemen Alışveriş Yap
               </Link>
             </div>

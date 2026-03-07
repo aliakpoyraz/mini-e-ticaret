@@ -38,7 +38,7 @@ export default function FavoriteButton({
             } else {
                 if (res.status === 401) {
                     alert("Favorilere eklemek için giriş yapmalısınız.");
-                    router.push('/login');
+                    router.push('/giris-yap');
                 }
             }
         } catch (error) {

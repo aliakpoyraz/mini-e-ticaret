@@ -39,7 +39,7 @@ export default function Navbar({ storeName = "Store." }: { storeName?: string })
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (searchQuery.trim()) {
-            router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
+            router.push(`/urunler?q=${encodeURIComponent(searchQuery.trim())}`);
             setIsSearchOpen(false);
             setSearchQuery('');
         }
@@ -62,13 +62,13 @@ export default function Navbar({ storeName = "Store." }: { storeName?: string })
                 </Link>
 
                 <div className="hidden md:flex items-center gap-8">
-                    <Link href="/products" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+                    <Link href="/urunler" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
                         Ürünler
                     </Link>
-                    <Link href="/track-order" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+                    <Link href="/siparis-takibi" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
                         Sipariş Takibi
                     </Link>
-                    <Link href="/contact" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+                    <Link href="/iletisim" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
                         İletişim
                     </Link>
                 </div>
@@ -82,11 +82,11 @@ export default function Navbar({ storeName = "Store." }: { storeName?: string })
                         <Search size={20} strokeWidth={1.5} />
                     </button>
 
-                    <Link href="/favorites" className="text-slate-600 hover:text-slate-900 transition-colors">
+                    <Link href="/favorilerim" className="text-slate-600 hover:text-slate-900 transition-colors">
                         <Heart size={20} strokeWidth={1.5} />
                     </Link>
 
-                    <Link href="/cart" className="relative text-slate-600 hover:text-slate-900 transition-colors">
+                    <Link href="/sepet" className="relative text-slate-600 hover:text-slate-900 transition-colors">
                         <ShoppingBag size={20} strokeWidth={1.5} />
                         {itemCount > 0 && (
                             <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
@@ -106,7 +106,7 @@ export default function Navbar({ storeName = "Store." }: { storeName?: string })
                                         Admin Paneli
                                     </Link>
                                 ) : (
-                                    <Link href="/account" className="text-sm font-semibold text-slate-800 hover:text-brand-600 transition-colors">
+                                    <Link href="/hesabim" className="text-sm font-semibold text-slate-800 hover:text-brand-600 transition-colors">
                                         {(user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Hesabım')}
                                     </Link>
                                 )}
@@ -118,10 +118,10 @@ export default function Navbar({ storeName = "Store." }: { storeName?: string })
                             </div>
                         ) : (
                             <div className="flex items-center gap-3">
-                                <Link href="/login" className="text-sm font-semibold text-slate-800 hover:text-brand-600 transition-colors">
+                                <Link href="/giris-yap" className="text-sm font-semibold text-slate-800 hover:text-brand-600 transition-colors">
                                     Giriş Yap
                                 </Link>
-                                <Link href="/register" className="text-sm font-semibold bg-slate-900 text-white px-4 py-2 rounded-xl hover:bg-slate-800 transition-colors">
+                                <Link href="/kayit-ol" className="text-sm font-semibold bg-slate-900 text-white px-4 py-2 rounded-xl hover:bg-slate-800 transition-colors">
                                     Kayıt Ol
                                 </Link>
                             </div>
@@ -153,13 +153,13 @@ export default function Navbar({ storeName = "Store." }: { storeName?: string })
                         </button>
 
                         <div className="flex flex-col gap-6 text-lg font-bold text-slate-900 mt-4">
-                            <Link href="/products" className="py-2 border-b border-slate-100 hover:text-brand-600 transition-colors">
+                            <Link href="/urunler" className="py-2 border-b border-slate-100 hover:text-brand-600 transition-colors">
                                 Ürünler
                             </Link>
-                            <Link href="/track-order" className="py-2 border-b border-slate-100 hover:text-brand-600 transition-colors">
+                            <Link href="/siparis-takibi" className="py-2 border-b border-slate-100 hover:text-brand-600 transition-colors">
                                 Sipariş Takibi
                             </Link>
-                            <Link href="/contact" className="py-2 border-b border-slate-100 hover:text-brand-600 transition-colors">
+                            <Link href="/iletisim" className="py-2 border-b border-slate-100 hover:text-brand-600 transition-colors">
                                 İletişim
                             </Link>
                         </div>
@@ -177,7 +177,7 @@ export default function Navbar({ storeName = "Store." }: { storeName?: string })
                                             Admin Paneli
                                         </Link>
                                     ) : (
-                                        <Link href="/account" className="w-full py-3 px-4 bg-slate-50 text-slate-900 rounded-xl font-bold flex items-center justify-center border border-slate-200">
+                                        <Link href="/hesabim" className="w-full py-3 px-4 bg-slate-50 text-slate-900 rounded-xl font-bold flex items-center justify-center border border-slate-200">
                                             Hesabım
                                         </Link>
                                     )}
@@ -192,10 +192,10 @@ export default function Navbar({ storeName = "Store." }: { storeName?: string })
                                 </div>
                             ) : (
                                 <div className="flex flex-col gap-3">
-                                    <Link href="/login" className="w-full py-3 px-4 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl font-bold flex items-center justify-center">
+                                    <Link href="/giris-yap" className="w-full py-3 px-4 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl font-bold flex items-center justify-center">
                                         Giriş Yap
                                     </Link>
-                                    <Link href="/register" className="w-full py-3 px-4 bg-slate-900 text-white rounded-xl font-bold flex items-center justify-center">
+                                    <Link href="/kayit-ol" className="w-full py-3 px-4 bg-slate-900 text-white rounded-xl font-bold flex items-center justify-center">
                                         Kayıt Ol
                                     </Link>
                                 </div>

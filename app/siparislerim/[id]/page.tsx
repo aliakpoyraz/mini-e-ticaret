@@ -130,7 +130,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                     <Link href="/" className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl text-slate-700 font-bold hover:bg-slate-50 hover:text-brand-600 transition shadow-sm">
                         <Home size={18} /> Ana Sayfaya Dön
                     </Link>
-                    <Link href="/products" className="flex items-center gap-2 px-6 py-3 bg-brand-600 rounded-xl text-white font-bold hover:bg-brand-700 transition shadow-lg shadow-brand-500/20">
+                    <Link href="/urunler" className="flex items-center gap-2 px-6 py-3 bg-brand-600 rounded-xl text-white font-bold hover:bg-brand-700 transition shadow-lg shadow-brand-500/20">
                         Alışverişe Devam Et <ArrowRight size={18} />
                     </Link>
                 </div>

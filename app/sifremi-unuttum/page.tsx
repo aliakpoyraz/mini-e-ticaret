@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
                         <p className="text-sm text-slate-500 mb-8 px-4">
                             Şifrenizi sıfırlamanız için <strong>{email}</strong> adresine bir bağlantı gönderdik. (Bu bir demo özelliğidir)
                         </p>
-                        <Link href="/login" className="w-full py-3.5 bg-black hover:bg-slate-800 text-white rounded-full text-sm font-semibold transition-colors block active:scale-[0.98]">
+                        <Link href="/giris-yap" className="w-full py-3.5 bg-black hover:bg-slate-800 text-white rounded-full text-sm font-semibold transition-colors block active:scale-[0.98]">
                             Giriş Ekranına Dön
                         </Link>
                     </div>
@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
                         </form>
 
                         <div className="mt-8 text-center text-sm font-medium">
-                            <Link href="/login" className="text-blue-600 hover:text-blue-700 transition-colors">
+                            <Link href="/giris-yap" className="text-blue-600 hover:text-blue-700 transition-colors">
                                 Giriş sayfasına dön
                             </Link>
                         </div>

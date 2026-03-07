@@ -216,7 +216,7 @@ export default function RegisterPage() {
 
                 <div className="mt-8 text-center text-sm text-slate-500">
                     Zaten hesabınız var mı?{' '}
-                    <Link href="/login" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                    <Link href="/giris-yap" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
                         Giriş Yapın
                     </Link>
                 </div>

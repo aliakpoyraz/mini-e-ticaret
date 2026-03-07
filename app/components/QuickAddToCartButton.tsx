@@ -136,7 +136,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
                             ))}
                         </div>
                         <button
-                            onClick={() => router.push(`/products/${product.id}`)}
+                            onClick={() => router.push(`/urunler/${product.id}`)}
                             className="mt-4 text-xs text-brand-600 hover:text-brand-700 font-semibold w-full text-center"
                         >
                             Ürün sayfasına git →
@@ -159,7 +159,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
                         </p>
                         <div className="flex flex-col gap-3">
                             <button
-                                onClick={() => { setShowSuccess(false); router.push('/cart'); }}
+                                onClick={() => { setShowSuccess(false); router.push('/sepet'); }}
                                 className="w-full flex items-center justify-between bg-slate-900 text-white px-6 py-3.5 rounded-2xl font-bold hover:bg-slate-800 transition-colors group"
                             >
                                 <span className="flex items-center gap-2"><ShoppingBag size={18} /> Sepete Git</span>

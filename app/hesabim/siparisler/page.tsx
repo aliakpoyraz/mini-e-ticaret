@@ -45,7 +45,7 @@ const getStatusLabel = (status: string) => {
 export default async function OrdersPage() {
     const session = await getSession();
     if (!session) {
-        redirect('/login?redirect=/account/orders');
+        redirect('/giris-yap?redirect=/hesabim/siparisler');
     }
 
     const orders = await prisma.order.findMany({
@@ -60,7 +60,7 @@ export default async function OrdersPage() {
                 }
             }
         }
-    });
+    }) as any[];
 
     return (
         <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 animate-fade-in">
@@ -72,7 +72,7 @@ export default async function OrdersPage() {
                     <Package className="w-16 h-16 text-slate-300 mx-auto mb-4" />
                     <h3 className="text-xl font-semibold text-slate-900 mb-2">Henüz Siparişiniz Yok</h3>
                     <p className="text-slate-500 mb-6">Alışverişe başlayarak ilk siparişinizi oluşturun.</p>
-                    <Link href="/products" className="inline-flex items-center justify-center px-6 py-3 bg-brand-600 text-white font-medium rounded-xl hover:bg-brand-700 transition-colors">
+                    <Link href="/urunler" className="inline-flex items-center justify-center px-6 py-3 bg-brand-600 text-white font-medium rounded-xl hover:bg-brand-700 transition-colors">
                         Alışverişe Başla
                     </Link>
                 </div>
@@ -108,7 +108,7 @@ export default async function OrdersPage() {
                                     </div>
                                     <div className="flex-1 sm:hidden"></div>
                                     <Link
-                                        href={`/track-order?id=${order.id}`}
+                                        href={`/siparis-takibi?id=${order.id}`}
                                         className="text-brand-600 hover:text-brand-700 font-medium text-sm flex items-center gap-1 whitespace-nowrap bg-brand-50 hover:bg-brand-100 px-4 py-2 rounded-xl transition-colors"
                                     >
                                         Detaylar

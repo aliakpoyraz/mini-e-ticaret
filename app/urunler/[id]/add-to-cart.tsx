@@ -39,11 +39,12 @@ export default function AddToCartButton({ product }: { product: Product }) {
             variantName: variant.name,
             price: Number(product.price),
             quantity: 1,
-            imageUrl: product.imageUrl || undefined
+            imageUrl: product.imageUrl || undefined,
+            stock: variant.stock
         });
 
-        alert("Added to cart!");
-        router.push('/cart');
+        alert("Sepete Eklendi!");
+        router.push('/sepet');
     };
 
     return (
@@ -61,7 +62,7 @@ export default function AddToCartButton({ product }: { product: Product }) {
                                 : 'hover:bg-gray-50'
                             }`}
                     >
-                        {variant.name} ({variant.stock > 0 ? 'In Stock' : 'Out of Stock'})
+                        {variant.name} ({variant.stock > 0 ? 'Stokta Var' : 'Stokta Yok'})
                     </button>
                 ))}
             </div>
@@ -74,7 +75,7 @@ export default function AddToCartButton({ product }: { product: Product }) {
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
             >
-                Add to Cart
+                Sepete Ekle
             </button>
         </div>
     );

@@ -15,12 +15,12 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         fetch('/api/auth/me')
             .then(res => {
                 if (!res.ok) {
-                    router.push('/login?redirect=/account');
+                    router.push('/giris-yap?redirect=/hesabim');
                 } else {
                     setIsLoading(false);
                 }
             })
-            .catch(() => router.push('/login?redirect=/account'));
+            .catch(() => router.push('/giris-yap?redirect=/hesabim'));
     }, [router]);
 
     if (isLoading) {
@@ -32,9 +32,9 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     }
 
     const navItems = [
-        { name: 'Profil Bilgileri', href: '/account/profile', icon: User },
-        { name: 'Adreslerim', href: '/account/addresses', icon: MapPin },
-        { name: 'Siparişlerim', href: '/account/orders', icon: Package },
+        { name: 'Profil Bilgileri', href: '/hesabim/profil', icon: User },
+        { name: 'Adreslerim', href: '/hesabim/adresler', icon: MapPin },
+        { name: 'Siparişlerim', href: '/hesabim/siparisler', icon: Package },
     ];
 
     return (

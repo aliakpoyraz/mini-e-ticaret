@@ -24,7 +24,7 @@ export default function NotFound() {
                         Ana Sayfaya Dön
                     </Link>
                     <Link
-                        href="/products"
+                        href="/urunler"
                         className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 bg-slate-100 text-slate-900 rounded-full font-medium hover:bg-slate-200 transition-all duration-300 active:scale-95"
                     >
                         <Search size={18} />

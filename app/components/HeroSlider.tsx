@@ -18,10 +18,10 @@ export default function HeroSlider() {
                         Yeni koleksiyonumuzu deneyimleyin. Birinci sınıf materyaller, minimalist tasarım ve rahatlığın kolaylığa bürünmüş hali.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                        <Link href="/products" className="group flex items-center justify-center gap-2 bg-black text-white px-8 py-4 rounded-full font-medium hover:bg-slate-800 transition-all shadow-xl shadow-black/10 text-center">
+                        <Link href="/urunler" className="group flex items-center justify-center gap-2 bg-black text-white px-8 py-4 rounded-full font-medium hover:bg-slate-800 transition-all shadow-xl shadow-black/10 text-center">
                             Hemen Alışveriş Yap <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                         </Link>
-                        <Link href="/products?category=new" className="flex items-center justify-center gap-2 px-8 py-4 rounded-full font-medium text-slate-900 hover:bg-slate-200 transition-all text-center">
+                        <Link href="/urunler?category=new" className="flex items-center justify-center gap-2 px-8 py-4 rounded-full font-medium text-slate-900 hover:bg-slate-200 transition-all text-center">
                             Daha Fazla Bilgi
                         </Link>
                     </div>

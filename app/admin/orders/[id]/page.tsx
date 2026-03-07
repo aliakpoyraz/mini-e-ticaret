@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Printer, Mail, Phone, MapPin, User, Calendar, CreditCard } from 'lucide-react';
 import { revalidatePath } from 'next/cache';
+import StatusUpdateForm from './status-update-form';
 import PrintButton from './print-button';
 
 export const dynamic = 'force-dynamic';
@@ -58,8 +59,6 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
 
         revalidatePath(`/admin/orders/${orderId}`);
         revalidatePath('/admin/orders');
-        revalidatePath('/admin/products');
-        revalidatePath('/admin/returns');
     };
 
     const STATUS_LABELS: Record<string, string> = {
@@ -108,26 +107,11 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <form action={updateStatus} className="flex items-center gap-2">
-                        <select
-                            name="status"
-                            defaultValue={order.status}
-                            className="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg p-2.5 pr-8 focus:ring-2 focus:ring-brand-500 focus:outline-none cursor-pointer font-medium appearance-none"
-                            style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundPosition: "right 0.5rem center", backgroundRepeat: "no-repeat", backgroundSize: "1.5em 1.5em" }}
-                        >
-                            <option value="CREATED">Oluşturuldu</option>
-                            <option value="PAID">Ödendi</option>
-                            <option value="SHIPPED">Kargolandı</option>
-                            <option value="DELIVERED">Teslim Edildi</option>
-                            <option value="RETURN_REQUESTED">İade Talep Edildi</option>
-                            <option value="RETURNED">İade Edildi</option>
-                            <option value="RETURN_REJECTED">İade Reddedildi</option>
-                            <option value="CANCELLED">İptal Edildi</option>
-                        </select>
-                        <button type="submit" className="bg-slate-900 text-white px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition-colors">
-                            Güncelle
-                        </button>
-                    </form>
+                    <StatusUpdateForm
+                        orderId={order.id}
+                        initialStatus={order.status}
+                        updateStatusAction={updateStatus}
+                    />
 
                     <PrintButton />
                 </div>

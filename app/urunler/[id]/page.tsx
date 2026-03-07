@@ -128,7 +128,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
                     <div className="w-full md:w-7/12 space-y-10">
                         <div className="space-y-4">
-                            <Link href="/products" className="inline-flex items-center text-gray-400 hover:text-black transition-colors font-medium text-sm mb-4">
+                            <Link href="/urunler" className="inline-flex items-center text-gray-400 hover:text-black transition-colors font-medium text-sm mb-4">
                                 <ArrowLeft size={16} className="mr-2" /> Mağazaya Dön
                             </Link>
                             <h1 className="text-5xl font-bold tracking-tight text-slate-900 leading-tight">
@@ -214,7 +214,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                         <h2 className="text-3xl font-bold text-slate-900 mb-12 tracking-tight">Beğenebileceğiniz Diğer Ürünler</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             {recommendations.map((rec: any) => (
-                                <Link key={rec.id} href={`/products/${rec.id}`} className="group block">
+                                <Link key={rec.id} href={`/urunler/${rec.id}`} className="group block">
                                     <div className="aspect-[4/5] bg-slate-50 rounded-2xl overflow-hidden mb-4 relative">
                                         {rec.imageUrl ? (
                                             <img src={rec.imageUrl} alt={rec.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />

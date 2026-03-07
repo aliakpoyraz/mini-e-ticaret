@@ -267,7 +267,7 @@ export default function CartPage() {
 
             const order = await res.json();
             clearCart();
-            router.push(`/orders/${order.id}`);
+            router.push(`/siparislerim/${order.id}`);
         } catch (error: any) {
             alert(error.message);
             setIsCheckingOut(false);
@@ -283,7 +283,7 @@ export default function CartPage() {
                 <h1 className="text-2xl font-bold mb-4 text-slate-900">Sepetiniz Boş</h1>
                 <p className="text-slate-500 mb-8 max-w-md mx-auto">Görünüşe göre henüz sepetinize bir şey eklememişsiniz.</p>
                 <button
-                    onClick={() => router.push('/products')}
+                    onClick={() => router.push('/urunler')}
                     className="inline-flex items-center gap-2 bg-brand-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-brand-700 transition shadow-lg shadow-brand-500/30"
                 >
                     Alışverişe Başla <ArrowRight size={20} />
@@ -442,10 +442,10 @@ export default function CartPage() {
                                 <h3 className="text-brand-900 font-bold mb-2">Daha Hızlı Ödeme İçin</h3>
                                 <p className="text-brand-700 text-sm mb-4">Kayıtlı adreslerinizi kullanmak ve siparişinizi kolayca takip etmek için giriş yapın.</p>
                                 <div className="flex gap-3">
-                                    <button onClick={() => router.push('/login?redirect=/cart')} className="bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-brand-700 transition">
+                                    <button onClick={() => router.push('/giris-yap?redirect=/sepet')} className="bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-brand-700 transition">
                                         Giriş Yap
                                     </button>
-                                    <button onClick={() => router.push('/register?redirect=/cart')} className="bg-white text-brand-600 px-5 py-2 rounded-lg text-sm font-bold border border-brand-200 hover:bg-brand-50 transition">
+                                    <button onClick={() => router.push('/kayit-ol?redirect=/sepet')} className="bg-white text-brand-600 px-5 py-2 rounded-lg text-sm font-bold border border-brand-200 hover:bg-brand-50 transition">
                                         Kayıt Ol
                                     </button>
                                 </div>
@@ -553,7 +553,7 @@ export default function CartPage() {
                                                 </div>
                                             </label>
                                         ))}
-                                        <a href="/account/addresses" className="text-xs font-semibold text-brand-600 hover:text-brand-700 pl-1 inline-block">
+                                        <a href="/hesabim/adreslerim" className="text-xs font-semibold text-brand-600 hover:text-brand-700 pl-1 inline-block">
                                             + Yeni adres ekle
                                         </a>
                                     </div>
@@ -596,7 +596,7 @@ export default function CartPage() {
                                         </div>
                                         {!isGuest && savedAddresses.length === 0 && (
                                             <p className="text-xs text-brand-600 mt-2">
-                                                <a href="/account/addresses" className="font-semibold hover:underline">Hesabım</a>'a giderek adres kaydedebilirsiniz.
+                                                <a href="/hesabim/adreslerim" className="font-semibold hover:underline">Hesabım</a>'a giderek adres kaydedebilirsiniz.
                                             </p>
                                         )}
                                     </div>
