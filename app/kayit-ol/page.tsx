@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import ReCAPTCHA from "react-google-recaptcha";
 
 const INPUT_CLASS = "w-full px-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 rounded-2xl outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400";
@@ -20,6 +20,8 @@ export default function RegisterPage() {
     const [error, setError] = useState('');
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [captchaToken, setCaptchaToken] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [resendStatus, setResendStatus] = useState<{ loading: boolean, message: string }>({ loading: false, message: '' });
 
     const router = useRouter();
 
@@ -52,6 +54,25 @@ export default function RegisterPage() {
         return Object.keys(errors).length === 0;
     };
 
+    const handleResendVerification = async () => {
+        setResendStatus({ loading: true, message: '' });
+        try {
+            const res = await fetch('/api/auth/resend-verification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setResendStatus({ loading: false, message: 'Doğrulama e-postası tekrar gönderildi.' });
+            } else {
+                setResendStatus({ loading: false, message: data.error || 'Gönderilemedi.' });
+            }
+        } catch (err) {
+            setResendStatus({ loading: false, message: 'Bir hata oluştu.' });
+        }
+    };
+
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -73,8 +94,9 @@ export default function RegisterPage() {
             const data = await res.json();
 
             if (res.ok && data.success) {
-                router.push('/');
-                router.refresh();
+                setIsSuccess(true);
+                // Artık otomatik sesssion set edilse bile isVerified false olduğu için giriş sayfasında kalmalı
+                // Veya burada bir başarı mesajı gösterip giriş ekranına yönlendirebiliriz.
             } else {
                 setError(data.error || 'Kayıt işlemi başarısız.');
             }
@@ -88,131 +110,164 @@ export default function RegisterPage() {
     return (
         <div className="min-h-screen bg-[#F5F5F7] flex flex-col justify-center items-center py-12 px-6 font-sans">
             <div className="w-full max-w-[500px] bg-white rounded-3xl shadow-sm border border-slate-100 p-8 md:p-10">
-                <div className="text-center mb-8">
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-2">
-                        Hesap Oluşturun
-                    </h1>
-                    <p className="text-sm text-slate-500">
-                        Hemen kayıt olun ve alışverişe başlayın.
-                    </p>
-                </div>
-                <form onSubmit={handleRegister} className="space-y-4" noValidate>
-                    {error && (
-                        <div className="p-3 bg-red-50 text-red-600 text-sm font-medium rounded-xl text-center">
-                            {error}
+                {isSuccess ? (
+                    <div className="text-center py-6 animate-in fade-in zoom-in duration-500">
+                        <div className="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <CheckCircle2 size={40} />
                         </div>
-                    )}
-                    <div className="space-y-4">
-                        {/* Ad & Soyad */}
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <div className="w-full">
-                                <input
-                                    type="text"
-                                    required
-                                    minLength={2}
-                                    value={firstName}
-                                    onChange={(e) => { setFirstName(e.target.value.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ\s]/g, '')); if (fieldErrors.firstName) setFieldErrors(p => ({ ...p, firstName: '' })); }}
-                                    className={fieldErrors.firstName ? INPUT_ERROR_CLASS : INPUT_CLASS}
-                                    placeholder="Ad"
-                                />
-                                {fieldErrors.firstName && <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.firstName}</p>}
-                            </div>
-                            <div className="w-full">
-                                <input
-                                    type="text"
-                                    required
-                                    minLength={2}
-                                    value={lastName}
-                                    onChange={(e) => { setLastName(e.target.value.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ\s]/g, '')); if (fieldErrors.lastName) setFieldErrors(p => ({ ...p, lastName: '' })); }}
-                                    className={fieldErrors.lastName ? INPUT_ERROR_CLASS : INPUT_CLASS}
-                                    placeholder="Soyad"
-                                />
-                                {fieldErrors.lastName && <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.lastName}</p>}
+                        <h2 className="text-2xl font-bold text-slate-900 mb-4">Kayıt Başarılı!</h2>
+                        <div className="space-y-4 mb-8">
+                            <p className="text-sm text-slate-600 leading-relaxed px-4">
+                                Hesabınız oluşturuldu. Kullanmaya başlamadan önce <strong>{email}</strong> adresine gönderdiğimiz doğrulama bağlantısına tıklamanız gerekmektedir.
+                            </p>
+                            <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-start gap-3 text-left">
+                                <AlertCircle size={18} className="text-blue-600 shrink-0 mt-0.5" />
+                                <p className="text-xs text-blue-800 leading-relaxed">
+                                    E-posta kutunuzun <strong>Gelen Kutusu</strong> veya <strong>Spam</strong> klasörünü kontrol etmeyi unutmayın.
+                                </p>
                             </div>
                         </div>
 
-                        {/* Telefon */}
-                        <div>
-                            <div className={`flex items-center gap-0 ${fieldErrors.phone ? 'border border-red-400 rounded-2xl bg-red-50' : 'border border-slate-200 rounded-2xl bg-slate-50'} focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-600/10 transition-all`}>
-                                <span className="pl-4 pr-2 text-sm font-semibold text-slate-500 whitespace-nowrap select-none">+90</span>
-                                <input
-                                    type="tel"
-                                    inputMode="numeric"
-                                    required
-                                    value={phone}
-                                    onChange={handlePhoneChange}
-                                    className="flex-1 px-2 py-3.5 bg-transparent outline-none text-sm text-slate-900 placeholder:text-slate-400 rounded-r-2xl"
-                                    placeholder="5321234567"
-                                    maxLength={10}
-                                />
-                            </div>
-                            {fieldErrors.phone
-                                ? <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.phone}</p>
-                                : <p className="text-xs text-slate-400 mt-1 pl-1">Başında sıfır olmadan 10 haneli girin (ör: 5321234567)</p>
-                            }
-                        </div>
+                        <div className="space-y-4">
+                            <Link href="/giris-yap" className="w-full py-3.5 bg-black hover:bg-slate-800 text-white rounded-full text-sm font-semibold transition-colors block active:scale-[0.98]">
+                                Giriş Yap
+                            </Link>
 
-                        {/* E-posta */}
-                        <div>
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => { setEmail(e.target.value); if (fieldErrors.email) setFieldErrors(p => ({ ...p, email: '' })); }}
-                                className={fieldErrors.email ? INPUT_ERROR_CLASS : INPUT_CLASS}
-                                placeholder="E-posta adresi"
-                            />
-                            {fieldErrors.email && <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.email}</p>}
-                        </div>
-
-                        {/* Şifre */}
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <div className="w-full">
-                                <input
-                                    type="password"
-                                    required
-                                    minLength={6}
-                                    value={password}
-                                    onChange={(e) => { setPassword(e.target.value); if (fieldErrors.password) setFieldErrors(p => ({ ...p, password: '' })); }}
-                                    className={fieldErrors.password ? INPUT_ERROR_CLASS : INPUT_CLASS}
-                                    placeholder="Şifre"
-                                />
-                                {fieldErrors.password && <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.password}</p>}
+                            <div className="pt-2">
+                                <button
+                                    onClick={handleResendVerification}
+                                    disabled={resendStatus.loading}
+                                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 underline disabled:opacity-50"
+                                >
+                                    {resendStatus.loading ? 'Gönderiliyor...' : 'E-postayı tekrar gönder'}
+                                </button>
+                                {resendStatus.message && (
+                                    <p className="mt-2 text-[10px] text-slate-500">
+                                        {resendStatus.message}
+                                    </p>
+                                )}
                             </div>
-                            <div className="w-full">
-                                <input
-                                    type="password"
-                                    required
-                                    minLength={6}
-                                    value={passwordConfirm}
-                                    onChange={(e) => { setPasswordConfirm(e.target.value); if (fieldErrors.passwordConfirm) setFieldErrors(p => ({ ...p, passwordConfirm: '' })); }}
-                                    className={fieldErrors.passwordConfirm ? INPUT_ERROR_CLASS : INPUT_CLASS}
-                                    placeholder="Şifre (Tekrar)"
-                                />
-                                {fieldErrors.passwordConfirm && <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.passwordConfirm}</p>}
-                            </div>
-                        </div>
-
-                        <div className="flex justify-center mt-4">
-                            <ReCAPTCHA
-                                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-                                onChange={(value) => setCaptchaToken(value || '')}
-                            />
                         </div>
                     </div>
-
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full mt-6 py-3.5 bg-black hover:bg-slate-800 text-white rounded-full text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center active:scale-[0.98]"
-                    >
-                        {isLoading ? (
-                            <Loader2 size={18} className="animate-spin" />
-                        ) : (
-                            <span>Kayıt Ol</span>
+                ) : (
+                    <form onSubmit={handleRegister} className="space-y-4" noValidate>
+                        {error && (
+                            <div className="p-3 bg-red-50 text-red-600 text-sm font-medium rounded-xl text-center">
+                                {error}
+                            </div>
                         )}
-                    </button>
-                </form>
+                        <div className="space-y-4">
+                            {/* Ad & Soyad */}
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <div className="w-full">
+                                    <input
+                                        type="text"
+                                        required
+                                        minLength={2}
+                                        value={firstName}
+                                        onChange={(e) => { setFirstName(e.target.value.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ\s]/g, '')); if (fieldErrors.firstName) setFieldErrors(p => ({ ...p, firstName: '' })); }}
+                                        className={fieldErrors.firstName ? INPUT_ERROR_CLASS : INPUT_CLASS}
+                                        placeholder="Ad"
+                                    />
+                                    {fieldErrors.firstName && <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.firstName}</p>}
+                                </div>
+                                <div className="w-full">
+                                    <input
+                                        type="text"
+                                        required
+                                        minLength={2}
+                                        value={lastName}
+                                        onChange={(e) => { setLastName(e.target.value.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ\s]/g, '')); if (fieldErrors.lastName) setFieldErrors(p => ({ ...p, lastName: '' })); }}
+                                        className={fieldErrors.lastName ? INPUT_ERROR_CLASS : INPUT_CLASS}
+                                        placeholder="Soyad"
+                                    />
+                                    {fieldErrors.lastName && <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.lastName}</p>}
+                                </div>
+                            </div>
+
+                            {/* Telefon */}
+                            <div>
+                                <div className={`flex items-center gap-0 ${fieldErrors.phone ? 'border border-red-400 rounded-2xl bg-red-50' : 'border border-slate-200 rounded-2xl bg-slate-50'} focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-600/10 transition-all`}>
+                                    <span className="pl-4 pr-2 text-sm font-semibold text-slate-500 whitespace-nowrap select-none">+90</span>
+                                    <input
+                                        type="tel"
+                                        inputMode="numeric"
+                                        required
+                                        value={phone}
+                                        onChange={handlePhoneChange}
+                                        className="flex-1 px-2 py-3.5 bg-transparent outline-none text-sm text-slate-900 placeholder:text-slate-400 rounded-r-2xl"
+                                        placeholder="5321234567"
+                                        maxLength={10}
+                                    />
+                                </div>
+                                {fieldErrors.phone
+                                    ? <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.phone}</p>
+                                    : <p className="text-xs text-slate-400 mt-1 pl-1">Başında sıfır olmadan 10 haneli girin (ör: 5321234567)</p>
+                                }
+                            </div>
+
+                            {/* E-posta */}
+                            <div>
+                                <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => { setEmail(e.target.value); if (fieldErrors.email) setFieldErrors(p => ({ ...p, email: '' })); }}
+                                    className={fieldErrors.email ? INPUT_ERROR_CLASS : INPUT_CLASS}
+                                    placeholder="E-posta adresi"
+                                />
+                                {fieldErrors.email && <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.email}</p>}
+                            </div>
+
+                            {/* Şifre */}
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <div className="w-full">
+                                    <input
+                                        type="password"
+                                        required
+                                        minLength={6}
+                                        value={password}
+                                        onChange={(e) => { setPassword(e.target.value); if (fieldErrors.password) setFieldErrors(p => ({ ...p, password: '' })); }}
+                                        className={fieldErrors.password ? INPUT_ERROR_CLASS : INPUT_CLASS}
+                                        placeholder="Şifre"
+                                    />
+                                    {fieldErrors.password && <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.password}</p>}
+                                </div>
+                                <div className="w-full">
+                                    <input
+                                        type="password"
+                                        required
+                                        minLength={6}
+                                        value={passwordConfirm}
+                                        onChange={(e) => { setPasswordConfirm(e.target.value); if (fieldErrors.passwordConfirm) setFieldErrors(p => ({ ...p, passwordConfirm: '' })); }}
+                                        className={fieldErrors.passwordConfirm ? INPUT_ERROR_CLASS : INPUT_CLASS}
+                                        placeholder="Şifre (Tekrar)"
+                                    />
+                                    {fieldErrors.passwordConfirm && <p className="text-xs text-red-500 mt-1 pl-1">{fieldErrors.passwordConfirm}</p>}
+                                </div>
+                            </div>
+
+                            <div className="flex justify-center mt-4">
+                                <ReCAPTCHA
+                                    sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+                                    onChange={(value) => setCaptchaToken(value || '')}
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full mt-6 py-3.5 bg-black hover:bg-slate-800 text-white rounded-full text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center active:scale-[0.98]"
+                        >
+                            {isLoading ? (
+                                <Loader2 size={18} className="animate-spin" />
+                            ) : (
+                                <span>Kayıt Ol</span>
+                            )}
+                        </button>
+                    </form>
+                )}
 
                 <div className="mt-8 text-center text-sm text-slate-500">
                     Zaten hesabınız var mı?{' '}

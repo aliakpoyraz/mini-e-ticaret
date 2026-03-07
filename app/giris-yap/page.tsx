@@ -11,11 +11,32 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
+    const [resendStatus, setResendStatus] = useState<{ loading: boolean, message: string }>({ loading: false, message: '' });
     const router = useRouter();
+
+    const handleResendVerification = async () => {
+        setResendStatus({ loading: true, message: '' });
+        try {
+            const res = await fetch('/api/auth/resend-verification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setResendStatus({ loading: false, message: 'Doğrulama e-postası tekrar gönderildi. Lütfen gelen kutunuzu kontrol edin.' });
+            } else {
+                setResendStatus({ loading: false, message: data.error || 'Gönderilemedi.' });
+            }
+        } catch (err) {
+            setResendStatus({ loading: false, message: 'Bir hata oluştu.' });
+        }
+    };
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setResendStatus({ loading: false, message: '' });
         setIsLoading(true);
 
         try {
@@ -63,8 +84,27 @@ export default function LoginPage() {
                 ) : (
                     <form onSubmit={handleLogin} className="space-y-4">
                         {error && (
-                            <div className="p-3 bg-red-50 text-red-600 text-sm font-medium rounded-xl text-center">
-                                {error}
+                            <div className="space-y-3">
+                                <div className="p-3 bg-red-50 text-red-600 text-sm font-medium rounded-xl text-center">
+                                    {error}
+                                </div>
+                                {error.includes('doğrulayın') && (
+                                    <div className="text-center">
+                                        <button
+                                            type="button"
+                                            onClick={handleResendVerification}
+                                            disabled={resendStatus.loading}
+                                            className="text-xs font-semibold text-blue-600 hover:text-blue-700 underline disabled:opacity-50"
+                                        >
+                                            {resendStatus.loading ? 'Gönderiliyor...' : 'Doğrulama e-postasını tekrar gönder'}
+                                        </button>
+                                        {resendStatus.message && (
+                                            <p className="mt-2 text-[10px] text-slate-500 bg-slate-50 p-2 rounded-lg">
+                                                {resendStatus.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
                         <div className="space-y-4">

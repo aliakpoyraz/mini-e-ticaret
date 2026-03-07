@@ -45,7 +45,10 @@ function ResetPasswordForm() {
                     router.push('/giris-yap');
                 }, 3000);
             } else {
-                setError(data.error || 'İşlem başarısız oldu.');
+                const detailedError = data.details
+                    ? `${data.error} - Detay: ${data.details}`
+                    : (data.error || 'İşlem başarısız oldu.');
+                setError(detailedError);
             }
         } catch (err) {
             setError('Sunucu hatası oluştu.');
