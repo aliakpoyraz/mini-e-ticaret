@@ -16,9 +16,27 @@ function ResetPasswordForm() {
     const [isSuccess, setIsSuccess] = useState(false);
 
     useEffect(() => {
-        if (!token) {
-            setError('Geçersiz veya eksik bağlantı. Lütfen yeni bir sıfırlama talebinde bulunun.');
-        }
+        const validateToken = async () => {
+            if (!token) {
+                setError('Geçersiz veya eksik bağlantı. Lütfen yeni bir sıfırlama talebinde bulunun.');
+                return;
+            }
+
+            setIsLoading(true);
+            try {
+                const res = await fetch(`/api/auth/reset-password?token=${token}`);
+                const data = await res.json();
+                if (!res.ok) {
+                    setError(data.error || 'Bu bağlantı geçersiz, süresi dolmuş veya daha önce kullanılmış.');
+                }
+            } catch (err) {
+                setError('Bağlantı kontrol edilirken bir hata oluştu.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        validateToken();
     }, [token]);
 
     const handleSubmit = async (e: React.FormEvent) => {

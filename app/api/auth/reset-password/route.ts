@@ -29,8 +29,8 @@ export async function POST(request: Request) {
         });
 
         if (!user) {
-            console.warn('[ResetPassword] Geçersiz veya süresi dolmuş token.');
-            return NextResponse.json({ error: 'Geçersiz veya süresi dolmuş bağlantı.' }, { status: 400 });
+            console.warn('[ResetPassword] Geçersiz, süresi dolmuş veya kullanılmış token.');
+            return NextResponse.json({ error: 'Geçersiz, süresi dolmuş veya daha önce kullanılmış bağlantı.' }, { status: 400 });
         }
 
         console.log('[ResetPassword] Kullanıcı bulundu:', user.email);
@@ -54,5 +54,34 @@ export async function POST(request: Request) {
             error: 'İşlem sırasında bir hata oluştu.',
             details: error instanceof Error ? error.message : String(error)
         }, { status: 500 });
+    }
+}
+
+export async function GET(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const token = searchParams.get('token');
+
+        if (!token) {
+            return NextResponse.json({ error: 'Token gereklidir.' }, { status: 400 });
+        }
+
+        const user = await prisma.user.findFirst({
+            where: {
+                resetToken: token,
+                resetTokenExpiry: {
+                    gt: new Date()
+                }
+            }
+        });
+
+        if (!user) {
+            return NextResponse.json({ error: 'Geçersiz, süresi dolmuş veya daha önce kullanılmış bağlantı.' }, { status: 400 });
+        }
+
+        return NextResponse.json({ success: true, message: 'Bağlantı geçerli.' });
+    } catch (error) {
+        console.error('Validate reset token error:', error);
+        return NextResponse.json({ error: 'İşlem sırasında bir hata oluştu.' }, { status: 500 });
     }
 }

@@ -17,7 +17,7 @@ export async function GET(request: Request) {
         });
 
         if (!user) {
-            return NextResponse.json({ error: 'Geçersiz doğrulama kodu.' }, { status: 400 });
+            return NextResponse.json({ error: 'Geçersiz, süresi dolmuş veya daha önce kullanılmış doğrulama kodu.' }, { status: 400 });
         }
 
         await prisma.user.update({
