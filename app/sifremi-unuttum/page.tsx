@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
                         </div>
                         <h2 className="text-xl font-bold text-slate-900 mb-3">Bağlantı Gönderildi</h2>
                         <p className="text-sm text-slate-500 mb-8 px-4">
-                            Şifrenizi sıfırlamanız için <strong>{email}</strong> adresine bir bağlantı gönderdik. (Bu bir demo özelliğidir)
+                            Şifrenizi sıfırlamanız için <strong>{email}</strong> adresine bir bağlantı gönderdik.
                         </p>
                         <Link href="/giris-yap" className="w-full py-3.5 bg-black hover:bg-slate-800 text-white rounded-full text-sm font-semibold transition-colors block active:scale-[0.98]">
                             Giriş Ekranına Dön
