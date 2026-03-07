@@ -1,46 +1,51 @@
 import { Resend } from 'resend';
 
-export const resend = process.env.RESEND_API_KEY
-    ? new Resend(process.env.RESEND_API_KEY)
-    : null;
-
 interface SendEmailParams {
     to: string | string[];
     subject: string;
     html: string;
 }
 
+const getResendClient = () => {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+        console.error('RESEND_API_KEY is missing from environment variables!');
+        return null;
+    }
+    return new Resend(apiKey);
+};
+
 export const sendEmail = async ({ to, subject, html }: SendEmailParams) => {
-    if (!resend) {
+    const resendClient = getResendClient();
+
+    if (!resendClient) {
         if (process.env.NODE_ENV === 'development') {
-            console.log('--- EMAIL MOCK ---');
+            console.log('--- EMAIL MOCK (Dev Mode) ---');
             console.log('To:', to);
             console.log('Subject:', subject);
-            console.log('--- END MOCK ---');
-            return { success: true, mockSession: true };
+            return { success: true, mock: true };
         }
-        console.warn('RESEND_API_KEY is not set. Email not sent.');
-        return { success: false, error: 'API Key missing' };
+        return { success: false, error: 'RESEND_API_KEY missing' };
     }
 
     try {
-        console.log(`Sending email to: ${to}, Subject: ${subject}`);
-        const { data, error } = await resend.emails.send({
+        console.log(`Email gönderiliyor: ${to}, Konu: ${subject}`);
+        const { data, error } = await resendClient.emails.send({
             from: 'onboarding@resend.dev',
-            to,
+            to: Array.isArray(to) ? to : [to],
             subject,
             html,
         });
 
         if (error) {
-            console.error('Resend API Error:', error);
+            console.error('Resend API Hatası:', error);
             return { success: false, error };
         }
 
-        console.log('Email sent successfully:', data);
+        console.log('Email başarıyla gönderildi ID:', data?.id);
         return { success: true, data };
     } catch (error) {
-        console.error('Unexpected Email Error:', error);
+        console.error('Email gönderimi sırasında beklenmedik hata:', error);
         return { success: false, error };
     }
 };
