@@ -29,23 +29,28 @@ export const sendEmail = async ({ to, subject, html }: SendEmailParams) => {
     }
 
     try {
-        console.log(`Email gönderiliyor: ${to}, Konu: ${subject}`);
+        const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+        console.log(`[Resend] E-posta paketi hazırlanıyor...`);
+        console.log(`[Resend] Kimden: ${fromEmail}`);
+        console.log(`[Resend] Kime: ${to}`);
+        console.log(`[Resend] Konu: ${subject}`);
+
         const { data, error } = await resendClient.emails.send({
-            from: 'onboarding@resend.dev',
+            from: fromEmail,
             to: Array.isArray(to) ? to : [to],
             subject,
             html,
         });
 
         if (error) {
-            console.error('Resend API Hatası:', error);
+            console.error('[Resend] API Hatası Yanıtı:', JSON.stringify(error, null, 2));
             return { success: false, error };
         }
 
-        console.log('Email başarıyla gönderildi ID:', data?.id);
+        console.log('[Resend] E-posta başarıyla sıraya alındı. ID:', data?.id);
         return { success: true, data };
     } catch (error) {
-        console.error('Email gönderimi sırasında beklenmedik hata:', error);
+        console.error('[Resend] Beklenmedik Hata:', error);
         return { success: false, error };
     }
 };

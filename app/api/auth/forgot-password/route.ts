@@ -12,9 +12,12 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'E-posta adresi gereklidir.' }, { status: 400 });
         }
 
-        const user = await prisma.user.findUnique({ where: { email } });
+        const normalizedEmail = email.toLowerCase().trim();
+        console.log('Şifre sıfırlama isteği e-posta:', normalizedEmail);
+        const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
 
         if (user) {
+            console.log('Kullanıcı bulundu, token oluşturuluyor...');
             const token = crypto.randomBytes(32).toString('hex');
             const expiry = new Date(Date.now() + 3600000); // 1 hour
 
