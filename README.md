@@ -1,89 +1,133 @@
-# YZL321 Store | Premium E-Ticaret Deneyimi 🚀
+<div align="center">
 
-Bu proje, modern web teknolojileri ile geliştirilmiş, kullanıcı deneyimi odaklı ve tam teşekküllü bir e-ticaret çözümüdür. Apple-like minimal tasarımı, güçlü backend mimarisi ve gelişmiş bildirim sistemleriyle uçtan uca bir alışveriş deneyimi sunar.
+# 🛍️ YZL321 Store | Tam Donanımlı Premium E-Ticaret MVP
 
----
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
 
-## 🛠 Teknoloji Yığını (Tech Stack)
+Modern web teknolojileri ile sıfırdan inşa edilmiş, hem kullanıcı (B2C) hem de yönetici (Admin) için kusursuz, **premium bir e-ticaret deneyimi** sunan açık kaynaklı bir MVP (Minimum Viable Product).
 
-Proje, güncel ve ölçeklenebilir en iyi teknolojiler üzerine inşa edilmiştir:
+[Canlı Demo](#) · [Hata Bildir](#) · [Özellik İste](#)
 
-- **Framework:** [Next.js](https://nextjs.org/) (App Router, Server Components)
-- **Database:** [Supabase](https://supabase.com/) (PostgreSQL)
-- **ORM:** [Prisma](https://www.prisma.io/) (Tip güvenli veritabanı yönetimi)
-- **E-posta:** [Resend](https://resend.com/) (Güçlü ve hızlı e-posta bildirimleri)
-- **Deployment:** [Vercel](https://vercel.com/) (Edge Runtime & Serverless)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/) (Premium UI & Glassmorphism)
-- **Auth:** Custom JWT-based Authentication (bcryptjs + jose)
+</div>
 
 ---
 
-## ✨ Öne Çıkan Özellikler
+## 🌟 Proje Hakkında
 
-### 🛍️ Kusursuz Alışveriş Akışı
-- **Dinamik Katalog:** Gelişmiş filtreleme ve arama motoru.
-- **Akıllı Sepet:** Stok kontrolleri ve anlık sepet güncellemeleri.
-- **Detaylı Takip:** Sipariş durumunun anlık olarak izlenebildiği müşteri paneli.
-- **İade Sistemi:** Teslim alım sonrası kolay iade talebi oluşturma.
+YZL321 Store, "Glassmorphism" (Buzlu cam) detayları, akıcı animasyonları ve modern, "Apple-like" minimal arayüz tasarımı ile öne çıkar. Yalnızca görsel bir şölen sunmakla kalmaz; arka planda **Next.js App Router**, **Prisma ORM**, **PostgreSQL** ve **Resend** e-posta servisi ile kurumsal seviyede güvenilir ve karmaşık iş mantıklarını (Sipariş durum makineleri, stok senkronizasyonu, sepet yönetimi) başarıyla yönetir.
 
-### 🛡️ Güvenlik ve Bildirimler
-- **Doğrulama Sistemi:** Kayıt sonrası e-posta doğrulama (Resend entegrasyonu).
-- **Şifre Kurtarma:** Güvenli token tabanlı şifre sıfırlama süreci.
-- **Anlık Bilgilendirme:** Sipariş alındığında ve durum güncellendiğinde (Kargoda, Teslim Edildi) otomatik e-posta gönderimi.
-
-### 📊 Güçlü Admin Paneli
-- **Stok Yönetimi:** Ürün ve varyasyon (renk/beden) bazlı anlık stok kontrolü.
-- **Sipariş Yönetimi:** Sipariş durumlarını yönetme ve iade taleplerini onaylama/reddetme.
-- **İndirim Motoru:** Ürün bazlı veya sepet alt limitli kampanya yönetim sistemi.
+Projeyi hiç bilmeyen bir geliştirici bile, temiz yazılmış ve tamamen **Türkçe açıklama satırları (comments)** ile donatılmış kod tabanı sayesinde projeye anında adapte olabilir.
 
 ---
 
-## 🔄 Sipariş Yaşam Döngüsü
+## 🚀 Öne Çıkan Özellikler
 
-Sistem, veritabanı tutarlılığını korumak için sıkı bir durum makinesi (state machine) izler:
+### 🎯 Müşteri Deneyimi (Storefront)
+- **Kusursuz Arayüz:** Modern, mobil uyumlu ve yüksek dönüşüm oranına (conversion-rate) odaklanmış tasarım.
+- **Ürün Keşfi:** Gelişmiş kategori, marka, fiyat ve puan tabanlı filtreleme ile anlık arama motoru.
+- **Dinamik Sepet:** Gerçek zamanlı varyasyon (renk/beden) ve stok kontrolü yapan akıllı sepet sistemi.
+- **Güvenli Kimlik Doğrulama:** Google OAuth veya e-posta/şifre ile güvenli giriş. Kayıt esnasında reCAPTCHA koruması.
+- **Sipariş Takibi:** "Hazırlanıyor", "Kargolandı", "Teslim Edildi" gibi aşamaların anlık izlenebildiği müşteri paneli.
+- **İade Yönetimi:** Teslim sonrası tek tıkla iade talebi oluşturma ve iade iptal süreçleri.
+- **Ürün Değerlendirmeleri:** Yalnızca o ürünü satın alan müşterilerin yorum yapabildiği ve puan verebildiği güvenilir yorum sistemi.
 
-1. **Ödendi (PAID):** Kartlı ödeme sonrası sipariş bu durumda başlar.
-2. **Oluşturuldu (CREATED):** Kapıda ödeme seçildiğinde sipariş bu durumda başlar.
-3. **Kargolandı (SHIPPED):** Admin kargoya verdiğinde müşteri mail ile bilgilendirilir.
-4. **Teslim Edildi (DELIVERED):** Ürün müşteriye ulaştığında iade hakkı başlar.
-5. **İade İstendi (RETURN_REQUESTED):** Müşteri iade süreci başlatır.
-6. **İade Edildi (RETURNED):** Admin onayladığında **stoklar otomatik olarak geri yüklenir**.
-7. **İptal Edildi (CANCELLED):** Kargodan önce iptal edilirse stoklar geri döner.
-
----
-
-## 🚀 Kurulum
-
-Projeyi yerel ortamınızda ayağa kaldırmak için:
-
-1. **Bağımlılıkları Yükleyin:**
-   ```bash
-   npm install
-   ```
-
-2. **Çevresel Değişkenleri Ayarlayın (.env):**
-   ```env
-   DATABASE_URL="supabase_postgresql_url"
-   RESEND_API_KEY="re_..."
-   JWT_SECRET="super_secret_key"
-   NEXT_PUBLIC_APP_URL="http://localhost:3000"
-   ```
-
-3. **Veritabanını Hazırlayın:**
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   ```
-
-4. **Çalıştırın:**
-   ```bash
-   npm run dev
-   ```
+### 🛡️ Yönetim Paneli (Admin Dashboard)
+- **Kapsamlı İstatistikler:** Toplam satış, aktif müşteri, sipariş sayıları ve bekleyen görevlerin anlık takibi.
+- **Sipariş & İade Yönetimi:** Durumu değişen (İptal, İade vb.) siparişlerde stokların **otomatik geri yüklenmesi** ve müşteriye bilgilendirme maillerinin atılması.
+- **Detaylı Stok ve Varyasyon Kontrolü:** Çoklu resim, beden, renk seçenekleriyle ürün ve stok girişleri.
+- **Pazarlama Araçları:** Alt limitli, yüzdelik veya sabit tutarlı gelişmiş "İndirim Kuponu" motoru.
+- **Kullanıcı & Yorum Moderatörlüğü:** Kötü amaçlı kullanıcıları banlama, uygunsuz değerlendirmeleri reddetme veya onaylama.
 
 ---
 
-## 🌐 Canlı Ortam (Deployment)
+## 🛠️ Mimari & Teknoloji Yığını
 
-Proje **Vercel** üzerinde optimize edilmiştir. Otomatik build süreci için `prisma generate` komutu `postinstall` adımına eklenmiştir.
+Proje, günümüzün en iyi pratikleri (Best Practices) kabul edilen modern teknolojiler üzerinde çalışmaktadır:
+
+| Kategori | Teknoloji | Açıklama |
+| :--- | :--- | :--- |
+| **Framework** | Next.js 15 (App Router) | React tabanlı full-stack framework. Server Components ile yüksek performans. |
+| **Veritabanı** | PostgreSQL | Güçlü ve ilişkisel veritabanı altyapısı (Supabase / Neon vb. ile uyumlu). |
+| **ORM / Veri Erişimi** | Prisma | Tip-güvenli (Type-safe) veritabanı sorguları ve şema yönetimi. |
+| **Tasarım / Stil** | Tailwind CSS | Utility-first yaklaşım, özelleştirilmiş tasarım token'ları ve responsive yapı. |
+| **E-Posta Servisi** | Resend | Sipariş onay, kargo, iade ve şifre sıfırlama mailleri için entegre API. |
+| **Kimlik Doğrulama** | Custom Auth | `bcryptjs` + `jose` tabanlı JWT sistemi & Google OAuth entegrasyonu. |
 
 ---
+
+## ⚙️ Kurulum & Yerel Geliştirme (Local Development)
+
+Kendinize ait bir kopyasını çalıştırmak oldukça basittir. 
+
+### Ön Koşullar
+* Node.js (v18.x veya üzeri önerilir)
+* PostgreSQL Veritabanı (Yerel makinenizde kurulu veya Supabase vb. bir Cloud servisi)
+
+### 1. Repoyu Klonlayın
+```bash
+git clone https://github.com/aliakpoyraz/mini-e-ticaret.git
+cd mini-e-ticaret
+```
+
+### 2. Bağımlılıkları Yükleyin
+```bash
+npm install
+```
+
+### 3. Çevresel Değişkenleri Ayarlayın (.env)
+Kök dizinde `.env` isimli bir dosya oluşturun ve aşağıdaki değişkenleri kendi bilgilerinizle doldurun:
+```env
+# Veritabanı Bağlantısı
+DATABASE_URL="postgresql://kullanici:sifre@localhost:5432/eticaretdb"
+
+# Güvenlik & Oturum
+JWT_SECRET="cok_gizli_bir_anahtar_belirleyin"
+
+# Bildirimler (Resend)
+RESEND_API_KEY="re_..."
+
+# Google OAuth (Opsiyonel)
+GOOGLE_CLIENT_ID="izin.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="gizli_anahtar"
+
+# Uygulama URL'i
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+### 4. Veritabanını Hazırlayın
+Veritabanı şemasını oluşturmak ve Prisma Client'ı oluşturmak için aşağıdaki komutları sırasıyla çalıştırın:
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### 5. Sunucuyu Başlatın
+```bash
+npm run dev
+```
+Uygulamanız başarıyla başlatıldığında tarayıcınızdan **`http://localhost:3000`** adresine giderek siteyi görüntüleyebilirsiniz.
+
+**Admin Girişi (Varsayılan):**
+Hazırlanan ilk başlatma mekanizması ile giriş ekranından `admin@store.com` / `admin123` bilgileriyle oturum açarak tüm yönetim paneline erişebilirsiniz.
+
+---
+
+## 🔒 Sipariş & Stok Durum Makinesi (State Machine)
+
+Bu proje, bir e-ticaret senaryosunun bel kemiği olan veri tutarlılığını sağlamak için katı bir durum akışı izler:
+- Kapıda Ödemeli siparişler **`CREATED`** (Oluşturuldu), Kredi Kartlı siparişler **`PAID`** (Ödendi) statüsü ile başlar.
+- Kargodan önce **`CANCELLED`** (İptal) veya ürün geri geldiğinde **`RETURNED`** (İade Edildi) statüsüne geçildiğinde; o siparişteki tüm **stoklar milisaniyeler içinde sisteme otomatik olarak geri işlenir**.
+- Her statü değişiminde kullanıcıya özel, dinamik hesaplanmış e-posta bilgilendirmeleri gönderilir.
+
+---
+
+## 📄 Lisans
+Bu proje geliştirilmeye açık ve portfolyo amaçlı sunulmuştur.
+
+<div align="center">
+  <p>Sevgi ve tasarım odaklı geliştirildi ❤️</p>
+</div>
