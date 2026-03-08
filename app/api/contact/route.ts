@@ -13,6 +13,20 @@ export async function POST(req: NextRequest) {
             );
         }
 
+        // Server-side validation
+        const nameRegex = /^[a-zA-ZğüşıöçĞÜŞİÖÇ ]+$/;
+        const phoneRegex = /^[0-9]{10,15}$/;
+
+        if (!nameRegex.test(firstName)) {
+            return NextResponse.json({ error: 'Geçersiz ad formatı. Sadece harf kullanın.' }, { status: 400 });
+        }
+        if (!nameRegex.test(lastName)) {
+            return NextResponse.json({ error: 'Geçersiz soyad formatı. Sadece harf kullanın.' }, { status: 400 });
+        }
+        if (!phoneRegex.test(phone.replace(/[^0-9]/g, ''))) {
+            return NextResponse.json({ error: 'Geçersiz telefon numarası. Sadece rakam kullanın (en az 10 hane).' }, { status: 400 });
+        }
+
         const adminEmail = process.env.RESEND_FROM_EMAIL || 'destek@ornek.com';
 
         const emailHtml = `

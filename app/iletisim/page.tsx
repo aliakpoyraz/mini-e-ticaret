@@ -36,8 +36,8 @@ export default function ContactPage() {
                             </div>
                             <h3 className="text-xl font-bold text-slate-900 mb-2">E-posta</h3>
                             <p className="text-slate-500 text-sm mb-4 leading-relaxed">Projeleriniz ve sorularınız için bize yazın.</p>
-                            <a href="mailto:iletisim@aliakpoyraz.com" className="text-brand-600 font-bold hover:text-brand-700 transition-colors text-lg">
-                                iletisim@aliakpoyraz.com
+                            <a href="mailto:bilgi@e-ticaret.aliakpoyraz.com" className="text-brand-600 font-bold hover:text-brand-700 transition-colors text-lg">
+                                bilgi@e-ticaret.aliakpoyraz.com
                             </a>
                         </div>
 

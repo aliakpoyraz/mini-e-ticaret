@@ -18,7 +18,17 @@ export default function ContactForm() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = e.target;
-        setFormData(prev => ({ ...prev, [id]: value }));
+        let filteredValue = value;
+
+        if (id === 'firstName' || id === 'lastName') {
+            // Sadece harf ve boşluk (Türkçe karakterler dahil)
+            filteredValue = value.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ ]/g, '');
+        } else if (id === 'phone') {
+            // Sadece rakam ve max 11 hane
+            filteredValue = value.replace(/[^0-9]/g, '').slice(0, 11);
+        }
+
+        setFormData(prev => ({ ...prev, [id]: filteredValue }));
         if (error) setError('');
     };
 
