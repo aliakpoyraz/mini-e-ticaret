@@ -8,7 +8,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
 
-Modern web teknolojileri ile sıfırdan inşa edilmiş, hem kullanıcı (B2C) hem de yönetici (Admin) için kusursuz, **premium bir e-ticaret deneyimi** sunan açık kaynaklı bir MVP (Minimum Viable Product).
+Next.js ve modern web teknolojilerini öğrenmek ve uygulamak amacıyla geliştirdiğim, hem müşteriler hem de yöneticiler için pratik özellikleri barındıran işlevsel bir e-ticaret (portfolyo) projesi.
 
 [Canlı Demo](https://e-ticaret.aliakpoyraz.com) · [Hata Bildir](https://github.com/aliakpoyraz/mini-e-ticaret/issues/new) · [Özellik İste](https://github.com/aliakpoyraz/mini-e-ticaret/issues/new)
 
@@ -18,9 +18,11 @@ Modern web teknolojileri ile sıfırdan inşa edilmiş, hem kullanıcı (B2C) he
 
 ## 🌟 Proje Hakkında
 
-YZL321 Store, "Glassmorphism" (Buzlu cam) detayları, akıcı animasyonları ve modern, "Apple-like" minimal arayüz tasarımı ile öne çıkar. Yalnızca görsel bir şölen sunmakla kalmaz; arka planda **Next.js App Router**, **Prisma ORM**, **PostgreSQL** ve **Resend** e-posta servisi ile kurumsal seviyede güvenilir ve karmaşık iş mantıklarını (Sipariş durum makineleri, stok senkronizasyonu, sepet yönetimi) başarıyla yönetir.
-
-Projeyi hiç bilmeyen bir geliştirici bile, temiz yazılmış ve tamamen **Türkçe açıklama satırları (comments)** ile donatılmış kod tabanı sayesinde projeye anında adapte olabilir.
+Bu proje, modern bir e-ticaret sitesinin nasıl çalıştığını baştan sona uygulamalı olarak öğrenmek için geliştirdiğim bir çalışmadır. Ön yüzde sade, anlaşılır ve temiz bir tasarım elde etmeye çalıştım.
+ 
+Arka planda ise; ürünleri, sepeti, sipariş takibini ve stok durumlarını (örneğin bir sipariş iptal edildiğinde stoğun otomatik geri gelmesi gibi) yönetebilen çalışan bir sistem kurdum. Bunu yaparken **Next.js**, **Prisma** ve **PostgreSQL** gibi güncel teknolojileri kullandım.
+ 
+Kodu incelerken başka öğrenci arkadaşların veya projeyi inceleyenlerin karmaşıklık yaşamaması için kodların kritik noktalarına **tamamen Türkçe** olan, neyi neden yaptığımı açıklayan yorum satırları ekledim.
 
 ---
 
