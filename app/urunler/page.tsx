@@ -114,7 +114,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
 
     return (
         <div className="min-h-screen bg-white">
-            <div className="bg-slate-50 border-b border-slate-200 pt-32 pb-16">
+            <div className="bg-slate-50 border-b border-slate-200 pt-40 pb-16">
                 <div className="container mx-auto px-6 text-center">
                     <h1 className="text-4xl font-bold text-slate-900 mb-4 tracking-tight">Tüm Ürünler</h1>
                     <p className="text-slate-500 max-w-xl mx-auto">

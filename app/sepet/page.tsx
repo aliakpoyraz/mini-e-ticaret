@@ -276,7 +276,7 @@ export default function CartPage() {
 
     if (items.length === 0) {
         return (
-            <div className="container mx-auto px-4 py-20 text-center">
+            <div className="container mx-auto px-4 py-36 text-center">
                 <div className="mb-6 inline-flex p-6 bg-slate-50 rounded-full text-slate-300">
                     <Trash2 size={48} />
                 </div>
@@ -293,7 +293,7 @@ export default function CartPage() {
     }
 
     return (
-        <div className="container mx-auto px-6 pt-28 pb-12 max-w-7xl">
+        <div className="container mx-auto px-6 pt-36 pb-12 max-w-7xl">
             <h1 className="text-3xl font-bold mb-8 text-slate-900 tracking-tight">Ödeme Yap</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

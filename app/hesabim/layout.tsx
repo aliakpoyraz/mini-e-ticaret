@@ -25,7 +25,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
     if (isLoading) {
         return (
-            <div className="min-h-screen pt-32 pb-16 flex items-center justify-center bg-[#F5F5F7]">
+            <div className="min-h-screen pt-36 pb-16 flex items-center justify-center bg-[#F5F5F7]">
                 <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
             </div>
         );
@@ -38,7 +38,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     ];
 
     return (
-        <div className="min-h-screen pt-32 pb-16 bg-[#F5F5F7]">
+        <div className="min-h-screen pt-36 pb-16 bg-[#F5F5F7]">
             <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Sidebar */}

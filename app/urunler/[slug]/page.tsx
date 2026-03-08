@@ -107,7 +107,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </div>
             </div>
 
-            <div className="container mx-auto px-6 py-12 md:py-20 lg:py-24">
+            <div className="container mx-auto px-6 pt-36 md:pt-40 lg:pt-44 pb-24">
                 <div className="flex flex-col md:flex-row gap-12 lg:gap-24">
 
                     <div className="w-full md:w-5/12">

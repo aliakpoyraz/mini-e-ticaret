@@ -133,7 +133,7 @@ export default async function TrackOrderPage({
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 pt-24 pb-12">
+        <div className="min-h-screen bg-slate-50 pt-36 pb-12">
             <div className="container mx-auto px-6 max-w-3xl">
                 <h1 className="text-3xl font-bold text-slate-900 mb-2 text-center">Sipariş Takibi</h1>
                 <p className="text-slate-500 text-center mb-10">Siparişinizin güncel durumunu öğrenmek için sipariş numaranızı girin.</p>

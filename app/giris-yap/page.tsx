@@ -80,7 +80,7 @@ function LoginForm() {
     };
 
     return (
-        <div className="min-h-screen bg-[#F5F5F7] flex flex-col items-center pt-32 pb-12 p-6 font-sans">
+        <div className="min-h-screen bg-[#F5F5F7] flex flex-col items-center pt-40 pb-12 p-6 font-sans">
             <div className="w-full max-w-[400px] bg-white rounded-3xl shadow-sm border border-slate-100 p-8 md:p-10">
                 <div className="text-center mb-8">
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-2">
