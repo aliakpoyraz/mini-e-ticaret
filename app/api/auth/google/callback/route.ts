@@ -4,18 +4,22 @@ import { signToken, setAuthCookie } from '@/app/lib/auth';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL;
+    const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/$/, '');
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const redirectUri = `${baseUrl}/api/auth/google/callback`;
 
     const client = new OAuth2Client(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-        `${baseUrl}/api/auth/google/callback`
+        clientId,
+        clientSecret,
+        redirectUri
     );
 
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');
 
     if (!code || !baseUrl) {
+        console.error('Google Auth Callback: Missing code or baseUrl', { hasCode: !!code, baseUrl });
         return NextResponse.redirect(`${baseUrl || ''}/giris-yap?error=google_auth_failed`);
     }
 
@@ -65,7 +69,12 @@ export async function GET(request: Request) {
 
         return NextResponse.redirect(`${baseUrl}/`);
     } catch (error: any) {
-        console.error('Google Auth Callback Error:', error.message);
+        console.error('Google Auth Callback Detailed Error:', {
+            message: error.message,
+            stack: error.stack,
+            clientId: process.env.GOOGLE_CLIENT_ID ? 'Configured' : 'Missing',
+            hasPayload: error.message === 'Google payload missing'
+        });
         return NextResponse.redirect(`${baseUrl}/giris-yap?error=google_auth_failed`);
     }
 }

@@ -24,6 +24,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Lütfen e-posta adresinizi doğrulayın.' }, { status: 403 });
         }
 
+        if (!user.password) {
+            return NextResponse.json({ error: 'Bu hesap şifre ile giriş desteklemiyor. Lütfen Google ile giriş yapın.' }, { status: 400 });
+        }
+
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
             return NextResponse.json({ error: 'E-posta veya şifre hatalı' }, { status: 401 });
@@ -33,8 +37,13 @@ export async function POST(request: Request) {
         await setAuthCookie(token);
 
         return NextResponse.json({ success: true, user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role } });
-    } catch (error) {
-        console.error('Login error:', error);
+    } catch (error: any) {
+        console.error('Login Detailed Error:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+            code: error.code // Prisma error codes are useful
+        });
         return NextResponse.json({ error: 'Giriş sırasında bir hata oluştu' }, { status: 500 });
     }
 }
