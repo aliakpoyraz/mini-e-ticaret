@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1e40af" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.2" />
+    </filter>
+  </defs>
+
+  <!-- Base shape (Squircle) -->
+  <rect width="512" height="512" rx="112" fill="url(#brandGradient)" />
+
+  <!-- Bag Handle -->
+  <path d="M 186 230 C 186 140, 326 140, 326 230" 
+        stroke="white" 
+        stroke-width="36" 
+        stroke-linecap="round" 
+        fill="transparent" 
+        opacity="0.95" />
+
+  <!-- Bag Body -->
+  <path d="M 136 210 
+           h 240 
+           a 36 36 0 0 1 36 36 
+           l -20 160 
+           a 48 48 0 0 1 -48 48 
+           h -176 
+           a 48 48 0 0 1 -48 -48 
+           l -20 -160 
+           a 36 36 0 0 1 36 -36 z" 
+        fill="white" 
+        filter="url(#shadow)" />
+
+  <!-- Checkmark detail inside the bag -->
+  <path d="M 216 320 L 246 350 L 306 280" 
+        stroke="url(#brandGradient)" 
+        stroke-width="32" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        fill="transparent" />
+
+  <!-- Sparkle top right -->
+  <path d="M 370 120 Q 380 120 380 110 Q 380 120 390 120 Q 380 120 380 130 Q 380 120 370 120 Z" fill="white" opacity="0.8" />
+  <path d="M 140 150 Q 146 150 146 144 Q 146 150 152 150 Q 146 150 146 156 Q 146 150 140 150 Z" fill="white" opacity="0.6" />
+</svg>
