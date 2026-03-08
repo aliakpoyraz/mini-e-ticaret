@@ -47,6 +47,8 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
         const status = formData.get('status') as string;
         console.log(`[AdminOrderUpdate] İşlem başladı. Sipariş: #${orderId}, Yeni Durum: ${status}`);
 
+        let orderForEmail = null;
+
         try {
             await prisma.$transaction(async (tx) => {
                 const currentOrder = await tx.order.findUnique({
@@ -55,8 +57,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                 });
 
                 if (!currentOrder) {
-                    console.error(`[AdminOrderUpdate] Sipariş bulunamadı: #${orderId}`);
-                    return;
+                    throw new Error(`Sipariş bulunamadı: #${orderId}`);
                 }
 
                 console.log(`[AdminOrderUpdate] Mevcut durum: ${currentOrder.status}`);
@@ -72,31 +73,31 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                     }
                 }
 
-                await tx.order.update({
+                orderForEmail = await tx.order.update({
                     where: { id: orderId },
                     data: { status }
                 });
 
-                console.log(`[AdminOrderUpdate] Durum güncellendi, e-posta hazırlanıyor...`);
+                console.log(`[AdminOrderUpdate] Veritabanı güncellendi. Yeni durum: ${orderForEmail.status}`);
+            });
 
-                // Send Status Update Email
-                const updatedOrder = await tx.order.findUnique({
-                    where: { id: orderId }
-                });
+            // E-posta gönderimini transaction dışına çıkardık (daha güvenli ve hızlı)
+            if (orderForEmail) {
+                const updatedOrder = orderForEmail as any;
+                const statusLabel = STATUS_LABELS[status] || status;
+                console.log(`[AdminOrderUpdate] E-posta hazırlanıyor: ${updatedOrder.customerEmail} - Durum: ${statusLabel}`);
 
-                if (updatedOrder) {
-                    const statusLabel = STATUS_LABELS[status] || status;
-                    console.log(`[AdminOrderUpdate] E-posta gönderiliyor: ${updatedOrder.customerEmail} - Durum: ${statusLabel}`);
+                try {
                     const emailRes = await sendEmail({
                         to: updatedOrder.customerEmail,
                         subject: `Sipariş Durumu Güncellemesi | YZL321 Store #${updatedOrder.id}`,
                         html: getOrderStatusUpdateEmailHtml(updatedOrder.id, statusLabel, updatedOrder.customerName)
                     });
                     console.log(`[AdminOrderUpdate] E-posta sonucu:`, emailRes);
-                } else {
-                    console.error(`[AdminOrderUpdate] Güncellenmiş sipariş okunamadı.`);
+                } catch (emailErr) {
+                    console.error(`[AdminOrderUpdate] E-posta gönderimi sırasında hata (fakat DB güncellendi):`, emailErr);
                 }
-            });
+            }
 
             console.log(`[AdminOrderUpdate] İşlem başarıyla tamamlandı.`);
             revalidatePath(`/admin/orders/${orderId}`);

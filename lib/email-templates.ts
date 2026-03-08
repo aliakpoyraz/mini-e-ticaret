@@ -60,7 +60,7 @@ export const getForgotPasswordEmailHtml = (resetUrl: string) => layout(`
 
 export const getOrderConfirmationEmailHtml = (orderId: number, total: string, customerName: string) => layout(`
   <h1 style="font-size: 24px; font-weight: 700; color: #0f172a; margin: 0 0 16px 0; text-align: center;">
-    Siparişin Yolda!
+    Siparişiniz Alındı!
   </h1>
   <p style="font-size: 16px; line-height: 24px; color: #475569; margin: 0 0 32px 0; text-align: center;">
     Harika bir seçim, ${customerName}! Siparişini aldık ve ekibimiz hazırlıklara başladı. Stilini tamamlamak için sabırsızlandığını biliyoruz.

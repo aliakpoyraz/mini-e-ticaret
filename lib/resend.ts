@@ -33,7 +33,8 @@ export const sendEmail = async ({ to, subject, html }: SendEmailParams) => {
     }
 
     try {
-        const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+        const rawFromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+        const fromEmail = `YZL321 Store <${rawFromEmail}>`;
         console.log(`[Resend] Paket Hazırlanıyor:`);
         console.log(` - Kimden: ${fromEmail}`);
         console.log(` - Kime: ${JSON.stringify(to)}`);
