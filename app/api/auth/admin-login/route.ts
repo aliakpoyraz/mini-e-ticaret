@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
         let user = await prisma.user.findUnique({ where: { email } });
 
-        // Auto-create admin if it doesn't exist and credentials match MVP default
+        // Admin kullanıcısı yoksa ve MVP varsayılan bilgileriyle giriş yapılıyorsa otomatik oluştur
         if (!user && email === 'admin@store.com' && password === 'admin123') {
             const hashedPassword = await bcrypt.hash(password, 10);
             user = await prisma.user.create({

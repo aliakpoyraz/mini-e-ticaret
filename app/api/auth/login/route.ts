@@ -42,7 +42,7 @@ export async function POST(request: Request) {
             message: error.message,
             stack: error.stack,
             name: error.name,
-            code: error.code // Prisma error codes are useful
+            code: error.code // Prisma hata kodları detaylı bilgi sağlar
         });
         return NextResponse.json({ error: 'Giriş sırasında bir hata oluştu' }, { status: 500 });
     }

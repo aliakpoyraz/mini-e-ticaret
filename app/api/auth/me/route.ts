@@ -16,7 +16,7 @@ export async function GET() {
         if (!user || user.isBanned) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         return NextResponse.json({ user });
     } catch {
-        // Fallback to session data if DB lookup fails
+        // Veritabanı araması başarısız olursa oturum verisine geri dön
         return NextResponse.json({ user: session });
     }
 }

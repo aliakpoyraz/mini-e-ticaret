@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getSession } from '@/app/lib/auth';
 import { filterProfanity } from '@/lib/profanity-filter';
 
-// Fetch all approved reviews for a product
+// Bir ürün için onaylanmış tüm değerlendirmeleri getir
 export async function GET(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -33,7 +33,7 @@ export async function GET(
     }
 }
 
-// Post a new review
+// Yeni bir değerlendirme paylaş
 export async function POST(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -53,7 +53,7 @@ export async function POST(
             return NextResponse.json({ error: 'Geçerli bir puan gereklidir (1-5)' }, { status: 400 });
         }
 
-        // Re-verify eligibility on server side
+        // Uygunluğu sunucu tarafında tekrar doğrula
         const purchase = await (prisma as any).order.findFirst({
             where: {
                 userId: Number(session.userId),
@@ -71,7 +71,7 @@ export async function POST(
             return NextResponse.json({ error: 'Bu ürünü değerlendirmek için satın almış olmalısınız.' }, { status: 403 });
         }
 
-        // Profanity Check
+        // Küfür/Argo Kontrolü
         let finalComment = comment;
         let finalStatus = 'APPROVED';
 

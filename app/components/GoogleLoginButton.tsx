@@ -2,7 +2,7 @@
 
 export default function GoogleLoginButton() {
     const handleLogin = () => {
-        // Redirect to our Google Auth API route
+        // Google Auth API rotamıza yönlendir
         window.location.href = "/api/auth/google";
     };
 

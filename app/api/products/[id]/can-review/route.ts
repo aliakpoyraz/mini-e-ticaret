@@ -16,7 +16,7 @@ export async function GET(
         const productId = parseInt(id);
         console.log(`Checking review eligibility for User: ${session.userId}, Product: ${productId}`);
 
-        // Check if user already reviewed
+        // Kullanıcının daha önce değerlendirme yapıp yapmadığını kontrol et
         const existingReview = await prisma.review.findUnique({
             where: {
                 userId_productId: {
@@ -34,13 +34,12 @@ export async function GET(
             });
         }
 
-        // Check if user purchased the product
+        // Kullanıcının ürünü satın alıp almadığını kontrol et
         // An order that includes a variant of this product
         const purchase = await prisma.order.findFirst({
             where: {
                 userId: Number(session.userId),
-                // Status could be anything that implies a successful intent/delivery
-                // For MVP, if they ordered it, they can review it.
+                // MVP için, sipariş verdilerse değerlendirebilirler.
                 items: {
                     some: {
                         variant: {

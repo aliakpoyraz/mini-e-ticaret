@@ -28,7 +28,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Lütfen robot olmadığınızı doğrulayın' }, { status: 400 });
         }
 
-        // Verify reCAPTCHA token
+        // reCAPTCHA jetonunu (token) doğrula
         const verifyResponse = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
             },
         });
 
-        // Send Welcome/Verification Email
+        // Hoş Geldin/Doğrulama E-postası Gönder
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://e-ticaret.aliakpoyraz.com';
         const verificationUrl = `${baseUrl}/api/auth/verify-email?token=${verificationToken}`;
         await sendEmail({
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
     } catch (error) {
         console.error('Register error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
-        // Check if it's likely a Prisma out-of-sync error to give a hint
+        // Prisma sekronizasyon hatası olma ihtimaline karşı ipucu ver
         if (errorMessage.includes('Unknown arg')) {
             return NextResponse.json({ error: 'Sunucu hatası: Lütfen terminalden dev serverı (npm run dev) kapatıp baştan başlatın. Veritabanı şeması güncellendiği için eski önbellek kullanılıyor.' }, { status: 500 });
         }

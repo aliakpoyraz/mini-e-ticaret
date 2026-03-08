@@ -10,7 +10,7 @@
     </filter>
   </defs>
 
-  <g transform="translate(256, 256) scale(0.9) translate(-256, -256)" filter="url(#premiumGlow)">
+  <g transform="translate(256, 256) scale(1.7) translate(-256, -256)" filter="url(#premiumGlow)">
     <!-- Base geometric structure representing an abstract 'Y' / Sparkle / Tech form -->
     <path d="M 256 64 
              C 256 160, 200 240, 96 256

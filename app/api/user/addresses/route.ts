@@ -34,7 +34,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Başlık, adres ve şehir zorunludur' }, { status: 400 });
         }
 
-        // Check if it's the first address to auto-make default
+        // Eğer bu ilk adres ise otomatik olarak varsayılan yap
         const existingCount = await prisma.address.count({ where: { userId: Number(session.userId) } });
         const shouldBeDefault = existingCount === 0 ? true : Boolean(isDefault);
 

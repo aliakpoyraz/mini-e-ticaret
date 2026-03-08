@@ -40,7 +40,7 @@ export async function GET(request: Request) {
         });
 
         if (!user) {
-            // Create user
+            // Kullanıcı oluştur
             user = await (prisma as any).user.create({
                 data: {
                     email: payload.email,
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
                 }
             });
         } else if (!user.googleId) {
-            // Link existing user to Google
+            // Mevcut kullanıcıyı Google ile ilişkilendir
             user = await (prisma as any).user.update({
                 where: { email: payload.email },
                 data: { googleId: payload.sub, isVerified: true }

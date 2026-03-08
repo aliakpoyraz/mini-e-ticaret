@@ -17,7 +17,7 @@ export async function PATCH(
     try {
         const bcrypt = require('bcryptjs');
 
-        // Fetch current user to check old password
+        // Eski şifreyi kontrol etmek için mevcut kullanıcıyı getir
         const currentUser = await prisma.user.findUnique({
             where: { id: Number(id) }
         });
@@ -33,7 +33,7 @@ export async function PATCH(
             email: body.email,
         };
 
-        // If trying to change password, verify old password first
+        // Şifre değiştirilmeye çalışılıyorsa, önce eski şifreyi doğrula
         if (body.password) {
             if (!body.oldPassword) {
                 return NextResponse.json({ error: 'Eski şifre zorunludur' }, { status: 400 });
@@ -47,7 +47,7 @@ export async function PATCH(
             data.password = await bcrypt.hash(body.password, 10);
         }
 
-        // Only allow admins to change roles or ban status
+        // Rol veya yasaklama durumunu değiştirmeye sadece adminlerin yetkisi var
         if (session.role === 'ADMIN') {
             if (body.role) data.role = body.role;
             if (body.isBanned !== undefined) data.isBanned = body.isBanned;

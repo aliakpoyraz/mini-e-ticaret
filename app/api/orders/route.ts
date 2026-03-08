@@ -118,7 +118,7 @@ export async function POST(request: Request) {
             });
         });
 
-        // Send Order Confirmation Email
+        // Sipariş onayı e-postasını gönder
         await sendEmail({
             to: customerEmail,
             subject: `Siparişiniz Alındı | YZL321 Store #${order.id}`,

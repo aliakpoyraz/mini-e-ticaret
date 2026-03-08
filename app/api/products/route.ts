@@ -30,7 +30,7 @@ export async function POST(request: Request) {
             ? imageUrls.map((url: string, index: number) => ({ url, order: index }))
             : [];
 
-        // Generate and ensure unique slug
+        // Benzersiz slug oluştur ve doğrula
         let slug = manualSlug ? slugify(manualSlug) : slugify(name);
         let finalSlug = slug;
         let counter = 0;
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
                 slug: finalSlug,
                 description,
                 price,
-                imageUrl: mainImageUrl, // Backward compatibility
+                imageUrl: mainImageUrl, // Geriye dönük uyumluluk
                 images: {
                     create: imagesData
                 },

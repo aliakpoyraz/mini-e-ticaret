@@ -82,7 +82,7 @@ export default function AddToCartButton({ product, variants }: { product: Produc
                 disabled={!selectedVariant || isLoading}
                 className={`w-full py-4 px-8 rounded-full text-lg font-bold flex items-center justify-center gap-3 transition-all transform duration-200 ${!selectedVariant
                     ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                    : isLoading // Changed from isAdding
+                    : isLoading
                         ? 'bg-green-600 text-white scale-95 shadow-inner'
                         : 'bg-blue-600 hover:bg-blue-700 text-white shadow-xl shadow-blue-500/30 hover:-translate-y-1'
                     }`}

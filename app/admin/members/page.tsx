@@ -5,7 +5,7 @@ import { Users } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 export default async function AdminMembersPage() {
-    // Get all users with their orders count
+    // Tüm kullanıcıları sipariş sayılarıyla birlikte getir
     const users = await prisma.user.findMany({
         orderBy: { createdAt: 'desc' },
         include: {

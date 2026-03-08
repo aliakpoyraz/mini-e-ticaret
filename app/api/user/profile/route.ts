@@ -49,7 +49,7 @@ export async function PUT(request: Request) {
 
         const updateData: any = { firstName, lastName, email, phone };
 
-        // Password change logic
+        // Şifre değiştirme mantığı
         if (currentPassword && newPassword) {
             const passwordMatch = await bcrypt.compare(currentPassword, user.password);
             if (!passwordMatch) {
@@ -61,7 +61,7 @@ export async function PUT(request: Request) {
             updateData.password = await bcrypt.hash(newPassword, 10);
         }
 
-        // Email duplicates check
+        // E-posta benzersizlik kontrolü
         if (email !== user.email) {
             const emailExists = await prisma.user.findUnique({ where: { email } });
             if (emailExists) {
@@ -69,7 +69,7 @@ export async function PUT(request: Request) {
             }
         }
 
-        // Phone duplicates check
+        // Telefon numarası benzersizlik kontrolü
         if (phone && phone !== user.phone) {
             const phoneExists = await prisma.user.findFirst({ where: { phone } });
             if (phoneExists) {

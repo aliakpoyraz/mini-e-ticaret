@@ -37,11 +37,11 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
         const mainImageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : null;
 
         const updatedProduct = await prisma.$transaction(async (tx) => {
-            // Get current product to check if slug needs update
+            // Slug'ın güncellenmesi gerekip gerekmediğini kontrol etmek için mevcut ürünü getir
             const currentProduct = await tx.product.findUnique({ where: { id: productId } });
             if (!currentProduct) throw new Error("Product not found");
 
-            // Generate and ensure unique slug if it changed or manual is provided
+            // Değiştiyse veya manuel girildiyse benzersiz slug oluştur ve doğrula
             let finalSlug = currentProduct.slug;
             const newBaseSlug = manualSlug ? slugify(manualSlug) : slugify(name);
 
@@ -67,7 +67,7 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
                 }
             }
 
-            // Update base product
+            // Ana ürünü güncelle
             const product = await tx.product.update({
                 where: { id: productId },
                 data: {
@@ -79,7 +79,7 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
                 }
             });
 
-            // Update images (delete all and recreate)
+            // Resimleri güncelle (hepsini sil ve yeniden oluştur)
             await tx.productImage.deleteMany({
                 where: { productId }
             });
@@ -94,7 +94,7 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
                 });
             }
 
-            // Sync variants: we receive full list. Delete missing, update existing, create new.
+            // Varyantları eşitle: tam listeyi alıyoruz. Eksikleri sil, mevcutları güncelle, yenilerini oluştur.
             const existingVariants = await tx.variant.findMany({ where: { productId } });
             const existingVariantIds = existingVariants.map(v => v.id);
             const incomingVariantIds = variants.map((v: any) => v.id).filter(Boolean);

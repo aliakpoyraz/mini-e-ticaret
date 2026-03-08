@@ -75,7 +75,7 @@ export default function CartPage() {
             .then(data => {
                 if (data && data.user) {
                     const sessionUser = data.user;
-                    // fetch full profile for phone
+                    // Telefon numarası için tam profili getir
                     fetch('/api/user/profile')
                         .then(r => r.json())
                         .then(profileData => {
@@ -101,7 +101,7 @@ export default function CartPage() {
                         })
                         .catch(() => { });
 
-                    // Fetch saved addresses
+                    // Kaydedilmiş adresleri getir
                     fetch('/api/user/addresses')
                         .then(r => r.json())
                         .then(addrData => {

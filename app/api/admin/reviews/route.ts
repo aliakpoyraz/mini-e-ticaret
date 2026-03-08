@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/app/lib/auth';
 
-// Fetch all reviews for admin
+// Admin için tüm değerlendirmeleri getir
 export async function GET(req: NextRequest) {
     try {
         const session = await getSession();
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     }
 }
 
-// Update review status
+// Değerlendirme durumunu güncelle
 export async function PATCH(req: NextRequest) {
     try {
         const session = await getSession();

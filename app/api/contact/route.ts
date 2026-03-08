@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Server-side validation
+        // Sunucu taraflı doğrulama
         const nameRegex = /^[a-zA-ZğüşıöçĞÜŞİÖÇ ]+$/;
         const phoneRegex = /^[0-9]{10,15}$/;
 

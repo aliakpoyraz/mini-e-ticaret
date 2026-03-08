@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getSession } from '@/app/lib/auth';
 
-// Helper to get user from session
+// Oturumdan (session) kullanıcı bilgisini almak için yardımcı fonksiyon
 async function getUser() {
     try {
         const session = await getSession();
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
         const { variantId, quantity, action } = body;
 
         if (action === 'sync') {
-            // Bulk sync (usually on login)
+            // Toplu eşitleme (genellikle giriş yapıldığında)
             const items = body.items || [];
 
             for (const item of items as any[]) {
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ message: "Cart synced" });
         }
 
-        // Single item update
+        // Tekil ürün güncelleme
         await prisma.cartItem.upsert({
             where: {
                 userId_variantId: {
