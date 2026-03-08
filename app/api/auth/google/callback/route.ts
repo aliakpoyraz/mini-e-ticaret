@@ -1,4 +1,3 @@
-```typescript
 import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '@/lib/prisma';
 import { signToken, setAuthCookie } from '@/app/lib/auth';
@@ -10,70 +9,63 @@ export async function GET(request: Request) {
     const client = new OAuth2Client(
         process.env.GOOGLE_CLIENT_ID,
         process.env.GOOGLE_CLIENT_SECRET,
-        `${ baseUrl } /api/auth / google / callback`
+        `${baseUrl}/api/auth/google/callback`
     );
 
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');
 
     if (!code || !baseUrl) {
-        return NextResponse.redirect(`${ baseUrl || '' }/giris-yap?error=google_auth_failed`);
+        return NextResponse.redirect(`${baseUrl || ''}/giris-yap?error=google_auth_failed`);
     }
 
-try {
-    const { tokens } = await client.getToken(code);
-    console.log('Google Tokens received:', !!tokens.id_token);
-
-    const ticket = await client.verifyIdToken({
-        idToken: tokens.id_token!,
-        audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    console.log('Google Payload email:', payload?.email);
-
-    if (!payload || !payload.email) {
-        console.error('Missing payload or email in Google Login');
-        throw new Error('Google payload missing');
-    }
-
-    let user = await(prisma as any).user.findUnique({
-        where: { email: payload.email }
-    });
-
-    if (!user) {
-        console.log('Creating new user from Google login:', payload.email);
-        // Create user
-        user = await(prisma as any).user.create({
-            data: {
-                email: payload.email,
-                firstName: payload.given_name,
-                lastName: payload.family_name,
-                googleId: payload.sub,
-                isVerified: true,
-                role: 'USER' // Varsayılan rol
-            }
+    try {
+        const { tokens } = await client.getToken(code);
+        const ticket = await client.verifyIdToken({
+            idToken: tokens.id_token!,
+            audience: process.env.GOOGLE_CLIENT_ID,
         });
-    } else if (!user.googleId) {
-        console.log('Linking existing user to Google:', payload.email);
-        // Link existing user to Google
-        user = await(prisma as any).user.update({
-            where: { email: payload.email },
-            data: { googleId: payload.sub, isVerified: true }
+        const payload = ticket.getPayload();
+
+        if (!payload || !payload.email) {
+            throw new Error('Google payload missing');
+        }
+
+        let user = await (prisma as any).user.findUnique({
+            where: { email: payload.email }
         });
+
+        if (!user) {
+            // Create user
+            user = await (prisma as any).user.create({
+                data: {
+                    email: payload.email,
+                    firstName: payload.given_name,
+                    lastName: payload.family_name,
+                    googleId: payload.sub,
+                    isVerified: true,
+                    role: 'USER'
+                }
+            });
+        } else if (!user.googleId) {
+            // Link existing user to Google
+            user = await (prisma as any).user.update({
+                where: { email: payload.email },
+                data: { googleId: payload.sub, isVerified: true }
+            });
+        }
+
+        const token = await signToken({
+            userId: user.id,
+            email: user.email,
+            role: user.role
+        });
+
+        await setAuthCookie(token);
+
+        return NextResponse.redirect(`${baseUrl}/`);
+    } catch (error: any) {
+        console.error('Google Auth Callback Error:', error.message);
+        return NextResponse.redirect(`${baseUrl}/giris-yap?error=google_auth_failed`);
     }
-
-    const token = await signToken({
-        userId: user.id,
-        email: user.email,
-        role: user.role
-    });
-
-    await setAuthCookie(token);
-    console.log('Google Auth success for:', user.email);
-
-    return NextResponse.redirect(`${baseUrl}/`);
-} catch (error: any) {
-    console.error('Google Auth Callback Error Detail:', error.message, error.stack);
-    return NextResponse.redirect(`${baseUrl}/giris-yap?error=google_auth_failed`);
-}
 }
