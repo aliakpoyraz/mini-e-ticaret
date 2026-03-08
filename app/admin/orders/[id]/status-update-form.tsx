@@ -23,14 +23,21 @@ export default function StatusUpdateForm({ orderId, initialStatus }: StatusUpdat
         const status = formData.get('status') as string;
 
         try {
-            const result = await updateOrderStatus(orderId, status);
-            if (result.success) {
+            const res = await fetch(`/api/admin/orders/${orderId}/status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
                 setIsSuccess(true);
                 setTimeout(() => {
                     setIsSuccess(false);
                 }, 3000);
             } else {
-                alert('Güncelleme başarısız: ' + result.error);
+                alert('Güncelleme başarısız: ' + (data.error || 'Bilinmeyen hata'));
             }
         } catch (error) {
             console.error('Update failed:', error);

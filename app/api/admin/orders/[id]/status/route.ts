@@ -1,9 +1,8 @@
-"use server";
-
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
 import { sendEmail } from '@/lib/resend';
 import { getOrderStatusUpdateEmailHtml } from '@/lib/email-templates';
+import { revalidatePath } from 'next/cache';
 
 const STATUS_LABELS: Record<string, string> = {
     'CREATED': 'Oluşturuldu',
@@ -16,10 +15,21 @@ const STATUS_LABELS: Record<string, string> = {
     'CANCELLED': 'İptal Edildi'
 };
 
-export async function updateOrderStatus(orderId: number, status: string) {
-    console.log(`[AdminOrderUpdate - ACTION] İşlem başladı. Sipariş: #${orderId}, Yeni Durum: ${status}`);
-
+export async function POST(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
     try {
+        const { id } = await params;
+        const orderId = parseInt(id);
+        const { status } = await request.json();
+
+        console.log(`[AdminOrderUpdate - API] İşlem başladı. Sipariş: #${orderId}, Yeni Durum: ${status}`);
+
+        if (isNaN(orderId)) {
+            return NextResponse.json({ error: 'Geçersiz sipariş ID' }, { status: 400 });
+        }
+
         let orderForEmail = null;
 
         await prisma.$transaction(async (tx) => {
@@ -32,11 +42,8 @@ export async function updateOrderStatus(orderId: number, status: string) {
                 throw new Error(`Sipariş bulunamadı: #${orderId}`);
             }
 
-            console.log(`[AdminOrderUpdate - ACTION] Mevcut durum: ${currentOrder.status}`);
-
             // Sadece iade edilmemiş bir durumdan RETURNED durumuna geçiliyorsa stokları geri yükle
             if (status === 'RETURNED' && !['RETURNED', 'RETURN_REQUESTED'].includes(currentOrder.status)) {
-                console.log(`[AdminOrderUpdate - ACTION] Stoklar geri yükleniyor...`);
                 for (const item of currentOrder.items) {
                     await tx.variant.update({
                         where: { id: item.variantId },
@@ -49,29 +56,29 @@ export async function updateOrderStatus(orderId: number, status: string) {
                 where: { id: orderId },
                 data: { status }
             });
-
-            console.log(`[AdminOrderUpdate - ACTION] Veritabanı güncellendi.`);
         });
 
         if (orderForEmail) {
             const updatedOrder = orderForEmail as any;
             const statusLabel = STATUS_LABELS[status] || status;
-            console.log(`[AdminOrderUpdate - ACTION] E-posta gönderiliyor: ${updatedOrder.customerEmail} - Durum: ${statusLabel}`);
+
+            console.log(`[AdminOrderUpdate - API] E-posta gönderiliyor: ${updatedOrder.customerEmail}`);
 
             const emailRes = await sendEmail({
                 to: updatedOrder.customerEmail,
                 subject: `Sipariş Durumu Güncellemesi | YZL321 Store #${updatedOrder.id}`,
                 html: getOrderStatusUpdateEmailHtml(updatedOrder.id, statusLabel, updatedOrder.customerName)
             });
-            console.log(`[AdminOrderUpdate - ACTION] E-posta sonucu:`, emailRes);
+            console.log(`[AdminOrderUpdate - API] E-posta sonucu:`, emailRes);
         }
 
         revalidatePath(`/admin/orders/${orderId}`);
         revalidatePath('/admin/orders');
 
-        return { success: true };
-    } catch (err: any) {
-        console.error(`[AdminOrderUpdate - ACTION] Kritik hata:`, err.message);
-        return { success: false, error: err.message };
+        return NextResponse.json({ success: true });
+
+    } catch (error: any) {
+        console.error('[AdminOrderUpdate - API] HATA:', error.message);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
