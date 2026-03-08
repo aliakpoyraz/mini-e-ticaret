@@ -71,7 +71,7 @@ export async function POST(request: Request) {
         const verificationUrl = `${baseUrl}/api/auth/verify-email?token=${verificationToken}`;
         await sendEmail({
             to: email,
-            subject: 'Hesabınızı Doğrulayın',
+            subject: 'Hoş Geldiniz: Hesabınızı Doğrulayın | YZL321 Store',
             html: getWelcomeEmailHtml(firstName, verificationUrl)
         });
 

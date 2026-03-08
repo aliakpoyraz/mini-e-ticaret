@@ -1,18 +1,33 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Loader2, CheckCircle2 } from 'lucide-react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
-export default function LoginPage() {
+function LoginForm() {
+    const searchParams = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [resendStatus, setResendStatus] = useState<{ loading: boolean, message: string }>({ loading: false, message: '' });
     const router = useRouter();
+
+    useEffect(() => {
+        const verified = searchParams.get('verified');
+        const err = searchParams.get('error');
+
+        if (verified === 'true') {
+            setSuccessMessage('E-posta adresiniz başarıyla doğrulandı. Giriş yapabilirsiniz.');
+        }
+
+        if (err) {
+            setError(decodeURIComponent(err));
+        }
+    }, [searchParams]);
 
     const handleResendVerification = async () => {
         setResendStatus({ loading: true, message: '' });
@@ -82,7 +97,7 @@ export default function LoginPage() {
                         </div>
                     </div>
                 ) : (
-                    <form onSubmit={handleLogin} className="space-y-4">
+                    <div className="space-y-4">
                         {error && (
                             <div className="space-y-3">
                                 <div className="p-3 bg-red-50 text-red-600 text-sm font-medium rounded-xl text-center">
@@ -107,47 +122,57 @@ export default function LoginPage() {
                                 )}
                             </div>
                         )}
-                        <div className="space-y-4">
-                            <div>
-                                <input
-                                    type="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 rounded-2xl outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
-                                    placeholder="E-posta adresi"
-                                />
-                            </div>
-                            <div>
-                                <input
-                                    type="password"
-                                    required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 rounded-2xl outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
-                                    placeholder="Şifre"
-                                />
-                            </div>
-                        </div>
 
-                        <div className="flex justify-end pt-2">
-                            <Link href="/sifremi-unuttum" className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
-                                Şifremi Unuttum
-                            </Link>
-                        </div>
+                        {successMessage && !isSuccess && (
+                            <div className="p-3 bg-green-50 text-green-600 text-sm font-medium rounded-xl text-center flex items-center justify-center gap-2 mb-4">
+                                <CheckCircle2 size={16} />
+                                {successMessage}
+                            </div>
+                        )}
 
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full mt-2 py-3.5 bg-black hover:bg-slate-800 text-white rounded-full text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center active:scale-[0.98]"
-                        >
-                            {isLoading ? (
-                                <Loader2 size={18} className="animate-spin" />
-                            ) : (
-                                <span>Giriş Yap</span>
-                            )}
-                        </button>
-                    </form>
+                        <form onSubmit={handleLogin} className="space-y-4">
+                            <div className="space-y-4">
+                                <div>
+                                    <input
+                                        type="email"
+                                        required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 rounded-2xl outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
+                                        placeholder="E-posta adresi"
+                                    />
+                                </div>
+                                <div>
+                                    <input
+                                        type="password"
+                                        required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 rounded-2xl outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
+                                        placeholder="Şifre"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end pt-2">
+                                <Link href="/sifremi-unuttum" className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
+                                    Şifremi Unuttum
+                                </Link>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="w-full mt-2 py-3.5 bg-black hover:bg-slate-800 text-white rounded-full text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center active:scale-[0.98]"
+                            >
+                                {isLoading ? (
+                                    <Loader2 size={18} className="animate-spin" />
+                                ) : (
+                                    <span>Giriş Yap</span>
+                                )}
+                            </button>
+                        </form>
+                    </div>
                 )}
 
                 <div className="mt-8 text-center text-sm text-slate-500">
@@ -158,5 +183,13 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#F5F5F7] flex items-center justify-center"><Loader2 className="animate-spin text-slate-300" /></div>}>
+            <LoginForm />
+        </Suspense>
     );
 }

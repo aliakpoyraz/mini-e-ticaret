@@ -2,12 +2,14 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: Request) {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://e-ticaret.aliakpoyraz.com';
+
     try {
         const { searchParams } = new URL(request.url);
         const token = searchParams.get('token');
 
         if (!token) {
-            return NextResponse.json({ error: 'Doğrulama kodu gereklidir.' }, { status: 400 });
+            return NextResponse.redirect(`${baseUrl}/giris-yap?error=${encodeURIComponent('Doğrulama kodu gereklidir.')}`);
         }
 
         const user = await prisma.user.findFirst({
@@ -17,7 +19,7 @@ export async function GET(request: Request) {
         });
 
         if (!user) {
-            return NextResponse.json({ error: 'Geçersiz, süresi dolmuş veya daha önce kullanılmış doğrulama kodu.' }, { status: 400 });
+            return NextResponse.redirect(`${baseUrl}/giris-yap?error=${encodeURIComponent('Geçersiz, süresi dolmuş veya daha önce kullanılmış doğrulama kodu.')}`);
         }
 
         await prisma.user.update({
@@ -28,11 +30,10 @@ export async function GET(request: Request) {
             }
         });
 
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
         return NextResponse.redirect(`${baseUrl}/giris-yap?verified=true`);
 
     } catch (error) {
         console.error('Email verification error:', error);
-        return NextResponse.json({ error: 'İşlem sırasında bir hata oluştu.' }, { status: 500 });
+        return NextResponse.redirect(`${baseUrl}/giris-yap?error=${encodeURIComponent('İşlem sırasında bir hata oluştu.')}`);
     }
 }

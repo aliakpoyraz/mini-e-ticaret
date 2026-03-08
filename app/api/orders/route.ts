@@ -121,7 +121,7 @@ export async function POST(request: Request) {
         // Send Order Confirmation Email
         await sendEmail({
             to: customerEmail,
-            subject: `Siparişiniz Alındı! #${order.id}`,
+            subject: `Siparişiniz Alındı | YZL321 Store #${order.id}`,
             html: getOrderConfirmationEmailHtml(order.id, Number(order.total).toFixed(2), customerName)
         });
 

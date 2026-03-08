@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
             await sendEmail({
                 to: email,
-                subject: 'Şifre Sıfırlama İstediği',
+                subject: 'Şifre Sıfırlama Talebi | YZL321 Store',
                 html: getForgotPasswordEmailHtml(resetUrl)
             });
         }

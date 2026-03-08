@@ -67,7 +67,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                 const statusLabel = STATUS_LABELS[status] || status;
                 await sendEmail({
                     to: updatedOrder.customerEmail,
-                    subject: `Sipariş Durumu Güncellendi: ${statusLabel}`,
+                    subject: `Sipariş Durumu Güncellemesi | YZL321 Store #${updatedOrder.id}`,
                     html: getOrderStatusUpdateEmailHtml(updatedOrder.id, statusLabel, updatedOrder.customerName)
                 });
             }

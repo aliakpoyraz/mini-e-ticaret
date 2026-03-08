@@ -38,7 +38,7 @@ export async function POST(request: Request) {
 
         const { success, error } = await sendEmail({
             to: user.email,
-            subject: 'Hesabınızı Doğrulayın (Yeni Bağlantı)',
+            subject: 'Yeni Doğrulama Bağlantısı | YZL321 Store',
             html: getWelcomeEmailHtml(user.firstName, verificationUrl)
         });
 
