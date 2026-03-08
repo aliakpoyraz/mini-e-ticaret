@@ -553,7 +553,7 @@ export default function CartPage() {
                                                 </div>
                                             </label>
                                         ))}
-                                        <a href="/hesabim/adreslerim" className="text-xs font-semibold text-brand-600 hover:text-brand-700 pl-1 inline-block">
+                                        <a href="/hesabim/adresler?new=true" className="text-xs font-semibold text-brand-600 hover:text-brand-700 pl-1 inline-block">
                                             + Yeni adres ekle
                                         </a>
                                     </div>
@@ -594,11 +594,9 @@ export default function CartPage() {
                                                 className="w-full border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 min-h-[80px] resize-none text-slate-900 font-medium placeholder:font-normal placeholder:text-slate-400"
                                             />
                                         </div>
-                                        {!isGuest && savedAddresses.length === 0 && (
-                                            <p className="text-xs text-brand-600 mt-2">
-                                                <a href="/hesabim/adreslerim" className="font-semibold hover:underline">Hesabım</a>'a giderek adres kaydedebilirsiniz.
-                                            </p>
-                                        )}
+                                        <p className="text-xs text-brand-600 mt-2">
+                                            <a href="/hesabim/adresler?new=true" className="font-semibold hover:underline">Hesabım</a>'a giderek adres kaydedebilirsiniz.
+                                        </p>
                                     </div>
                                 )}
                             </div>

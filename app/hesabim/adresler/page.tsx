@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Loader2, Plus, MapPin, Trash2, Edit2, CheckCircle2, Star } from 'lucide-react';
 
 interface Address {
@@ -14,6 +15,15 @@ interface Address {
 }
 
 export default function AddressesPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-brand-600" /></div>}>
+            <AddressesContent />
+        </Suspense>
+    );
+}
+
+function AddressesContent() {
+    const searchParams = useSearchParams();
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -41,7 +51,12 @@ export default function AddressesPage() {
 
     useEffect(() => {
         fetchAddresses();
-    }, []);
+
+        // Auto-open form if "new=true" is in URL
+        if (searchParams.get('new') === 'true') {
+            setShowForm(true);
+        }
+    }, [searchParams]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
