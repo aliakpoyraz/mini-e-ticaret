@@ -136,7 +136,7 @@ export default async function AdminReturnsPage() {
                                                 {order.items.length} ürün
                                             </div>
                                             <div className="mt-2">
-                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${paymentMethod === 'CREDIT_CARD' ? 'bg-indigo-50 text-indigo-700 border-indigo-100' :
+                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border whitespace-nowrap ${paymentMethod === 'CREDIT_CARD' ? 'bg-indigo-50 text-indigo-700 border-indigo-100' :
                                                     paymentMethod === 'CASH_ON_DELIVERY' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                                                         'bg-slate-50 text-slate-600 border-slate-100'
                                                     }`}>
@@ -147,7 +147,7 @@ export default async function AdminReturnsPage() {
                                         </td>
                                         <td className="px-8 py-5 text-right align-top">
                                             <div className="flex flex-col items-end gap-3">
-                                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border ${order.status === 'RETURN_REQUESTED' ? 'bg-orange-50 text-orange-700 border-orange-100' :
+                                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border whitespace-nowrap ${order.status === 'RETURN_REQUESTED' ? 'bg-orange-50 text-orange-700 border-orange-100' :
                                                     order.status === 'RETURNED' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                                                         order.status === 'RETURN_REJECTED' ? 'bg-red-50 text-red-700 border-red-100' :
                                                             'bg-slate-50 text-slate-700 border-slate-100'

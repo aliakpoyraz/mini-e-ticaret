@@ -146,12 +146,12 @@ export default async function AdminOrdersPage() {
                                             </div>
                                         </td>
                                         <td className="px-4 py-4 align-top">
-                                            <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-bold border ${paymentMethod === 'CREDIT_CARD' ? 'bg-indigo-50 text-indigo-700 border-indigo-100' :
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border whitespace-nowrap ${paymentMethod === 'CREDIT_CARD' ? 'bg-indigo-50 text-indigo-700 border-indigo-100' :
                                                 paymentMethod === 'CASH_ON_DELIVERY' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                                                     'bg-slate-50 text-slate-600 border-slate-100'
                                                 }`}>
                                                 {paymentMethod === 'CREDIT_CARD' && <CreditCard size={12} />}
-                                                {paymentMethod === 'CREDIT_CARD' ? 'Kredi Kartı' : paymentMethod === 'CASH_ON_DELIVERY' ? 'Kap. Ödeme' : paymentMethod.replace(/_/g, ' ')}
+                                                {paymentMethod === 'CREDIT_CARD' ? 'Kredi Kartı' : paymentMethod === 'CASH_ON_DELIVERY' ? 'Kapıda Ödeme' : paymentMethod.replace(/_/g, ' ')}
                                             </span>
                                         </td>
                                         <td className="px-4 py-4 align-top">
@@ -177,16 +177,16 @@ export default async function AdminOrdersPage() {
                                                     <select
                                                         name="status"
                                                         defaultValue={order.status}
-                                                        className="bg-white border border-slate-200 text-slate-700 text-xs rounded-lg p-1.5 pr-5 focus:ring-2 focus:ring-slate-900 focus:outline-none cursor-pointer font-medium appearance-none min-w-[120px]"
+                                                        className="bg-white border border-slate-200 text-slate-700 text-xs rounded-lg p-1.5 pr-6 focus:ring-2 focus:ring-slate-900 focus:outline-none cursor-pointer font-medium appearance-none w-[130px]"
                                                         style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundPosition: "right 0.25rem center", backgroundRepeat: "no-repeat", backgroundSize: "1em 1em" }}
                                                     >
-                                                        <option value="CREATED">Oluş.tu</option>
+                                                        <option value="CREATED">Oluşturuldu</option>
                                                         <option value="PAID">Ödendi</option>
-                                                        <option value="SHIPPED">Kargolndı</option>
-                                                        <option value="DELIVERED">Teslim E.</option>
-                                                        <option value="RETURN_REQUESTED">İade İ.</option>
-                                                        <option value="RETURNED">İade E.</option>
-                                                        <option value="RETURN_REJECTED">İade Red</option>
+                                                        <option value="SHIPPED">Kargolandı</option>
+                                                        <option value="DELIVERED">Teslim Edildi</option>
+                                                        <option value="RETURN_REQUESTED">İade İstendi</option>
+                                                        <option value="RETURNED">İade Edildi</option>
+                                                        <option value="RETURN_REJECTED">İade Reddedildi</option>
                                                     </select>
                                                     <button type="submit" className="text-white bg-slate-900 hover:bg-black text-xs font-bold px-2.5 py-1.5 rounded-lg transition-colors shadow-sm whitespace-nowrap">
                                                         Kaydet

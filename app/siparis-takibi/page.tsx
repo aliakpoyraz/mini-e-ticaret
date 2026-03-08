@@ -249,7 +249,7 @@ export default async function TrackOrderPage({
 
                                     <div
                                         className="absolute top-6 left-0 h-1 bg-brand-500 rounded-full transition-all duration-500"
-                                        style={{ width: `${(currentIndex / (statuses.length - 1)) * 100}%` }}
+                                        style={{ width: `${Math.min(100, Math.max(0, (currentIndex / (statuses.length - 1)) * 100))}%` }}
                                     />
 
                                     <div className="relative flex justify-between">
