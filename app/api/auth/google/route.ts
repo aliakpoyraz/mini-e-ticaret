@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
     const clientId = process.env.GOOGLE_CLIENT_ID;
-    const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/google/callback`;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL;
+    const redirectUri = `${baseUrl}/api/auth/google/callback`;
     const scope = 'openid email profile';
 
-    if (!clientId || !process.env.NEXT_PUBLIC_BASE_URL) {
+    if (!clientId || !baseUrl) {
         return NextResponse.json({ error: 'Missing Google Auth Configuration' }, { status: 500 });
     }
 

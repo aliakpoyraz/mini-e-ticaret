@@ -3,10 +3,12 @@ import { prisma } from '@/lib/prisma';
 import { signToken, setAuthCookie } from '@/app/lib/auth';
 import { NextResponse } from 'next/server';
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL;
+
 const client = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/google/callback`
+    `${baseUrl}/api/auth/google/callback`
 );
 
 export async function GET(request: Request) {
@@ -14,7 +16,7 @@ export async function GET(request: Request) {
     const code = searchParams.get('code');
 
     if (!code) {
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/giris-yap?error=google_auth_failed`);
+        return NextResponse.redirect(`${baseUrl}/giris-yap?error=google_auth_failed`);
     }
 
     try {
@@ -60,9 +62,9 @@ export async function GET(request: Request) {
 
         await setAuthCookie(token);
 
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/`);
+        return NextResponse.redirect(`${baseUrl}/`);
     } catch (error) {
         console.error('Google Auth Callback Error:', error);
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/giris-yap?error=google_auth_failed`);
+        return NextResponse.redirect(`${baseUrl}/giris-yap?error=google_auth_failed`);
     }
 }
