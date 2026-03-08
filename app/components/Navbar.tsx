@@ -27,6 +27,26 @@ export default function Navbar({
     const [user, setUser] = useState<{ id: string, firstName?: string, lastName?: string, role?: string } | null>(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isCheckingUser, setIsCheckingUser] = useState(true);
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (typeof window !== 'undefined') {
+                const currentScrollY = window.scrollY;
+                // Sadece belli bir miktardan sonra navbarı gizle
+                if (currentScrollY > lastScrollY && currentScrollY > 120) {
+                    setIsVisible(false); // Aşağı kaydırılıyor
+                } else if (currentScrollY < lastScrollY) {
+                    setIsVisible(true);  // Yukarı kaydırılıyor
+                }
+                setLastScrollY(currentScrollY);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
 
     useEffect(() => {
         setMounted(true);
@@ -62,7 +82,7 @@ export default function Navbar({
     if (pathname.startsWith('/admin')) return null;
 
     return (
-        <nav className="fixed top-0 w-full z-[100] border-b border-gray-200/50">
+        <nav className={`fixed top-0 w-full z-[100] border-b border-gray-200/50 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
             {isAnnouncementActive && announcement && (
                 <div className="bg-slate-900 text-white py-2 px-4 text-center text-xs md:text-sm font-medium tracking-tight">
                     {announcement}
