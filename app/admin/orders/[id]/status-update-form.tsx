@@ -14,7 +14,6 @@ export default function StatusUpdateForm({ orderId, initialStatus }: StatusUpdat
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        alert('Form Gönderiliyor! (Order ID: ' + orderId + ')');
         console.log(`[StatusUpdateForm] Form gönderiliyor. Order: ${orderId}`);
         setIsLoading(true);
         setIsSuccess(false);
@@ -35,17 +34,17 @@ export default function StatusUpdateForm({ orderId, initialStatus }: StatusUpdat
             console.log('[StatusUpdateForm] Sunucu Yanıtı:', data);
 
             if (res.ok && data.success) {
-                alert('GÜNCELLEME BAŞARILI! (Server success döndü)');
                 setIsSuccess(true);
                 setTimeout(() => {
                     setIsSuccess(false);
                 }, 3000);
             } else {
-                alert('GÜNCELLEME HATASI: ' + (data.error || 'Bilinmeyen hata'));
+                console.error('Güncelleme başarısız:', data.error);
+                alert('Güncelleme başarısız: ' + (data.error || 'Bilinmeyen hata'));
             }
         } catch (error: any) {
             console.error('Update failed:', error);
-            alert('SUNUCUYA BAĞLANILAMADI: ' + error.message);
+            alert('Güncelleme sırasında hata oluştu.');
         } finally {
             setIsLoading(false);
         }
