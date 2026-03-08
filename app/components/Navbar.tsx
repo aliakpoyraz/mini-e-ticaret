@@ -34,7 +34,7 @@ export default function Navbar({
         const handleScroll = () => {
             if (typeof window !== 'undefined') {
                 const currentScrollY = window.scrollY;
-                // Sadece belli bir miktardan sonra navbarı gizle
+                // Sadece belli bir miktardan sonra navbarı gizl e
                 if (currentScrollY > lastScrollY && currentScrollY > 120) {
                     setIsVisible(false); // Aşağı kaydırılıyor
                 } else if (currentScrollY < lastScrollY) {
