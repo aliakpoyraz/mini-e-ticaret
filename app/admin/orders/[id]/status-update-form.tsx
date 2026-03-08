@@ -14,6 +14,7 @@ export default function StatusUpdateForm({ orderId, initialStatus }: StatusUpdat
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        alert('Form Gönderiliyor! (Order ID: ' + orderId + ')');
         console.log(`[StatusUpdateForm] Form gönderiliyor. Order: ${orderId}`);
         setIsLoading(true);
         setIsSuccess(false);
@@ -23,7 +24,7 @@ export default function StatusUpdateForm({ orderId, initialStatus }: StatusUpdat
         console.log(`[StatusUpdateForm] Seçilen Durum: ${status}`);
 
         try {
-            console.log(`[StatusUpdateForm] Fetch başlatılıyor: /api/admin/orders/${orderId}/status`);
+            console.log(`[StatusUpdateForm] Fetch başlatılıyor...`);
             const res = await fetch(`/api/admin/orders/${orderId}/status`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -31,18 +32,20 @@ export default function StatusUpdateForm({ orderId, initialStatus }: StatusUpdat
             });
 
             const data = await res.json();
+            console.log('[StatusUpdateForm] Sunucu Yanıtı:', data);
 
             if (res.ok && data.success) {
+                alert('GÜNCELLEME BAŞARILI! (Server success döndü)');
                 setIsSuccess(true);
                 setTimeout(() => {
                     setIsSuccess(false);
                 }, 3000);
             } else {
-                alert('Güncelleme başarısız: ' + (data.error || 'Bilinmeyen hata'));
+                alert('GÜNCELLEME HATASI: ' + (data.error || 'Bilinmeyen hata'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Update failed:', error);
-            alert('Güncelleme başarısız oldu.');
+            alert('SUNUCUYA BAĞLANILAMADI: ' + error.message);
         } finally {
             setIsLoading(false);
         }
