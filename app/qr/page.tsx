@@ -19,7 +19,7 @@ export default function QRPage() {
                     Projeyi Keşfedin
                 </h1>
                 <p className="text-sm text-slate-500 mb-8 leading-relaxed px-4">
-                    Kameranızı okutarak projeyi telefonunuzdan canlı olarak inceleyebilirsiniz.
+                    Kameranızı okutarak projeyi canlı olarak telefonunuzdan inceleyebilirsiniz.
                 </p>
 
                 <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 shadow-inner flex justify-center mb-10 mx-auto w-fit">
