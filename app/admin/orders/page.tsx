@@ -27,33 +27,57 @@ export default async function AdminOrdersPage() {
         const orderId = parseInt(formData.get('orderId') as string);
         const status = formData.get('status') as string;
 
-        await prisma.$transaction(async (tx) => {
-            const currentOrder = await tx.order.findUnique({
-                where: { id: orderId },
-                include: { items: true }
+        console.log(`[AdminOrdersList] İşlem başladı. Sipariş: #${orderId}, Yeni Durum: ${status}`);
+
+        try {
+            let orderForEmail = null;
+
+            await prisma.$transaction(async (tx) => {
+                const currentOrder = await tx.order.findUnique({
+                    where: { id: orderId },
+                    include: { items: true }
+                });
+
+                if (!currentOrder) return;
+
+                // Sadece iade edilmemiş bir durumdan RETURNED durumuna geçiliyorsa stokları geri yükle
+                if (status === 'RETURNED' && !['RETURNED', 'RETURN_REQUESTED'].includes(currentOrder.status)) {
+                    for (const item of currentOrder.items) {
+                        await tx.variant.update({
+                            where: { id: item.variantId },
+                            data: { stock: { increment: item.quantity } }
+                        });
+                    }
+                }
+
+                orderForEmail = await tx.order.update({
+                    where: { id: orderId },
+                    data: { status }
+                });
             });
 
-            if (!currentOrder) return;
+            if (orderForEmail) {
+                const updatedOrder = orderForEmail as any;
+                const statusLabel = STATUS_LABELS[status] || status;
 
-            // Sadece iade edilmemiş bir durumdan RETURNED durumuna geçiliyorsa stokları geri yükle
-            if (status === 'RETURNED' && !['RETURNED', 'RETURN_REQUESTED'].includes(currentOrder.status)) {
-                for (const item of currentOrder.items) {
-                    await tx.variant.update({
-                        where: { id: item.variantId },
-                        data: { stock: { increment: item.quantity } }
-                    });
-                }
+                console.log(`[AdminOrdersList] E-posta gönderiliyor: ${updatedOrder.customerEmail}`);
+
+                const { sendEmail } = await import('@/lib/resend');
+                const { getOrderStatusUpdateEmailHtml } = await import('@/lib/email-templates');
+
+                await sendEmail({
+                    to: updatedOrder.customerEmail,
+                    subject: `Sipariş Durumu Güncellemesi | YZL321 Store #${updatedOrder.id}`,
+                    html: getOrderStatusUpdateEmailHtml(updatedOrder.id, statusLabel, updatedOrder.customerName)
+                });
             }
 
-            await tx.order.update({
-                where: { id: orderId },
-                data: { status }
-            });
-        });
-
-        revalidatePath('/admin/orders');
-        revalidatePath('/admin/products');
-        revalidatePath('/admin/returns');
+            revalidatePath('/admin/orders');
+            revalidatePath('/admin/products');
+            revalidatePath('/admin/returns');
+        } catch (error) {
+            console.error('[AdminOrdersList] HATA:', error);
+        }
     };
 
     return (
