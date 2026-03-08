@@ -12,13 +12,17 @@ const getResendClient = () => {
         console.error('RESEND_API_KEY is missing from environment variables!');
         return null;
     }
+    // Debug için anahtarın başlangıcını logla (güvenli bir şekilde)
+    console.log(`[Resend] API Key yüklendi (Format: ${apiKey.slice(0, 7)}...)`);
     return new Resend(apiKey);
 };
 
 export const sendEmail = async ({ to, subject, html }: SendEmailParams) => {
+    console.log(`[Resend] E-posta gönderme isteği alındı. Konu: ${subject}`);
     const resendClient = getResendClient();
 
     if (!resendClient) {
+        console.error(`[Resend] KRİTİK HATA: Resend istemcisi oluşturulamadı! (API_KEY eksik olabilir)`);
         if (process.env.NODE_ENV === 'development') {
             console.log('--- EMAIL MOCK (Dev Mode) ---');
             console.log('To:', to);
@@ -30,10 +34,11 @@ export const sendEmail = async ({ to, subject, html }: SendEmailParams) => {
 
     try {
         const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
-        console.log(`[Resend] E-posta paketi hazırlanıyor...`);
-        console.log(`[Resend] Kimden: ${fromEmail}`);
-        console.log(`[Resend] Kime: ${to}`);
-        console.log(`[Resend] Konu: ${subject}`);
+        console.log(`[Resend] Paket Hazırlanıyor:`);
+        console.log(` - Kimden: ${fromEmail}`);
+        console.log(` - Kime: ${JSON.stringify(to)}`);
+        console.log(` - Konu: ${subject}`);
+        console.log(` - HTML Uzunluğu: ${html.length} karakter`);
 
         const { data, error } = await resendClient.emails.send({
             from: fromEmail,
@@ -43,14 +48,15 @@ export const sendEmail = async ({ to, subject, html }: SendEmailParams) => {
         });
 
         if (error) {
-            console.error('[Resend] API Hatası Yanıtı:', JSON.stringify(error, null, 2));
+            console.error('[Resend] API HATASI:', JSON.stringify(error, null, 2));
             return { success: false, error };
         }
 
-        console.log('[Resend] E-posta başarıyla sıraya alındı. ID:', data?.id);
+        console.log('[Resend] BAŞARI: E-posta sıraya alındı. ID:', data?.id);
         return { success: true, data };
-    } catch (error) {
-        console.error('[Resend] Beklenmedik Hata:', error);
-        return { success: false, error };
+    } catch (error: any) {
+        console.error('[Resend] BEKLENMEDİK HATA:', error.message || error);
+        if (error.stack) console.error(error.stack);
+        return { success: false, error: error.message || error };
     }
 };

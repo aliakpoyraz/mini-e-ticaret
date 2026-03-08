@@ -16,33 +16,35 @@ export async function POST(request: Request) {
         console.log('Şifre sıfırlama isteği e-posta:', normalizedEmail);
         const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
 
-        if (user) {
-            console.log('Kullanıcı bulundu, token oluşturuluyor...');
-            const token = crypto.randomBytes(32).toString('hex');
-            const expiry = new Date(Date.now() + 3600000); // 1 hour
-
-            await prisma.user.update({
-                where: { id: user.id },
-                data: {
-                    resetToken: token,
-                    resetTokenExpiry: expiry
-                }
-            });
-
-            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://e-ticaret.aliakpoyraz.com';
-            const resetUrl = `${baseUrl}/sifre-sifirla?token=${token}`;
-
-            await sendEmail({
-                to: email,
-                subject: 'Şifre Sıfırlama Talebi | YZL321 Store',
-                html: getForgotPasswordEmailHtml(resetUrl)
-            });
+        if (!user) {
+            console.log('Kullanıcı bulunamadı:', normalizedEmail);
+            return NextResponse.json({ error: 'Bu e-posta adresi ile kayıtlı bir kullanıcı bulunamadı.' }, { status: 404 });
         }
 
-        // Güvenlik nedeniyle kullanıcı bulunmasa bile başarılı mesajı dönüyoruz
+        console.log('Kullanıcı bulundu, token oluşturuluyor...');
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiry = new Date(Date.now() + 3600000); // 1 hour
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                resetToken: token,
+                resetTokenExpiry: expiry
+            }
+        });
+
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://e-ticaret.aliakpoyraz.com';
+        const resetUrl = `${baseUrl}/sifre-sifirla?token=${token}`;
+
+        await sendEmail({
+            to: email,
+            subject: 'Şifre Sıfırlama Talebi | YZL321 Store',
+            html: getForgotPasswordEmailHtml(resetUrl)
+        });
+
         return NextResponse.json({
             success: true,
-            message: 'Eğer bu e-posta adresi sistemde kayıtlıysa, şifre sıfırlama bağlantısı gönderilmiştir.'
+            message: 'Şifre sıfırlama bağlantısı e-posta adresinize gönderilmiştir.'
         });
     } catch (error) {
         console.error('Forgot password error:', error);
