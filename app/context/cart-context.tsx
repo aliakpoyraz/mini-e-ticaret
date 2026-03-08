@@ -65,44 +65,54 @@ export function CartProvider({ children }: { children: ReactNode }) {
             }
         };
 
-        if (userId) {
-            let userCart = parseCart(userKey!) || [];
-            let guestCart = parseCart(guestKey);
+        const initializeCart = async () => {
+            if (userId) {
+                // Sunucudan sepeti çek
+                try {
+                    const res = await fetch('/api/cart');
+                    const data = await res.json();
+                    let serverCart = data.items || [];
+                    let guestCart = parseCart(guestKey) || [];
 
-            if (guestCart && guestCart.length > 0) {
-                // Misafir sepetini kullanıcı sepetine aktar (merge)
-                let merged = [...userCart];
-                guestCart.forEach(gItem => {
-                    const existing = merged.find(uItem => uItem.variantId === gItem.variantId);
-                    if (existing) {
-                        existing.quantity += gItem.quantity;
-                    } else {
-                        merged.push(gItem);
+                    if (guestCart.length > 0) {
+                        // Misafir sepetini sunucuyla birleştir
+                        const resSync = await fetch('/api/cart', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'sync', items: guestCart })
+                        });
+
+                        if (resSync.ok) {
+                            // Yeniden sunucudan güncel sepeti çek
+                            const resFinal = await fetch('/api/cart');
+                            const dataFinal = await resFinal.json();
+                            serverCart = dataFinal.items || [];
+                            localStorage.removeItem(guestKey);
+                        }
                     }
-                });
-                setItems(merged);
-                localStorage.setItem(userKey!, JSON.stringify(merged));
-                localStorage.removeItem(guestKey); // Aktarım bitti, temizle
-            } else {
-                setItems(userCart);
-            }
-        } else {
-            // Sadece misafir
-            let guestCart = parseCart(guestKey) || [];
 
-            // Eğer cart_guest boşsa ama eski 'cart' anahtarı doluysa, onu taşı (Geriye Dönük Uyumluluk)
-            if (guestCart.length === 0) {
-                const legacyCart = parseCart('cart');
-                if (legacyCart && legacyCart.length > 0) {
-                    guestCart = legacyCart;
-                    localStorage.removeItem('cart');
+                    setItems(serverCart);
+                    localStorage.setItem(userKey!, JSON.stringify(serverCart));
+                } catch (e) {
+                    // Hata durumunda local'den devam et
+                    setItems(parseCart(userKey!) || []);
                 }
+            } else {
+                // Sadece misafir
+                let guestCart = parseCart(guestKey) || [];
+                if (guestCart.length === 0) {
+                    const legacyCart = parseCart('cart');
+                    if (legacyCart && legacyCart.length > 0) {
+                        guestCart = legacyCart;
+                        localStorage.removeItem('cart');
+                    }
+                }
+                setItems(guestCart);
             }
+            setIsLoaded(true);
+        };
 
-            setItems(guestCart);
-        }
-
-        setIsLoaded(true);
+        initializeCart();
     }, [isCheckingAuth, userId]);
 
     // Değişiklikleri kaydet
@@ -112,36 +122,62 @@ export function CartProvider({ children }: { children: ReactNode }) {
         localStorage.setItem(storageKey, JSON.stringify(items));
     }, [items, isLoaded, userId]);
 
-    const addToCart = (newItem: CartItem) => {
-        setItems(current => {
-            const existing = current.find(item => item.variantId === newItem.variantId);
-            const validItem = { ...newItem, price: Number(newItem.price) || 0 };
+    const addToCart = async (newItem: CartItem) => {
+        const existing = items.find(item => item.variantId === newItem.variantId);
+        const newQuantity = existing
+            ? Math.min(newItem.stock, existing.quantity + (newItem.quantity || 1))
+            : Math.min(newItem.stock, newItem.quantity || 1);
 
+        setItems(current => {
             if (existing) {
                 return current.map(item =>
-                    item.variantId === newItem.variantId
-                        ? { ...item, quantity: Math.min(item.stock, item.quantity + (newItem.quantity || 1)) }
-                        : item
+                    item.variantId === newItem.variantId ? { ...item, quantity: newQuantity } : item
                 );
             }
-            return [...current, { ...validItem, quantity: Math.min(newItem.stock, newItem.quantity || 1) }];
+            return [...current, { ...newItem, quantity: newQuantity }];
         });
+
+        if (userId) {
+            await fetch('/api/cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ variantId: newItem.variantId, quantity: newQuantity })
+            });
+        }
     };
 
-    const updateQuantity = (variantId: number, quantity: number) => {
+    const updateQuantity = async (variantId: number, quantity: number) => {
         if (quantity < 1) return;
+        const item = items.find(i => i.variantId === variantId);
+        if (!item) return;
+
+        const finalQuantity = Math.min(item.stock, quantity);
         setItems(current =>
-            current.map(item =>
-                item.variantId === variantId ? { ...item, quantity: Math.min(item.stock, quantity) } : item
-            )
+            current.map(i => i.variantId === variantId ? { ...i, quantity: finalQuantity } : i)
         );
+
+        if (userId) {
+            await fetch('/api/cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ variantId, quantity: finalQuantity })
+            });
+        }
     };
 
-    const removeFromCart = (variantId: number) => {
+    const removeFromCart = async (variantId: number) => {
         setItems(current => current.filter(item => item.variantId !== variantId));
+        if (userId) {
+            await fetch(`/api/cart?variantId=${variantId}`, { method: 'DELETE' });
+        }
     };
 
-    const clearCart = () => setItems([]);
+    const clearCart = async () => {
+        setItems([]);
+        if (userId) {
+            await fetch('/api/cart?variantId=all', { method: 'DELETE' });
+        }
+    };
 
     return (
         <CartContext.Provider value={{ items, addToCart, updateQuantity, removeFromCart, clearCart }}>
