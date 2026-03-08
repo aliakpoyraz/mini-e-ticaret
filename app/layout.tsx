@@ -30,6 +30,11 @@ export default async function RootLayout({
         className={`${inter.variable} font-sans antialiased text-slate-900 selection:bg-blue-100 selection:text-blue-900`}
       >
         <CartProvider>
+          {settings?.isAnnouncementActive && settings?.announcement && (
+            <div className="bg-slate-900 text-white py-2.5 px-4 text-center text-sm font-medium tracking-tight">
+              {settings.announcement}
+            </div>
+          )}
           <Navbar storeName={storeName} />
           <main>{children}</main>
         </CartProvider>

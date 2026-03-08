@@ -73,7 +73,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 print:hidden">
                     <StatusUpdateForm
                         orderId={order.id}
                         initialStatus={order.status}
@@ -91,8 +91,8 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                             <p className="text-slate-500 text-sm mt-1">Sipariş No #{order.id}</p>
                         </div>
                         <div className="text-right">
-                            <h3 className="font-bold text-slate-900 text-lg">Store.</h3>
-                            <p className="text-slate-500 text-xs mt-1">Örnek Mağaza A.Ş.</p>
+                            <h3 className="font-bold text-slate-900 text-lg">YZL321 Store</h3>
+                            <p className="text-slate-500 text-xs mt-1">YZL321 Store</p>
                             <p className="text-slate-500 text-xs">İstanbul, Türkiye</p>
                         </div>
                     </div>

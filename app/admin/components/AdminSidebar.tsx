@@ -50,7 +50,7 @@ export default function AdminSidebar() {
                 />
             )}
 
-            <aside className={`w-64 bg-white/90 backdrop-blur-xl border-r border-slate-200 fixed h-full flex flex-col z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+            <aside className={`w-64 bg-white/90 backdrop-blur-xl border-r border-slate-200 fixed h-full flex flex-col z-50 transition-transform duration-300 print:hidden ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
                 <div className="md:hidden absolute top-4 right-4">
                     <button onClick={() => setIsOpen(false)} className="p-2 text-slate-400 hover:text-slate-900 bg-slate-50 rounded-full">
                         <X size={20} />

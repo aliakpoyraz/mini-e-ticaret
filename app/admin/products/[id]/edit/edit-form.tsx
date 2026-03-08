@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Upload, ArrowLeft } from 'lucide-react';
+import { Upload, ArrowLeft, ArrowUp, ArrowDown } from 'lucide-react';
 import Link from 'next/link';
 
 type Variant = {
@@ -10,6 +10,7 @@ type Variant = {
     name: string;
     sku: string;
     stock: number;
+    order: number;
 };
 
 type ProductImage = {
@@ -143,15 +144,56 @@ export default function EditProductForm({ product }: { product: Product }) {
             <div className="space-y-4">
                 <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Envanter Yönetimi</h2>
                 <div className="space-y-2">
-                    {variants.map((variant, index) => (
-                        <div key={variant.id} className="flex gap-3 items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    {variants.sort((a, b) => (a.order || 0) - (b.order || 0)).map((variant, index) => (
+                        <div key={index} className="flex gap-3 items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div className="flex flex-col gap-1">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (index === 0) return;
+                                        const newVariants = [...variants];
+                                        const tempOrder = newVariants[index].order;
+                                        newVariants[index].order = newVariants[index - 1].order;
+                                        newVariants[index - 1].order = tempOrder;
+                                        setVariants(newVariants);
+                                    }}
+                                    disabled={index === 0}
+                                    className="p-1 text-gray-400 hover:text-brand-600 disabled:opacity-30"
+                                >
+                                    <ArrowUp size={14} />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (index === variants.length - 1) return;
+                                        const newVariants = [...variants];
+                                        const tempOrder = newVariants[index].order;
+                                        newVariants[index].order = newVariants[index + 1].order;
+                                        newVariants[index + 1].order = tempOrder;
+                                        setVariants(newVariants);
+                                    }}
+                                    disabled={index === variants.length - 1}
+                                    className="p-1 text-gray-400 hover:text-brand-600 disabled:opacity-30"
+                                >
+                                    <ArrowDown size={14} />
+                                </button>
+                            </div>
                             <div className="w-1/3">
-                                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Varyant</label>
-                                <p className="font-bold text-gray-900 text-sm">{variant.name}</p>
+                                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Varyant Adı</label>
+                                <input
+                                    type="text"
+                                    value={variant.name}
+                                    onChange={e => {
+                                        const newVariants = [...variants];
+                                        newVariants[index].name = e.target.value;
+                                        setVariants(newVariants);
+                                    }}
+                                    className="w-full border border-gray-200 p-1.5 rounded text-sm font-bold focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 bg-white text-gray-900"
+                                />
                             </div>
                             <div className="flex-1">
                                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">SKU (Stok Kodu)</label>
-                                <p className="font-mono text-xs text-gray-900 bg-white p-1.5 rounded border border-gray-200">{variant.sku}</p>
+                                <p className="font-mono text-xs text-gray-900 bg-white p-2 rounded border border-gray-200">{variant.sku}</p>
                             </div>
                             <div className="w-20">
                                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Stok</label>
@@ -160,7 +202,7 @@ export default function EditProductForm({ product }: { product: Product }) {
                                     value={variant.stock}
                                     onChange={e => {
                                         const newVariants = [...variants];
-                                        newVariants[index].stock = parseInt(e.target.value);
+                                        newVariants[index].stock = parseInt(e.target.value) || 0;
                                         setVariants(newVariants);
                                     }}
                                     className="w-full border border-gray-200 p-1.5 rounded text-sm font-bold focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 bg-white text-gray-900"

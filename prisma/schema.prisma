@@ -32,6 +32,7 @@ model Variant {
   name      String    // e.g., "Small/Red"
   sku       String    @unique
   stock     Int       @default(0)
+  order     Int       @default(0) // For sorting
   productId Int
   product   Product   @relation(fields: [productId], references: [id])
   orderItems OrderItem[]
@@ -65,14 +66,16 @@ model OrderItem {
 }
 
 model StoreSettings {
-  id          Int      @id @default(1)
-  storeName   String   @default("My Store")
-  description String?
-  email       String?
-  phone       String?
-  address     String?
-  currency    String   @default("USD")
-  updatedAt   DateTime @updatedAt
+  id                   Int      @id @default(1)
+  storeName            String   @default("My Store")
+  description          String?
+  email                String?
+  phone                String?
+  address              String?
+  currency             String   @default("USD")
+  announcement         String?  // Announcement text
+  isAnnouncementActive Boolean  @default(false) // Toggle for announcement banner
+  updatedAt            DateTime @updatedAt
 }
 
 model Discount {

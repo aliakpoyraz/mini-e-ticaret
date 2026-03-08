@@ -11,7 +11,11 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
 
     const product = await prisma.product.findUnique({
         where: { id: productId },
-        include: { variants: true }
+        include: {
+            variants: {
+                orderBy: { order: 'asc' }
+            }
+        }
     });
 
     if (!product) {
@@ -80,7 +84,12 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
                 if (v.id) {
                     await tx.variant.update({
                         where: { id: v.id },
-                        data: { name: v.name, sku: v.sku, stock: v.stock }
+                        data: {
+                            name: v.name,
+                            sku: v.sku,
+                            stock: v.stock,
+                            order: v.order || 0
+                        }
                     });
                 } else {
                     await tx.variant.create({
@@ -88,6 +97,7 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
                             name: v.name,
                             sku: v.sku,
                             stock: v.stock,
+                            order: v.order || 0,
                             productId
                         }
                     });

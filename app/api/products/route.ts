@@ -39,7 +39,12 @@ export async function POST(request: Request) {
                     create: imagesData
                 },
                 variants: {
-                    create: variants // { name, sku, stock } formatında dizi bekler
+                    create: variants.map((v: any, index: number) => ({
+                        name: v.name,
+                        sku: v.sku,
+                        stock: v.stock,
+                        order: v.order ?? index
+                    }))
                 }
             },
             include: { variants: true, images: true }

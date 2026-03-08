@@ -76,6 +76,43 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
 
                     <div>
                         <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                            <AlignLeft className="text-slate-400" size={20} />
+                            Duyuru Ayarları
+                        </h2>
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                <input
+                                    type="checkbox"
+                                    name="isAnnouncementActive"
+                                    id="isAnnouncementActive"
+                                    defaultChecked={settings.isAnnouncementActive}
+                                    className="w-5 h-5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                                />
+                                <label htmlFor="isAnnouncementActive" className="text-sm font-bold text-slate-700 cursor-pointer">
+                                    Duyuru Bandını Aktif Et
+                                </label>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700">Duyuru Metni</label>
+                                <div className="relative flex">
+                                    <AlignLeft className="absolute left-3 top-3 text-slate-400" size={18} />
+                                    <textarea
+                                        name="announcement"
+                                        defaultValue={settings.announcement || ''}
+                                        rows={2}
+                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 focus:outline-none text-sm transition-shadow resize-y"
+                                        placeholder="Örn. Mağazamıza hoş geldiniz! Bugün tüm kargolar ücretsiz."
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr className="border-slate-100" />
+
+                    <div>
+                        <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
                             <Mail className="text-slate-400" size={20} />
                             İletişim Bilgileri
                         </h2>
