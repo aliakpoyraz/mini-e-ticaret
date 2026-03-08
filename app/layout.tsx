@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "YZL321 Store",
+  title: "YZL321 Store | E-Ticaret Platformu",
   description: "Premium E-Ticaret Deneyimi",
 };
 

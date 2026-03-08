@@ -67,7 +67,7 @@ export default async function AdminOrdersPage() {
 
                 await sendEmail({
                     to: updatedOrder.customerEmail,
-                    subject: `Sipariş Durumu Güncellemesi | YZL321 Store #${updatedOrder.id}`,
+                    subject: `Sipariş Durumu Güncellemesi | YZL321 Store | E-Ticaret Platformu #${updatedOrder.id}`,
                     html: getOrderStatusUpdateEmailHtml(updatedOrder.id, statusLabel, updatedOrder.customerName)
                 });
             }

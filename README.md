@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛍️ YZL321 Store | Tam Donanımlı Premium E-Ticaret MVP
+# 🛍️ YZL321 Store | E-Ticaret Platformu
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react)](https://react.dev/)
@@ -10,7 +10,7 @@
 
 Modern web teknolojileri ile sıfırdan inşa edilmiş, hem kullanıcı (B2C) hem de yönetici (Admin) için kusursuz, **premium bir e-ticaret deneyimi** sunan açık kaynaklı bir MVP (Minimum Viable Product).
 
-[Canlı Demo](#) · [Hata Bildir](#) · [Özellik İste](#)
+[Canlı Demo](https://e-ticaret.aliakpoyraz.com) · [Hata Bildir](https://github.com/aliakpoyraz/mini-e-ticaret/issues/new) · [Özellik İste](https://github.com/aliakpoyraz/mini-e-ticaret/issues/new)
 
 </div>
 
