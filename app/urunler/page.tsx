@@ -160,7 +160,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                                 return (
                                     <div key={product.id} className="group relative">
                                         {/* Clickable card area */}
-                                        <Link href={`/urunler/${product.id}`} className="block">
+                                        <Link href={`/urunler/${product.slug}`} className="block">
                                             <div className="aspect-[4/5] bg-slate-100 rounded-2xl overflow-hidden mb-6 relative">
                                                 {product.imageUrl ? (
                                                     <img

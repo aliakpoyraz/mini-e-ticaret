@@ -94,11 +94,11 @@ export default async function FavoritesPage() {
                                 }
                             }
 
-                            const totalStock = product.variants.reduce((total, variant) => total + variant.stock, 0);
+                            const totalStock = product.variants.reduce((total: number, variant: any) => total + (variant.stock || 0), 0);
                             const isOutOfStock = totalStock === 0;
 
                             return (
-                                <Link href={`/urunler/${product.id}`} key={product.id} className="group block">
+                                <Link href={`/urunler/${product.slug}`} key={product.id} className="group block">
                                     <div className="bg-slate-50 rounded-[2rem] overflow-hidden aspect-[3/4] mb-6 relative transition-transform duration-500 group-hover:-translate-y-1 shadow-sm group-hover:shadow-xl group-hover:shadow-slate-200/50">
                                         {product.imageUrl ? (
                                             <img
@@ -130,7 +130,8 @@ export default async function FavoritesPage() {
                                                 id: product.id,
                                                 name: product.name,
                                                 price: finalPrice,
-                                                imageUrl: product.imageUrl
+                                                imageUrl: product.imageUrl,
+                                                slug: product.slug
                                             }}
                                             variants={product.variants}
                                             className="absolute bottom-4 right-4 z-20"

@@ -17,6 +17,7 @@ type Product = {
     name: string;
     price: number;
     imageUrl: string | null;
+    slug: string;
 };
 
 export default function QuickAddToCartButton({ product, variants, className = '' }: { product: Product, variants: Variant[], className?: string }) {
@@ -98,7 +99,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
                     className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in"
                     onClick={(e) => { if (e.target === e.currentTarget) setShowPicker(false); }}
                 >
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 animate-scale-up">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 animate-scale-up border border-slate-100">
                         {/* Product Info */}
                         <div className="flex items-center gap-4 mb-6">
                             {product.imageUrl && (
@@ -136,7 +137,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
                             ))}
                         </div>
                         <button
-                            onClick={() => router.push(`/urunler/${product.id}`)}
+                            onClick={() => router.push(`/urunler/${product.slug}`)}
                             className="mt-4 text-xs text-brand-600 hover:text-brand-700 font-semibold w-full text-center"
                         >
                             Ürün sayfasına git →
@@ -149,7 +150,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
             {/* Success Modal */}
             {mounted && showSuccess && createPortal(
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-                    <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 animate-scale-up relative">
+                    <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 animate-scale-up relative border border-slate-100">
                         <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                             <Check className="text-green-600" size={24} strokeWidth={3} />
                         </div>

@@ -3,7 +3,8 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle2 } from 'lucide-react';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 function LoginForm() {
     const searchParams = useSearchParams();
@@ -79,7 +80,7 @@ function LoginForm() {
     };
 
     return (
-        <div className="min-h-screen bg-[#F5F5F7] flex flex-col justify-center items-center p-6 font-sans">
+        <div className="min-h-screen bg-[#F5F5F7] flex flex-col items-center pt-32 pb-12 p-6 font-sans">
             <div className="w-full max-w-[400px] bg-white rounded-3xl shadow-sm border border-slate-100 p-8 md:p-10">
                 <div className="text-center mb-8">
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-2">
@@ -97,90 +98,103 @@ function LoginForm() {
                         </div>
                     </div>
                 ) : (
-                    <div className="space-y-4">
-                        {error && (
-                            <div className="space-y-3">
-                                <div className="p-3 bg-red-50 text-red-600 text-sm font-medium rounded-xl text-center">
-                                    {error}
-                                </div>
-                                {error.includes('doğrulayın') && (
-                                    <div className="text-center">
-                                        <button
-                                            type="button"
-                                            onClick={handleResendVerification}
-                                            disabled={resendStatus.loading}
-                                            className="text-xs font-semibold text-blue-600 hover:text-blue-700 underline disabled:opacity-50"
-                                        >
-                                            {resendStatus.loading ? 'Gönderiliyor...' : 'Doğrulama e-postasını tekrar gönder'}
-                                        </button>
-                                        {resendStatus.message && (
-                                            <p className="mt-2 text-[10px] text-slate-500 bg-slate-50 p-2 rounded-lg">
-                                                {resendStatus.message}
-                                            </p>
-                                        )}
+                    <div className="space-y-6">
+                        <GoogleLoginButton />
+
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-slate-100"></div>
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-white px-2 text-slate-400 font-medium">Veya</span>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            {error && (
+                                <div className="space-y-3">
+                                    <div className="p-3 bg-red-50 text-red-600 text-sm font-medium rounded-xl text-center">
+                                        {error}
                                     </div>
-                                )}
-                            </div>
-                        )}
-
-                        {successMessage && !isSuccess && (
-                            <div className="p-3 bg-green-50 text-green-600 text-sm font-medium rounded-xl text-center flex items-center justify-center gap-2 mb-4">
-                                <CheckCircle2 size={16} />
-                                {successMessage}
-                            </div>
-                        )}
-
-                        <form onSubmit={handleLogin} className="space-y-4">
-                            <div className="space-y-4">
-                                <div>
-                                    <input
-                                        type="email"
-                                        required
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 rounded-2xl outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
-                                        placeholder="E-posta adresi"
-                                    />
+                                    {error.includes('doğrulayın') && (
+                                        <div className="text-center">
+                                            <button
+                                                type="button"
+                                                onClick={handleResendVerification}
+                                                disabled={resendStatus.loading}
+                                                className="text-xs font-semibold text-blue-600 hover:text-blue-700 underline disabled:opacity-50"
+                                            >
+                                                {resendStatus.loading ? 'Gönderiliyor...' : 'Doğrulama e-postasını tekrar gönder'}
+                                            </button>
+                                            {resendStatus.message && (
+                                                <p className="mt-2 text-[10px] text-slate-500 bg-slate-50 p-2 rounded-lg">
+                                                    {resendStatus.message}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
-                                <div>
-                                    <input
-                                        type="password"
-                                        required
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 rounded-2xl outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
-                                        placeholder="Şifre"
-                                    />
+                            )}
+
+                            {successMessage && !isSuccess && (
+                                <div className="p-3 bg-green-50 text-green-600 text-sm font-medium rounded-xl text-center flex items-center justify-center gap-2 mb-4">
+                                    <CheckCircle2 size={16} />
+                                    {successMessage}
                                 </div>
-                            </div>
+                            )}
 
-                            <div className="flex justify-end pt-2">
-                                <Link href="/sifremi-unuttum" className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
-                                    Şifremi Unuttum
-                                </Link>
-                            </div>
+                            <form onSubmit={handleLogin} className="space-y-4">
+                                <div className="space-y-4">
+                                    <div>
+                                        <input
+                                            type="email"
+                                            required
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 rounded-2xl outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
+                                            placeholder="E-posta adresi"
+                                        />
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="password"
+                                            required
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 rounded-2xl outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
+                                            placeholder="Şifre"
+                                        />
+                                    </div>
+                                </div>
 
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full mt-2 py-3.5 bg-black hover:bg-slate-800 text-white rounded-full text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center active:scale-[0.98]"
-                            >
-                                {isLoading ? (
-                                    <Loader2 size={18} className="animate-spin" />
-                                ) : (
-                                    <span>Giriş Yap</span>
-                                )}
-                            </button>
-                        </form>
+                                <div className="flex justify-end pt-2">
+                                    <Link href="/sifremi-unuttum" className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
+                                        Şifremi Unuttum
+                                    </Link>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="w-full mt-2 py-3.5 bg-black hover:bg-slate-800 text-white rounded-full text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center active:scale-[0.98]"
+                                >
+                                    {isLoading ? (
+                                        <Loader2 size={18} className="animate-spin" />
+                                    ) : (
+                                        <span>Giriş Yap</span>
+                                    )}
+                                </button>
+                            </form>
+                        </div>
+
+                        <div className="mt-8 text-center text-sm text-slate-500">
+                            Hesabınız yok mu?{' '}
+                            <Link href="/kayit-ol" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                                Kayıt Olun
+                            </Link>
+                        </div>
                     </div>
                 )}
-
-                <div className="mt-8 text-center text-sm text-slate-500">
-                    Hesabınız yok mu?{' '}
-                    <Link href="/kayit-ol" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-                        Kayıt Olun
-                    </Link>
-                </div>
             </div>
         </div>
     );

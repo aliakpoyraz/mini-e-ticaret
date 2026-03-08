@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { slugify } from '@/lib/slug';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, description, price, imageUrls, variants } = body;
+        const { name, description, price, imageUrls, variants, slug: manualSlug } = body;
 
         const mainImageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : null;
 
@@ -29,9 +30,28 @@ export async function POST(request: Request) {
             ? imageUrls.map((url: string, index: number) => ({ url, order: index }))
             : [];
 
+        // Generate and ensure unique slug
+        let slug = manualSlug ? slugify(manualSlug) : slugify(name);
+        let finalSlug = slug;
+        let counter = 0;
+        let isUnique = false;
+
+        while (!isUnique) {
+            const existing = await prisma.product.findUnique({
+                where: { slug: finalSlug }
+            });
+            if (!existing) {
+                isUnique = true;
+            } else {
+                counter++;
+                finalSlug = `${slug}-${counter}`;
+            }
+        }
+
         const product = await prisma.product.create({
             data: {
                 name,
+                slug: finalSlug,
                 description,
                 price,
                 imageUrl: mainImageUrl, // Backward compatibility
@@ -54,10 +74,19 @@ export async function POST(request: Request) {
         console.error("Error creating product:", error);
 
         if (error.code === 'P2002') {
-            return NextResponse.json(
-                { error: 'A variant with this SKU already exists. Please use unique SKUs.' },
-                { status: 409 }
-            );
+            const target = error.meta?.target as string[];
+            if (target?.includes('sku')) {
+                return NextResponse.json(
+                    { error: 'A variant with this SKU already exists. Please use unique SKUs.' },
+                    { status: 409 }
+                );
+            }
+            if (target?.includes('slug')) {
+                return NextResponse.json(
+                    { error: 'This slug is already in use.' },
+                    { status: 409 }
+                );
+            }
         }
 
         return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });

@@ -75,7 +75,7 @@ export default function ProductFilters() {
                             onChange={(e) => setSearch(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                             placeholder="Anahtar Kelime..."
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black/5 transition-colors"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors"
                         />
                         <Search
                             size={18}
@@ -93,7 +93,7 @@ export default function ProductFilters() {
                             value={priceMin}
                             onChange={(e) => setPriceMin(e.target.value)}
                             placeholder="En Az"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black/5 transition-all"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
                         />
                         <span className="text-slate-300">-</span>
                         <input

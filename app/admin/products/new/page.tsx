@@ -53,6 +53,7 @@ export default function AddProductPage() {
 
         const productData = {
             name: formData.get('name'),
+            slug: formData.get('slug'),
             description: formData.get('description'),
             price: parseFloat(formData.get('price') as string),
             imageUrls: imageUrls,
@@ -87,9 +88,19 @@ export default function AddProductPage() {
                 <div className="space-y-4">
                     <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Temel Bilgiler</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-semibold text-gray-900 mb-1">Ürün Adı</label>
-                            <input name="name" required placeholder="Örn. Premium Pamuklu Tişört" className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm placeholder:text-gray-400" />
+                        <div className="md:col-span-2 space-y-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-900 mb-1">Ürün Adı</label>
+                                <input name="name" required placeholder="Örn. Premium Pamuklu Tişört" className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm placeholder:text-gray-400" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-900 mb-1">SEO Linki (Slug)</label>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-gray-400 text-sm font-mono bg-gray-50 px-2 py-2.5 rounded-lg border border-gray-100 italic">/urunler/</span>
+                                    <input name="slug" placeholder="premium-pamuklu-tisort (Boş bırakırsanız isme göre oluşur)" className="flex-1 border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm placeholder:text-gray-400 font-mono" />
+                                </div>
+                                <p className="text-[10px] text-gray-400 mt-1 italic">* Boş bırakıldığında ürün isminden otomatik olarak (örn: "Ürün Adı" → "urun-adi") oluşturulur.</p>
+                            </div>
                         </div>
 
                         <div className="md:col-span-2">

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { slugify } from '@/lib/slug';
 
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
     const { id } = await context.params;
@@ -31,16 +32,47 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
 
     try {
         const body = await request.json();
-        const { name, description, price, imageUrls, variants } = body;
+        const { name, description, price, imageUrls, variants, slug: manualSlug } = body;
 
         const mainImageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : null;
 
         const updatedProduct = await prisma.$transaction(async (tx) => {
+            // Get current product to check if slug needs update
+            const currentProduct = await tx.product.findUnique({ where: { id: productId } });
+            if (!currentProduct) throw new Error("Product not found");
+
+            // Generate and ensure unique slug if it changed or manual is provided
+            let finalSlug = currentProduct.slug;
+            const newBaseSlug = manualSlug ? slugify(manualSlug) : slugify(name);
+
+            if (newBaseSlug !== currentProduct.slug) {
+                let slug = newBaseSlug;
+                finalSlug = slug;
+                let counter = 0;
+                let isUnique = false;
+
+                while (!isUnique) {
+                    const existing = await tx.product.findFirst({
+                        where: {
+                            slug: finalSlug,
+                            id: { not: productId }
+                        }
+                    });
+                    if (!existing) {
+                        isUnique = true;
+                    } else {
+                        counter++;
+                        finalSlug = `${slug}-${counter}`;
+                    }
+                }
+            }
+
             // Update base product
             const product = await tx.product.update({
                 where: { id: productId },
                 data: {
                     name,
+                    slug: finalSlug,
                     description,
                     price,
                     imageUrl: mainImageUrl
@@ -69,9 +101,6 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
 
             const variantsToDelete = existingVariantIds.filter(id => !incomingVariantIds.includes(id));
 
-            // Delete order items of deleted variants to maintain integrity or just delete variant
-            // For MVP: delete variants (will cascade if configured, otherwise might fail if ordered)
-            // Let's assume orderItem holds variant data, or it's just MVP constraint
             try {
                 if (variantsToDelete.length > 0) {
                     await tx.variant.deleteMany({

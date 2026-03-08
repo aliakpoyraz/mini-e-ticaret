@@ -374,7 +374,7 @@ export default function CartPage() {
                                             placeholder="Kupon Kodunuz"
                                             value={couponCode}
                                             onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                            className="flex-1 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 font-mono text-sm uppercase placeholder:font-sans placeholder-normal"
+                                            className="flex-1 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 text-slate-900 font-mono text-sm uppercase placeholder:font-sans placeholder-normal"
                                         />
                                         <button
                                             onClick={handleApplyCoupon}
@@ -409,7 +409,7 @@ export default function CartPage() {
                         <div className="space-y-3">
                             <div className="flex justify-between text-slate-600">
                                 <span>Ara Toplam</span>
-                                <span className="font-medium">{subtotal.toFixed(2)} ₺</span>
+                                <span className="font-medium text-slate-900">{subtotal.toFixed(2)} ₺</span>
                             </div>
                             {discountAmount > 0 && (
                                 <div className="flex justify-between text-green-600">

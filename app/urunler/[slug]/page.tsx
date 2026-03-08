@@ -10,12 +10,16 @@ import ReviewsSection from './components/ReviewsSection';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
+export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const isId = !isNaN(parseInt(slug));
+
     const product = await (prisma as any).product.findUnique({
-        where: { id: parseInt(id) },
+        where: isId ? { id: parseInt(slug) } : { slug: slug },
         include: {
-            variants: true,
+            variants: {
+                orderBy: { order: 'asc' }
+            },
             images: { orderBy: { order: 'asc' } },
             discounts: {
                 where: { active: true }
@@ -214,7 +218,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                         <h2 className="text-3xl font-bold text-slate-900 mb-12 tracking-tight">Beğenebileceğiniz Diğer Ürünler</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             {recommendations.map((rec: any) => (
-                                <Link key={rec.id} href={`/urunler/${rec.id}`} className="group block">
+                                <Link key={rec.id} href={`/urunler/${rec.slug}`} className="group block">
                                     <div className="aspect-[4/5] bg-slate-50 rounded-2xl overflow-hidden mb-4 relative">
                                         {rec.imageUrl ? (
                                             <img src={rec.imageUrl} alt={rec.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />

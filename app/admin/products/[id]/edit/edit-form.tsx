@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, ArrowLeft, ArrowUp, ArrowDown } from 'lucide-react';
 import Link from 'next/link';
+import { Toast } from '@/app/components/Toast';
 
 type Variant = {
     id: number;
@@ -25,6 +26,7 @@ type Product = {
     description: string | null;
     price: number | any;
     imageUrl: string | null;
+    slug: string;
     images?: ProductImage[];
     variants: Variant[];
 };
@@ -40,6 +42,8 @@ export default function EditProductForm({ product }: { product: Product }) {
 
     const [imageUrls, setImageUrls] = useState<string[]>(initialImages);
     const [variants, setVariants] = useState(product.variants);
+    const [showToast, setShowToast] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files?.[0]) return;
@@ -75,19 +79,22 @@ export default function EditProductForm({ product }: { product: Product }) {
 
         const productData = {
             name: formData.get('name'),
+            slug: formData.get('slug'),
             description: formData.get('description'),
             price: parseFloat(formData.get('price') as string),
             imageUrls: imageUrls,
             variants: variants
         };
 
+        setIsSaving(true);
         const res = await fetch(`/api/products/${product.id}`, {
             method: 'PUT',
             body: JSON.stringify(productData)
         });
 
+        setIsSaving(false);
         if (res.ok) {
-            router.push('/admin');
+            setShowToast(true);
             router.refresh();
         } else {
             alert('Ürün güncellenirken hata oluştu');
@@ -99,9 +106,19 @@ export default function EditProductForm({ product }: { product: Product }) {
             <div className="space-y-4">
                 <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Ürün Detayları</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-semibold text-gray-900 mb-1">Ürün Adı</label>
-                        <input name="name" defaultValue={product.name} required className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm" />
+                    <div className="md:col-span-2 space-y-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-900 mb-1">Ürün Adı</label>
+                            <input name="name" defaultValue={product.name} required className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-900 mb-1">SEO Linki (Slug)</label>
+                            <div className="flex items-center gap-2">
+                                <span className="text-gray-400 text-sm font-mono bg-gray-50 px-2 py-2.5 rounded-lg border border-gray-100 italic">/urunler/</span>
+                                <input name="slug" defaultValue={product.slug} placeholder="premium-pamuklu-tisort" className="flex-1 border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 text-sm font-mono" />
+                            </div>
+                            <p className="text-[10px] text-gray-400 mt-1 italic">* SEO uyumlu link için kullanılır. Değiştirilirse eski link çalışmayabilir.</p>
+                        </div>
                     </div>
 
                     <div className="md:col-span-2">
@@ -144,18 +161,16 @@ export default function EditProductForm({ product }: { product: Product }) {
             <div className="space-y-4">
                 <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Envanter Yönetimi</h2>
                 <div className="space-y-2">
-                    {variants.sort((a, b) => (a.order || 0) - (b.order || 0)).map((variant, index) => (
+                    {[...variants].sort((a, b) => (a.order || 0) - (b.order || 0)).map((variant, index, sortedArr) => (
                         <div key={index} className="flex gap-3 items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
                             <div className="flex flex-col gap-1">
                                 <button
                                     type="button"
                                     onClick={() => {
                                         if (index === 0) return;
-                                        const newVariants = [...variants];
-                                        const tempOrder = newVariants[index].order;
-                                        newVariants[index].order = newVariants[index - 1].order;
-                                        newVariants[index - 1].order = tempOrder;
-                                        setVariants(newVariants);
+                                        const newVariants = [...sortedArr];
+                                        [newVariants[index], newVariants[index - 1]] = [newVariants[index - 1], newVariants[index]];
+                                        setVariants(newVariants.map((v, i) => ({ ...v, order: i })));
                                     }}
                                     disabled={index === 0}
                                     className="p-1 text-gray-400 hover:text-brand-600 disabled:opacity-30"
@@ -165,14 +180,12 @@ export default function EditProductForm({ product }: { product: Product }) {
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        if (index === variants.length - 1) return;
-                                        const newVariants = [...variants];
-                                        const tempOrder = newVariants[index].order;
-                                        newVariants[index].order = newVariants[index + 1].order;
-                                        newVariants[index + 1].order = tempOrder;
-                                        setVariants(newVariants);
+                                        if (index === sortedArr.length - 1) return;
+                                        const newVariants = [...sortedArr];
+                                        [newVariants[index], newVariants[index + 1]] = [newVariants[index + 1], newVariants[index]];
+                                        setVariants(newVariants.map((v, i) => ({ ...v, order: i })));
                                     }}
-                                    disabled={index === variants.length - 1}
+                                    disabled={index === sortedArr.length - 1}
                                     className="p-1 text-gray-400 hover:text-brand-600 disabled:opacity-30"
                                 >
                                     <ArrowDown size={14} />
@@ -184,7 +197,7 @@ export default function EditProductForm({ product }: { product: Product }) {
                                     type="text"
                                     value={variant.name}
                                     onChange={e => {
-                                        const newVariants = [...variants];
+                                        const newVariants = [...sortedArr];
                                         newVariants[index].name = e.target.value;
                                         setVariants(newVariants);
                                     }}
@@ -201,7 +214,7 @@ export default function EditProductForm({ product }: { product: Product }) {
                                     type="number"
                                     value={variant.stock}
                                     onChange={e => {
-                                        const newVariants = [...variants];
+                                        const newVariants = [...sortedArr];
                                         newVariants[index].stock = parseInt(e.target.value) || 0;
                                         setVariants(newVariants);
                                     }}
@@ -214,10 +227,20 @@ export default function EditProductForm({ product }: { product: Product }) {
             </div>
 
             <div className="pt-4 border-t border-gray-100">
-                <button type="submit" className="w-full bg-brand-600 text-white p-3 rounded-xl font-bold text-base hover:bg-brand-700 transition shadow-lg shadow-brand-500/20 transform hover:-translate-y-0.5">
-                    Ürünü Güncelle
+                <button
+                    type="submit"
+                    disabled={isSaving}
+                    className="w-full bg-brand-600 text-white p-3 rounded-xl font-bold text-base hover:bg-brand-700 transition shadow-lg shadow-brand-500/20 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                >
+                    {isSaving ? 'Güncelleniyor...' : 'Ürünü Güncelle'}
                 </button>
             </div>
+
+            <Toast
+                show={showToast}
+                message="Ürün başarıyla güncellendi."
+                onClose={() => setShowToast(false)}
+            />
         </form>
     );
 }
