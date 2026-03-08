@@ -16,6 +16,7 @@ type Product = {
     name: string;
     description: string | null;
     price: number;
+    originalPrice?: number;
     imageUrl: string | null;
     variants: Variant[];
 };
@@ -38,6 +39,7 @@ export default function AddToCartButton({ product }: { product: Product }) {
             description: product.description || '',
             variantName: variant.name,
             price: Number(product.price),
+            originalPrice: product.originalPrice ? Number(product.originalPrice) : undefined,
             quantity: 1,
             imageUrl: product.imageUrl || undefined,
             stock: variant.stock

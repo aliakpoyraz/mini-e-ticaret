@@ -110,6 +110,7 @@ export default async function Home() {
                       id: product.id,
                       name: product.name,
                       price: finalPrice,
+                      originalPrice: originalPrice > finalPrice ? originalPrice : undefined,
                       imageUrl: product.imageUrl,
                       slug: product.slug
                     }}

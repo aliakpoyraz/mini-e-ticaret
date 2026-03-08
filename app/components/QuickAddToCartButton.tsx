@@ -16,6 +16,7 @@ type Product = {
     id: number;
     name: string;
     price: number;
+    originalPrice?: number;
     imageUrl: string | null;
     slug: string;
 };
@@ -56,6 +57,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
             productId: product.id,
             name: product.name,
             price: Number(product.price),
+            originalPrice: product.originalPrice ? Number(product.originalPrice) : undefined,
             imageUrl: product.imageUrl || undefined,
             variantId: variant.id,
             variantName: variant.name,

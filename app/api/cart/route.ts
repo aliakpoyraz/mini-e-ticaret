@@ -3,11 +3,11 @@ import prisma from '@/lib/prisma';
 import { getSession } from '@/app/lib/auth';
 
 // Oturumdan (session) kullanıcı bilgisini almak için yardımcı fonksiyon
-async function getUser() {
+async function getUser(): Promise<{ id: number } | null> {
     try {
         const session = await getSession();
         if (!session || !session.userId) return null;
-        return { id: session.userId };
+        return { id: Number(session.userId) };
     } catch (e) {
         return null;
     }
@@ -25,23 +25,61 @@ export async function GET() {
             include: {
                 variant: {
                     include: {
-                        product: true
+                        product: {
+                            include: {
+                                discounts: {
+                                    where: { active: true }
+                                }
+                            }
+                        }
                     }
                 }
             }
         });
 
-        const formattedItems = cartItems.map(item => ({
-            productId: item.variant.productId,
-            variantId: item.variantId,
-            name: item.variant.product.name,
-            description: item.variant.product.description || '',
-            variantName: item.variant.name,
-            price: Number(item.variant.product.price),
-            quantity: item.quantity,
-            stock: item.variant.stock,
-            imageUrl: item.variant.product.imageUrl || ''
-        }));
+        const globalDiscounts = await prisma.discount.findMany({
+            where: { active: true, productId: null },
+            orderBy: { value: 'desc' },
+        });
+
+        const subtotal = cartItems.reduce((acc, item) => {
+            return acc + (Number(item.variant.product.price) * item.quantity);
+        }, 0);
+
+        const bestGlobalDiscount = globalDiscounts.find(d => !d.minCartValue || subtotal >= Number(d.minCartValue));
+
+        const formattedItems = cartItems.map(item => {
+            let finalPrice = Number(item.variant.product.price);
+            const originalPrice = finalPrice;
+            let activeDiscount = null;
+
+            if (item.variant.product.discounts && item.variant.product.discounts.length > 0) {
+                activeDiscount = item.variant.product.discounts[0];
+            } else if (bestGlobalDiscount) {
+                activeDiscount = bestGlobalDiscount;
+            }
+
+            if (activeDiscount) {
+                if (activeDiscount.type === 'PERCENTAGE') {
+                    finalPrice = finalPrice - (finalPrice * Number(activeDiscount.value) / 100);
+                } else if (activeDiscount.type === 'FIXED') {
+                    finalPrice = Math.max(0, finalPrice - Number(activeDiscount.value));
+                }
+            }
+
+            return {
+                productId: item.variant.productId,
+                variantId: item.variantId,
+                name: item.variant.product.name,
+                description: item.variant.product.description || '',
+                variantName: item.variant.name,
+                price: finalPrice,
+                originalPrice: originalPrice,
+                quantity: item.quantity,
+                stock: item.variant.stock,
+                imageUrl: item.variant.product.imageUrl || ''
+            };
+        });
 
         return NextResponse.json({ items: formattedItems });
     } catch (error: any) {

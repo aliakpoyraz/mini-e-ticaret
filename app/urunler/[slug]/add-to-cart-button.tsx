@@ -16,6 +16,7 @@ type Product = {
     id: number;
     name: string;
     price: number;
+    originalPrice?: number;
     imageUrl: string | null;
 };
 
@@ -37,11 +38,12 @@ export default function AddToCartButton({ product, variants }: { product: Produc
         addToCart({
             productId: product.id,
             name: product.name,
+            description: '',
             price: Number(product.price),
+            originalPrice: product.originalPrice ? Number(product.originalPrice) : undefined,
             imageUrl: product.imageUrl || undefined,
             variantId: selectedVariant.id,
             variantName: selectedVariant.name,
-            description: '',
             quantity: 1,
             stock: selectedVariant.stock
         });

@@ -123,6 +123,7 @@ export default function CartPage() {
     }, []);
 
     const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const originalSubtotal = items.reduce((acc, item) => acc + ((item.originalPrice || item.price) * item.quantity), 0);
     const shipping = 0; // kargo ücretsiz
 
     let discountAmount = 0;
@@ -318,7 +319,16 @@ export default function CartPage() {
                                     <div className="flex-1">
                                         <div className="flex justify-between items-start mb-1">
                                             <h3 className="font-bold text-slate-900">{item.name}</h3>
-                                            <p className="font-bold text-slate-900">{(item.price * item.quantity).toFixed(2)} ₺</p>
+                                            <div className="flex flex-col items-end">
+                                                {item.originalPrice && item.originalPrice > item.price && (
+                                                    <span className="text-xs text-slate-400 line-through">
+                                                        {(item.originalPrice * item.quantity).toFixed(2)} ₺
+                                                    </span>
+                                                )}
+                                                <span className="font-bold text-slate-900">
+                                                    {(item.price * item.quantity).toFixed(2)} ₺
+                                                </span>
+                                            </div>
                                         </div>
                                         <p className="text-slate-500 text-sm mb-2">{item.variantName}</p>
 
@@ -408,19 +418,34 @@ export default function CartPage() {
 
                         <div className="space-y-3">
                             <div className="flex justify-between text-slate-600">
+                                <span>Ürün Toplamı</span>
+                                <span className={originalSubtotal > subtotal ? "text-slate-400 line-through" : "font-medium text-slate-900"}>{originalSubtotal.toFixed(2)} ₺</span>
+                            </div>
+                            {originalSubtotal > subtotal && (
+                                <div className="flex justify-between text-green-600">
+                                    <span>Ürün İndirimleri</span>
+                                    <span className="font-bold">-{(originalSubtotal - subtotal).toFixed(2)} ₺</span>
+                                </div>
+                            )}
+                            <div className="flex justify-between text-slate-600">
                                 <span>Ara Toplam</span>
                                 <span className="font-medium text-slate-900">{subtotal.toFixed(2)} ₺</span>
                             </div>
                             {discountAmount > 0 && (
                                 <div className="flex justify-between text-green-600">
-                                    <span>İndirim ({appliedDiscountName})</span>
+                                    <span>Sepet İndirimi ({appliedDiscountName})</span>
                                     <span className="font-bold">-{discountAmount.toFixed(2)} ₺</span>
                                 </div>
                             )}
                             {appliedCoupon && (
-                                <div className="flex justify-between text-brand-600">
-                                    <span>Kupon İndirimi ({appliedCoupon.code})</span>
-                                    <span className="font-bold">-{couponDiscountAmount.toFixed(2)} ₺</span>
+                                <div className="flex flex-col gap-1 text-brand-600">
+                                    <div className="flex justify-between">
+                                        <span>Kupon İndirimi ({appliedCoupon.code})</span>
+                                        <span className="font-bold">-{couponDiscountAmount.toFixed(2)} ₺</span>
+                                    </div>
+                                    <div className="text-xs opacity-80 text-right">
+                                        (Ürünler <span className="line-through">{originalSubtotal.toFixed(2)} ₺</span> yerine kupon ile <strong>{(subtotal - couponDiscountAmount).toFixed(2)} ₺</strong>'ye düştü!)
+                                    </div>
                                 </div>
                             )}
                             <div className="flex justify-between text-slate-600">

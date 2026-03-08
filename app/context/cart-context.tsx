@@ -12,6 +12,7 @@ export type CartItem = {
     quantity: number;
     stock: number;
     imageUrl?: string;
+    originalPrice?: number;
 };
 
 type CartContextType = {
@@ -58,6 +59,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 return Array.isArray(parsed) ? parsed.map((item: any) => ({
                     ...item,
                     price: Number(item.price) || 0,
+                    originalPrice: item.originalPrice ? Number(item.originalPrice) : undefined,
                     quantity: Number(item.quantity) || 1
                 })) : null;
             } catch (e) {

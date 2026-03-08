@@ -88,7 +88,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
     return (
         <div className="min-h-screen bg-white text-slate-900">
-            <div className="sticky top-16 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 hidden md:block">
+            <div className="sticky top-[104px] z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 hidden md:block">
                 <div className="container mx-auto px-6 py-4 flex justify-between items-center">
                     <h2 className="font-bold text-lg">{product.name}</h2>
                     {hasDiscount ? (
@@ -163,6 +163,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                                     id: product.id,
                                     name: product.name,
                                     price: finalPrice, // İndirimli fiyatı gönder
+                                    originalPrice: originalPrice > finalPrice ? originalPrice : undefined,
                                     imageUrl: product.imageUrl
                                 }}
                                 variants={product.variants}
