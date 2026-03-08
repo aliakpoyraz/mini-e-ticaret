@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getSession } from '@/app/lib/auth';
 
 // Helper to get user from session
 async function getUser() {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/auth/me`);
-        if (!res.ok) return null;
-        const data = await res.json();
-        return data.user;
+        const session = await getSession();
+        if (!session || !session.userId) return null;
+        return { id: session.userId };
     } catch (e) {
         return null;
     }

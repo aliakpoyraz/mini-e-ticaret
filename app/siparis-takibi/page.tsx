@@ -95,7 +95,7 @@ export default async function TrackOrderPage({
 
         // Sayfayı yeniden doğrulayarak (revalidate) güncelle
         const { revalidatePath } = require('next/cache');
-        revalidatePath('/track-order');
+        revalidatePath('/siparis-takibi');
     };
 
     const cancelOrder = async (formData: FormData) => {
@@ -127,7 +127,7 @@ export default async function TrackOrderPage({
         });
 
         const { revalidatePath } = require('next/cache');
-        revalidatePath('/track-order');
+        revalidatePath('/siparis-takibi');
         revalidatePath('/admin/orders');
         revalidatePath('/admin/products');
     };
@@ -139,7 +139,7 @@ export default async function TrackOrderPage({
                 <p className="text-slate-500 text-center mb-10">Siparişinizin güncel durumunu öğrenmek için sipariş numaranızı girin.</p>
 
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
-                    <form className="flex flex-col gap-4" action="/track-order">
+                    <form className="flex flex-col gap-4" action="/siparis-takibi">
                         <div className="flex flex-col sm:flex-row gap-4">
                             <input
                                 type="text"
