@@ -29,7 +29,7 @@ export async function GET(
 
         return NextResponse.json({ reviews });
     } catch (error) {
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 });
     }
 }
 
@@ -50,7 +50,7 @@ export async function POST(
         const { rating, comment } = body;
 
         if (!rating || rating < 1 || rating > 5) {
-            return NextResponse.json({ error: 'Valid rating is required (1-5)' }, { status: 400 });
+            return NextResponse.json({ error: 'Geçerli bir puan gereklidir (1-5)' }, { status: 400 });
         }
 
         // Re-verify eligibility on server side
@@ -68,7 +68,7 @@ export async function POST(
         });
 
         if (!purchase) {
-            return NextResponse.json({ error: 'You must purchase this product to review it.' }, { status: 403 });
+            return NextResponse.json({ error: 'Bu ürünü değerlendirmek için satın almış olmalısınız.' }, { status: 403 });
         }
 
         // Profanity Check
@@ -112,6 +112,6 @@ export async function POST(
         });
     } catch (error) {
         console.error('Post review error:', error);
-        return NextResponse.json({ error: 'Failed to post review' }, { status: 500 });
+        return NextResponse.json({ error: 'Değerlendirme paylaşılamadı' }, { status: 500 });
     }
 }

@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Geçersiz telefon numarası. Sadece rakam kullanın (en az 10 hane).' }, { status: 400 });
         }
 
-        const adminEmail = process.env.RESEND_FROM_EMAIL || 'destek@ornek.com';
+        const adminEmail = process.env.RESEND_FROM_EMAIL || 'bilgi@e-ticaret.aliakpoyraz.com';
 
         const emailHtml = `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
