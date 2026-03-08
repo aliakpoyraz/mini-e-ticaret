@@ -4,9 +4,9 @@ import { sendEmail } from '@/lib/resend';
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { name, email, subject, message } = body;
+        const { firstName, lastName, email, phone, subject, message } = body;
 
-        if (!name || !email || !subject || !message) {
+        if (!firstName || !lastName || !email || !phone || !subject || !message) {
             return NextResponse.json(
                 { error: 'Tüm alanlar zorunludur.' },
                 { status: 400 }
@@ -23,7 +23,17 @@ export async function POST(req: NextRequest) {
                     
                     <div style="margin-bottom: 15px;">
                         <strong style="color: #666;">Gönderen:</strong><br/>
-                        <span style="font-size: 16px;">${name} (${email})</span>
+                        <span style="font-size: 16px;">${firstName} ${lastName}</span>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <strong style="color: #666;">E-posta:</strong><br/>
+                        <span style="font-size: 16px;">${email}</span>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <strong style="color: #666;">Telefon:</strong><br/>
+                        <span style="font-size: 16px;">${phone}</span>
                     </div>
                     
                     <div style="margin-bottom: 15px;">
@@ -44,7 +54,7 @@ export async function POST(req: NextRequest) {
 
         const result = await sendEmail({
             to: adminEmail,
-            subject: `[İletişim Formu] ${subject}`,
+            subject: `[İletişim Formu] ${subject} - ${firstName} ${lastName}`,
             html: emailHtml,
         });
 

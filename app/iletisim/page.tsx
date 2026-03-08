@@ -16,10 +16,6 @@ export default function ContactPage() {
                 <div className="absolute bottom-0 left-0 w-1/4 h-1/2 bg-blue-500/10 blur-[100px] rounded-full -translate-x-1/2 translate-y-1/2"></div>
 
                 <div className="container mx-auto px-6 text-center relative z-10 max-w-4xl">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-brand-400 text-sm font-bold mb-8 animate-fade-in">
-                        <Sparkles size={16} />
-                        <span>Sizin İçin Buradayız</span>
-                    </div>
                     <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1]">
                         Bizimle İletişime Geçin
                     </h1>

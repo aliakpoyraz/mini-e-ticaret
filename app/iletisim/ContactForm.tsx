@@ -8,8 +8,10 @@ export default function ContactForm() {
     const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
+        phone: '',
         subject: '',
         message: ''
     });
@@ -36,7 +38,7 @@ export default function ContactForm() {
 
             if (res.ok) {
                 setIsSuccess(true);
-                setFormData({ name: '', email: '', subject: '', message: '' });
+                setFormData({ firstName: '', lastName: '', email: '', phone: '', subject: '', message: '' });
             } else {
                 setError(data.error || 'Mesaj gönderilemedi. Lütfen tüm alanları doldurduğunuzdan emin olun.');
             }
@@ -78,17 +80,32 @@ export default function ContactForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-bold text-slate-700 ml-1">Adınız Soyadınız</label>
+                    <label htmlFor="firstName" className="text-sm font-bold text-slate-700 ml-1">Adınız</label>
                     <input
                         required
                         type="text"
-                        id="name"
-                        value={formData.name}
+                        id="firstName"
+                        value={formData.firstName}
                         onChange={handleChange}
                         className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all text-slate-900 placeholder:text-slate-400"
-                        placeholder="Adınız Soyadınız"
+                        placeholder="Adınız"
                     />
                 </div>
+                <div className="space-y-2">
+                    <label htmlFor="lastName" className="text-sm font-bold text-slate-700 ml-1">Soyadınız</label>
+                    <input
+                        required
+                        type="text"
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all text-slate-900 placeholder:text-slate-400"
+                        placeholder="Soyadınız"
+                    />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-bold text-slate-700 ml-1">E-posta Adresiniz</label>
                     <input
@@ -99,6 +116,18 @@ export default function ContactForm() {
                         onChange={handleChange}
                         className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all text-slate-900 placeholder:text-slate-400"
                         placeholder="ornek@email.com"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label htmlFor="phone" className="text-sm font-bold text-slate-700 ml-1">Telefon Numaranız</label>
+                    <input
+                        required
+                        type="tel"
+                        id="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all text-slate-900 placeholder:text-slate-400"
+                        placeholder="0 (5XX) XXX XX XX"
                     />
                 </div>
             </div>
@@ -132,14 +161,16 @@ export default function ContactForm() {
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-slate-900 text-white font-bold py-4.5 rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 active:scale-[0.98]"
+                className="w-full bg-brand-600 hover:bg-brand-700 text-white font-extrabold py-5 rounded-2xl shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-3 group disabled:opacity-50 active:scale-[0.98] text-lg"
             >
                 {isLoading ? (
-                    <Loader2 size={20} className="animate-spin" />
+                    <Loader2 size={24} className="animate-spin" />
                 ) : (
                     <>
                         <span>Mesajı Gönder</span>
-                        <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                        <div className="bg-white/20 p-1.5 rounded-lg group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">
+                            <Send size={20} />
+                        </div>
                     </>
                 )}
             </button>
