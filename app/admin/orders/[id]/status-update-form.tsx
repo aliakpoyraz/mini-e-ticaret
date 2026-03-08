@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import { Loader2, Check } from 'lucide-react';
 
+import { updateOrderStatus } from './actions';
+
 interface StatusUpdateFormProps {
     orderId: number;
     initialStatus: string;
-    updateStatusAction: (formData: FormData) => Promise<void>;
 }
 
-export default function StatusUpdateForm({ orderId, initialStatus, updateStatusAction }: StatusUpdateFormProps) {
+export default function StatusUpdateForm({ orderId, initialStatus }: StatusUpdateFormProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
@@ -19,12 +20,18 @@ export default function StatusUpdateForm({ orderId, initialStatus, updateStatusA
         setIsSuccess(false);
 
         const formData = new FormData(e.currentTarget);
+        const status = formData.get('status') as string;
+
         try {
-            await updateStatusAction(formData);
-            setIsSuccess(true);
-            setTimeout(() => {
-                setIsSuccess(false);
-            }, 3000);
+            const result = await updateOrderStatus(orderId, status);
+            if (result.success) {
+                setIsSuccess(true);
+                setTimeout(() => {
+                    setIsSuccess(false);
+                }, 3000);
+            } else {
+                alert('Güncelleme başarısız: ' + result.error);
+            }
         } catch (error) {
             console.error('Update failed:', error);
             alert('Güncelleme başarısız oldu.');
@@ -56,8 +63,8 @@ export default function StatusUpdateForm({ orderId, initialStatus, updateStatusA
                 type="submit"
                 disabled={isLoading}
                 className={`flex items-center justify-center gap-2 min-w-[100px] px-4 py-2.5 rounded-lg text-sm font-bold transition-all active:scale-[0.98] ${isSuccess
-                        ? 'bg-green-600 text-white'
-                        : 'bg-slate-900 text-white hover:bg-slate-800'
+                    ? 'bg-green-600 text-white'
+                    : 'bg-slate-900 text-white hover:bg-slate-800'
                     } disabled:opacity-70`}
             >
                 {isLoading ? (

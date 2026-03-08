@@ -2,11 +2,8 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Printer, Mail, Phone, MapPin, User, Calendar, CreditCard } from 'lucide-react';
-import { revalidatePath } from 'next/cache';
 import StatusUpdateForm from './status-update-form';
 import PrintButton from './print-button';
-import { sendEmail } from '@/lib/resend';
-import { getOrderStatusUpdateEmailHtml } from '@/lib/email-templates';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,72 +38,6 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
     });
 
     if (!order) notFound();
-
-    const updateStatus = async (formData: FormData) => {
-        "use server";
-        const status = formData.get('status') as string;
-        console.log(`[AdminOrderUpdate] İşlem başladı. Sipariş: #${orderId}, Yeni Durum: ${status}`);
-
-        let orderForEmail = null;
-
-        try {
-            await prisma.$transaction(async (tx) => {
-                const currentOrder = await tx.order.findUnique({
-                    where: { id: orderId },
-                    include: { items: true }
-                });
-
-                if (!currentOrder) {
-                    throw new Error(`Sipariş bulunamadı: #${orderId}`);
-                }
-
-                console.log(`[AdminOrderUpdate] Mevcut durum: ${currentOrder.status}`);
-
-                // Sadece iade edilmemiş bir durumdan RETURNED durumuna geçiliyorsa stokları geri yükle
-                if (status === 'RETURNED' && !['RETURNED', 'RETURN_REQUESTED'].includes(currentOrder.status)) {
-                    console.log(`[AdminOrderUpdate] Stoklar geri yükleniyor...`);
-                    for (const item of currentOrder.items) {
-                        await tx.variant.update({
-                            where: { id: item.variantId },
-                            data: { stock: { increment: item.quantity } }
-                        });
-                    }
-                }
-
-                orderForEmail = await tx.order.update({
-                    where: { id: orderId },
-                    data: { status }
-                });
-
-                console.log(`[AdminOrderUpdate] Veritabanı güncellendi. Yeni durum: ${orderForEmail.status}`);
-            });
-
-            // E-posta gönderimini transaction dışına çıkardık (daha güvenli ve hızlı)
-            if (orderForEmail) {
-                const updatedOrder = orderForEmail as any;
-                const statusLabel = STATUS_LABELS[status] || status;
-                console.log(`[AdminOrderUpdate] E-posta hazırlanıyor: ${updatedOrder.customerEmail} - Durum: ${statusLabel}`);
-
-                try {
-                    const emailRes = await sendEmail({
-                        to: updatedOrder.customerEmail,
-                        subject: `Sipariş Durumu Güncellemesi | YZL321 Store #${updatedOrder.id}`,
-                        html: getOrderStatusUpdateEmailHtml(updatedOrder.id, statusLabel, updatedOrder.customerName)
-                    });
-                    console.log(`[AdminOrderUpdate] E-posta sonucu:`, emailRes);
-                } catch (emailErr) {
-                    console.error(`[AdminOrderUpdate] E-posta gönderimi sırasında hata (fakat DB güncellendi):`, emailErr);
-                }
-            }
-
-            console.log(`[AdminOrderUpdate] İşlem başarıyla tamamlandı.`);
-            revalidatePath(`/admin/orders/${orderId}`);
-            revalidatePath('/admin/orders');
-        } catch (err) {
-            console.error(`[AdminOrderUpdate] Kritik hata:`, err);
-            throw err;
-        }
-    };
 
     return (
         <div className="space-y-6 max-w-5xl mx-auto">
@@ -146,7 +77,6 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                     <StatusUpdateForm
                         orderId={order.id}
                         initialStatus={order.status}
-                        updateStatusAction={updateStatus}
                     />
 
                     <PrintButton />
