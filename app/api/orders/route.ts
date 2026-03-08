@@ -110,7 +110,7 @@ export async function POST(request: Request) {
                     paymentMethod,
                     couponCode: couponCode || null,
                     total: calculatedTotal,
-                    status: 'PAID', // Anında ödemeyi simüle ediyoruz
+                    status: paymentMethod === 'CASH_ON_DELIVERY' ? 'CREATED' : 'PAID',
                     items: {
                         create: finalItems
                     }
