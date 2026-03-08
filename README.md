@@ -87,4 +87,3 @@ Projeyi yerel ortamınızda ayağa kaldırmak için:
 Proje **Vercel** üzerinde optimize edilmiştir. Otomatik build süreci için `prisma generate` komutu `postinstall` adımına eklenmiştir.
 
 ---
-**YZL321 Store** - *Software Engineering Graduate Project*
