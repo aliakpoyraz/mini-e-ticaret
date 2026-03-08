@@ -3,8 +3,6 @@
 import { useState } from 'react';
 import { Loader2, Check } from 'lucide-react';
 
-import { updateOrderStatus } from './actions';
-
 interface StatusUpdateFormProps {
     orderId: number;
     initialStatus: string;
@@ -16,13 +14,16 @@ export default function StatusUpdateForm({ orderId, initialStatus }: StatusUpdat
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        console.log(`[StatusUpdateForm] Form gönderiliyor. Order: ${orderId}`);
         setIsLoading(true);
         setIsSuccess(false);
 
         const formData = new FormData(e.currentTarget);
         const status = formData.get('status') as string;
+        console.log(`[StatusUpdateForm] Seçilen Durum: ${status}`);
 
         try {
+            console.log(`[StatusUpdateForm] Fetch başlatılıyor: /api/admin/orders/${orderId}/status`);
             const res = await fetch(`/api/admin/orders/${orderId}/status`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
