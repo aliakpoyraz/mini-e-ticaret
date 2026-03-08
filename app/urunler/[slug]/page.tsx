@@ -4,6 +4,7 @@ import AddToCartButton from './add-to-cart-button';
 import { ArrowLeft, Check, Truck, ShieldCheck, CreditCard, Headphones, Star } from 'lucide-react';
 import Link from 'next/link';
 import FavoriteButton from '@/app/components/FavoriteButton';
+import QuickAddToCartButton from '@/app/components/QuickAddToCartButton';
 import ProductImageGallery from '@/app/components/ProductImageGallery';
 import { getSession } from '@/app/lib/auth';
 import ReviewsSection from './components/ReviewsSection';
@@ -88,22 +89,34 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
     return (
         <div className="min-h-screen bg-white text-slate-900">
-            <div className="sticky top-[104px] z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 hidden md:block">
+            <div className="sticky top-16 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 hidden md:block">
                 <div className="container mx-auto px-6 py-4 flex justify-between items-center">
                     <h2 className="font-bold text-lg">{product.name}</h2>
-                    {hasDiscount ? (
-                        <div className="flex items-center gap-3">
-                            <span className="text-sm text-slate-400 line-through">{originalPrice.toFixed(2)} ₺</span>
-                            <span className="font-bold text-red-600">{finalPrice.toFixed(2)} ₺</span>
-                        </div>
-                    ) : (
-                        <span className="font-bold">{originalPrice.toFixed(2)} ₺</span>
-                    )}
-                    <FavoriteButton
-                        productId={product.id}
-                        initialIsFavorite={isFavorite}
-                        className="ml-4"
-                    />
+                    <div className="flex items-center gap-4">
+                        {hasDiscount ? (
+                            <div className="flex items-center gap-3">
+                                <span className="text-sm text-slate-400 line-through">{originalPrice.toFixed(2)} ₺</span>
+                                <span className="font-bold text-red-600">{finalPrice.toFixed(2)} ₺</span>
+                            </div>
+                        ) : (
+                            <span className="font-bold">{originalPrice.toFixed(2)} ₺</span>
+                        )}
+                        <QuickAddToCartButton
+                            product={{
+                                id: product.id,
+                                name: product.name,
+                                price: finalPrice,
+                                originalPrice: originalPrice > finalPrice ? originalPrice : undefined,
+                                imageUrl: product.imageUrl,
+                                slug: product.slug
+                            }}
+                            variants={product.variants}
+                        />
+                        <FavoriteButton
+                            productId={product.id}
+                            initialIsFavorite={isFavorite}
+                        />
+                    </div>
                 </div>
             </div>
 
