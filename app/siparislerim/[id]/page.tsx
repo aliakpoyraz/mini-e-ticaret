@@ -66,8 +66,12 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                         <div className="space-y-4">
                             {order.items.map((item) => (
                                 <div key={item.id} className="flex items-center gap-4 py-2">
-                                    <div className="w-16 h-16 bg-slate-50 rounded-xl border border-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
-                                        <Package size={20} className="text-slate-300" />
+                                    <div className="w-16 h-16 bg-slate-50 rounded-xl border border-slate-100 overflow-hidden shrink-0 flex items-center justify-center relative">
+                                        {item.variant.product.imageUrl ? (
+                                            <img src={item.variant.product.imageUrl} alt={item.variant.product.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <Package size={20} className="text-slate-300" />
+                                        )}
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-bold text-slate-900">{item.variant.product.name}</h3>

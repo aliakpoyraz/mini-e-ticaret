@@ -120,6 +120,39 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </div>
             </div>
 
+            {/* Mobile Sticky Bottom Bar */}
+            <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-100 p-4 md:hidden pb-safe shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] transition-transform duration-300 transform translate-y-0">
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1 truncate">
+                        <h3 className="font-bold text-sm text-slate-900 truncate">{product.name}</h3>
+                        <div className="flex items-center gap-2">
+                            {hasDiscount ? (
+                                <span className="font-bold text-red-600 text-sm">{finalPrice.toFixed(2)} ₺</span>
+                            ) : (
+                                <span className="font-bold text-slate-900 text-sm">{originalPrice.toFixed(2)} ₺</span>
+                            )}
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                        <FavoriteButton
+                            productId={product.id}
+                            initialIsFavorite={isFavorite}
+                        />
+                        <QuickAddToCartButton
+                            product={{
+                                id: product.id,
+                                name: product.name,
+                                price: finalPrice,
+                                originalPrice: originalPrice > finalPrice ? originalPrice : undefined,
+                                imageUrl: product.imageUrl,
+                                slug: product.slug
+                            }}
+                            variants={product.variants}
+                        />
+                    </div>
+                </div>
+            </div>
+
             <div className="container mx-auto px-6 pt-36 md:pt-40 lg:pt-44 pb-24">
                 <div className="flex flex-col md:flex-row gap-12 lg:gap-24">
 

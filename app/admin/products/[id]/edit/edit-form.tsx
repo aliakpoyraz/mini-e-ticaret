@@ -27,7 +27,7 @@ type Product = {
     price: number | any;
     imageUrl: string | null;
     slug: string;
-    isNew: boolean;
+    isNew?: boolean;
     images?: ProductImage[];
     variants: Variant[];
 };

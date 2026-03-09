@@ -15,6 +15,9 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
         include: {
             variants: {
                 orderBy: { order: 'asc' }
+            },
+            images: {
+                orderBy: { order: 'asc' }
             }
         }
     });
