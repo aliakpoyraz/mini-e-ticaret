@@ -35,28 +35,36 @@ export async function GET(request: Request) {
             throw new Error('Google payload missing');
         }
 
+        // Önce Google ID ile kullanıcıyı ara
         let user = await (prisma as any).user.findUnique({
-            where: { email: payload.email }
+            where: { googleId: payload.sub }
         });
 
         if (!user) {
-            // Kullanıcı oluştur
-            user = await (prisma as any).user.create({
-                data: {
-                    email: payload.email,
-                    firstName: payload.given_name,
-                    lastName: payload.family_name,
-                    googleId: payload.sub,
-                    isVerified: true,
-                    role: 'USER'
-                }
+            // Google ID ile bulunamadıysa e-posta ile kontrol et
+            user = await (prisma as any).user.findUnique({
+                where: { email: payload.email }
             });
-        } else if (!user.googleId) {
-            // Mevcut kullanıcıyı Google ile ilişkilendir
-            user = await (prisma as any).user.update({
-                where: { email: payload.email },
-                data: { googleId: payload.sub, isVerified: true }
-            });
+
+            if (user) {
+                // E-posta ile bulundu, mevcut hesaba Google ID ekle (hesap birleştirme)
+                user = await (prisma as any).user.update({
+                    where: { id: user.id },
+                    data: { googleId: payload.sub, isVerified: true }
+                });
+            } else {
+                // Hiçbir şekilde bulunamadı, yeni kullanıcı oluştur
+                user = await (prisma as any).user.create({
+                    data: {
+                        email: payload.email,
+                        firstName: payload.given_name,
+                        lastName: payload.family_name,
+                        googleId: payload.sub,
+                        isVerified: true,
+                        role: 'USER'
+                    }
+                });
+            }
         }
 
         const token = await signToken({
