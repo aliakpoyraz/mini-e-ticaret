@@ -22,7 +22,7 @@ export default async function TrackOrderPage({
             order = await prisma.order.findFirst({
                 where: {
                     OR: [
-                        { id: isNaN(parseInt(orderId)) ? -1 : parseInt(orderId) },
+                        { id: isNaN(parseInt(orderId)) ? -1 : parseInt(orderId), orderNumber: null },
                         { orderNumber: orderId }
                     ]
                 },
