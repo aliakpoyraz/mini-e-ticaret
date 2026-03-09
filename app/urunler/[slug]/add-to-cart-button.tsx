@@ -102,7 +102,7 @@ export default function AddToCartButton({ product, variants }: { product: Produc
             </button>
 
             {mounted && showModal && createPortal(
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
                     <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 transform transition-all animate-scale-up relative">
                         <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4 animate-scale-up">
                             <Check className="text-green-600" size={24} strokeWidth={3} />

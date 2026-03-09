@@ -98,7 +98,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
             {/* Variant Picker Modal */}
             {mounted && showPicker && createPortal(
                 <div
-                    className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in"
+                    className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in"
                     onClick={(e) => { if (e.target === e.currentTarget) setShowPicker(false); }}
                 >
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 animate-scale-up border border-slate-100">
@@ -151,7 +151,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
 
             {/* Success Modal */}
             {mounted && showSuccess && createPortal(
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
                     <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 animate-scale-up relative border border-slate-100">
                         <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                             <Check className="text-green-600" size={24} strokeWidth={3} />
