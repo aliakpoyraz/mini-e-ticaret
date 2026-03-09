@@ -66,8 +66,8 @@ export async function POST(
 
             const emailRes = await sendEmail({
                 to: updatedOrder.customerEmail,
-                subject: `Sipariş Durumu Güncellemesi | YZL321 Store #${updatedOrder.id}`,
-                html: getOrderStatusUpdateEmailHtml(updatedOrder.id, statusLabel, updatedOrder.customerName)
+                subject: `Sipariş Durumu Güncellemesi | YZL321 Store #${updatedOrder.orderNumber || updatedOrder.id}`,
+                html: getOrderStatusUpdateEmailHtml(updatedOrder.orderNumber || updatedOrder.id, statusLabel, updatedOrder.customerName)
             });
             console.log(`[AdminOrderUpdate - API] E-posta sonucu:`, emailRes);
         }
