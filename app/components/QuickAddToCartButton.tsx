@@ -99,7 +99,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
             {mounted && showPicker && createPortal(
                 <div
                     className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in"
-                    onClick={(e) => { if (e.target === e.currentTarget) setShowPicker(false); }}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (e.target === e.currentTarget) setShowPicker(false); }}
                 >
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 animate-scale-up border border-slate-100">
                         {/* Product Info */}
@@ -114,7 +114,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
                                 <p className="text-brand-600 font-bold text-sm mt-0.5">{product.price.toFixed(2)} ₺</p>
                             </div>
                             <button
-                                onClick={() => setShowPicker(false)}
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowPicker(false); }}
                                 className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
                             >
                                 <X size={18} />
@@ -126,7 +126,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
                             {variants.map(v => (
                                 <button
                                     key={v.id}
-                                    onClick={() => v.stock > 0 && handleVariantSelect(v)}
+                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); v.stock > 0 && handleVariantSelect(v); }}
                                     disabled={v.stock === 0 || isAdding}
                                     className={`px-5 py-2.5 rounded-xl text-sm font-bold border-2 transition-all ${v.stock === 0
                                         ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed line-through'
@@ -139,7 +139,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
                             ))}
                         </div>
                         <button
-                            onClick={() => router.push(`/urunler/${product.slug}`)}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/urunler/${product.slug}`); }}
                             className="mt-4 text-xs text-brand-600 hover:text-brand-700 font-semibold w-full text-center"
                         >
                             Ürün sayfasına git →
@@ -151,7 +151,10 @@ export default function QuickAddToCartButton({ product, variants, className = ''
 
             {/* Success Modal */}
             {mounted && showSuccess && createPortal(
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+                <div
+                    className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                >
                     <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 animate-scale-up relative border border-slate-100">
                         <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                             <Check className="text-green-600" size={24} strokeWidth={3} />
@@ -162,14 +165,14 @@ export default function QuickAddToCartButton({ product, variants, className = ''
                         </p>
                         <div className="flex flex-col gap-3">
                             <button
-                                onClick={() => { setShowSuccess(false); router.push('/sepet'); }}
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowSuccess(false); router.push('/sepet'); }}
                                 className="w-full flex items-center justify-between bg-slate-900 text-white px-6 py-3.5 rounded-2xl font-bold hover:bg-slate-800 transition-colors group"
                             >
                                 <span className="flex items-center gap-2"><ShoppingBag size={18} /> Sepete Git</span>
                                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                             </button>
                             <button
-                                onClick={() => setShowSuccess(false)}
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowSuccess(false); }}
                                 className="w-full bg-slate-100 text-slate-600 px-6 py-3.5 rounded-2xl font-bold hover:bg-slate-200 transition-colors"
                             >
                                 Alışverişe Devam Et
