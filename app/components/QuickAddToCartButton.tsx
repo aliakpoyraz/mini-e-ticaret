@@ -44,7 +44,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
         if (hasOptions) {
             setShowPicker(true);
         } else {
-            // Single variant — add directly
+            // Tek varyant
             const variant = variants[0];
             if (!variant || variant.stock === 0) return;
             doAddToCart(variant);
@@ -95,14 +95,14 @@ export default function QuickAddToCartButton({ product, variants, className = ''
                 )}
             </button>
 
-            {/* Variant Picker Modal */}
+            {/* Varyant Seçim */}
             {mounted && showPicker && createPortal(
                 <div
                     className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in"
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (e.target === e.currentTarget) setShowPicker(false); }}
                 >
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 animate-scale-up border border-slate-100">
-                        {/* Product Info */}
+                        {/* Ürün Bilgisi */}
                         <div className="flex items-center gap-4 mb-6">
                             {product.imageUrl && (
                                 <div className="w-14 h-14 rounded-xl overflow-hidden flex-none bg-slate-100">
@@ -149,7 +149,7 @@ export default function QuickAddToCartButton({ product, variants, className = ''
                 document.body
             )}
 
-            {/* Success Modal */}
+            {/* Başarılı */}
             {mounted && showSuccess && createPortal(
                 <div
                     className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in"
