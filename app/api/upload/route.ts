@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 
 import { getSession } from '@/app/lib/auth';
@@ -23,6 +23,13 @@ export async function POST(request: Request) {
 
         // public/uploads klasörüne kaydet
         const uploadDir = join(process.cwd(), 'public/uploads');
+
+        // Klasör yoksa oluştur
+        try {
+            await mkdir(uploadDir, { recursive: true });
+        } catch (e) {
+            console.error("Error creating upload directory:", e);
+        }
 
         // Basit dosya adı oluşturma
         const filename = `${Date.now()}-${file.name.replace(/\s/g, '-')}`;
