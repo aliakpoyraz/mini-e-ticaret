@@ -53,15 +53,27 @@ export default function ProductFilters() {
     return (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
             {/* Mobile Toggle Button */}
-            <button
-                onClick={() => setIsOpenMobile(!isOpenMobile)}
-                className="w-full flex items-center justify-between p-4 lg:hidden bg-slate-50 font-bold text-slate-900 border-b border-slate-100"
-            >
-                <div className="flex items-center gap-2">
+            <div className="w-full flex items-center justify-between p-4 lg:hidden bg-slate-50 border-b border-slate-100">
+                <button
+                    onClick={() => setIsOpenMobile(!isOpenMobile)}
+                    className="flex items-center gap-2 font-bold text-slate-900"
+                >
                     <Filter size={18} /> Filtreler
-                </div>
-                {isOpenMobile ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-            </button>
+                    {isOpenMobile ? <ChevronUp size={20} className="ml-1" /> : <ChevronDown size={20} className="ml-1" />}
+                </button>
+
+                {(search || priceMin || priceMax || sort !== 'newest' || searchParams.get('rating')) && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            clearFilters();
+                        }}
+                        className="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
+                    >
+                        <X size={14} /> Temizle
+                    </button>
+                )}
+            </div>
 
             <div className={`p-4 space-y-8 ${isOpenMobile ? 'block' : 'hidden'} lg:block`}>
                 <h3 className="font-bold text-xl text-slate-900 hidden lg:block">Filtreler</h3>

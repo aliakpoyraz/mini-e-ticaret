@@ -87,8 +87,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
     if (q) {
         const normalizedQ = normalizeTR(q);
         filteredProducts = filteredProducts.filter((p: any) =>
-            normalizeTR(p.name).includes(normalizedQ) ||
-            normalizeTR(p.description || '').includes(normalizedQ)
+            normalizeTR(p.name).includes(normalizedQ)
         );
     }
 
