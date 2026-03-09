@@ -128,7 +128,7 @@ Bu proje, bir e-ticaret senaryosunun bel kemiği olan veri tutarlılığını sa
 ---
 
 ## 📄 Lisans
-Bu proje geliştirilmeye açık ve portfolyo amaçlı sunulmuştur.
+Bu proje geliştirilmeye açık ve portfolyo amaçlı sunulmuştur. 
 
 <div align="center">
   <p>Sevgi ve tasarım odaklı geliştirildi ❤️</p>
