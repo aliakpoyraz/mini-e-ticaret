@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { put } from '@vercel/blob';
 
 import { getSession } from '@/app/lib/auth';
 
@@ -21,25 +20,17 @@ export async function POST(request: Request) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
-        // public/uploads klasörüne kaydet
-        const uploadDir = join(process.cwd(), 'public/uploads');
-
-        // Klasör yoksa oluştur
-        try {
-            await mkdir(uploadDir, { recursive: true });
-        } catch (e) {
-            console.error("Error creating upload directory:", e);
-        }
-
-        // Basit dosya adı oluşturma
+        // Vercel Blob'a yükle (public)
         const filename = `${Date.now()}-${file.name.replace(/\s/g, '-')}`;
-        const path = join(uploadDir, filename);
+        const blob = await put(filename, buffer, {
+            access: 'public',
+            contentType: file.type || 'image/jpeg'
+        });
 
-        await writeFile(path, buffer);
-
-        return NextResponse.json({ url: `/uploads/${filename}` });
+        // Blob URL'sini geri döndür
+        return NextResponse.json({ url: blob.url });
     } catch (error) {
-        console.error("Upload error:", error);
+        console.error("Vercel Blob Upload error:", error);
         return NextResponse.json({ error: "Upload failed" }, { status: 500 });
     }
 }
