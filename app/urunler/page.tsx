@@ -47,7 +47,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         if (max !== undefined) where.price.lte = max;
     }
 
-    let orderByConfig: any = { createdAt: 'desc' };
+    let orderByConfig: any = [{ sortOrder: 'asc' }, { createdAt: 'desc' }];
     if (sort === 'price_asc') {
         orderByConfig = { price: 'asc' };
     } else if (sort === 'price_desc') {
@@ -182,11 +182,11 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                                                         <span className="bg-red-600 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
                                                             İndirim
                                                         </span>
-                                                    ) : (
+                                                    ) : product.isNew ? (
                                                         <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-slate-900 shadow-sm">
                                                             Yeni
                                                         </span>
-                                                    )}
+                                                    ) : null}
                                                 </div>
 
                                                 {product.reviews && product.reviews.length > 0 && (

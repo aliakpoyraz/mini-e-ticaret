@@ -27,6 +27,7 @@ type Product = {
     price: number | any;
     imageUrl: string | null;
     slug: string;
+    isNew: boolean;
     images?: ProductImage[];
     variants: Variant[];
 };
@@ -83,7 +84,8 @@ export default function EditProductForm({ product }: { product: Product }) {
             description: formData.get('description'),
             price: parseFloat(formData.get('price') as string),
             imageUrls: imageUrls,
-            variants: variants
+            variants: variants,
+            isNew: formData.get('isNew') === 'on' || formData.get('isNew') === 'true'
         };
 
         setIsSaving(true);
@@ -129,6 +131,13 @@ export default function EditProductForm({ product }: { product: Product }) {
                     <div>
                         <label className="block text-sm font-semibold text-gray-900 mb-1">Fiyat (₺)</label>
                         <input name="price" type="number" step="0.01" defaultValue={Number(product.price)} required className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-white text-gray-900 font-mono text-sm" />
+                    </div>
+
+                    <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border border-gray-200 h-fit self-end">
+                        <input type="checkbox" name="isNew" id="isNew" defaultChecked={product.isNew} className="w-4 h-4 text-brand-600 bg-white border-gray-300 rounded focus:ring-brand-500 cursor-pointer" />
+                        <label htmlFor="isNew" className="text-sm font-semibold text-gray-900 cursor-pointer">
+                            "YENİ" Etiketi Göster
+                        </label>
                     </div>
 
                     <div>

@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, description, price, imageUrls, variants, slug: manualSlug } = body;
+        const { name, description, price, imageUrls, variants, slug: manualSlug, isNew } = body;
 
         const mainImageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : null;
 
@@ -54,6 +54,7 @@ export async function POST(request: Request) {
                 slug: finalSlug,
                 description,
                 price,
+                isNew: isNew ?? false,
                 imageUrl: mainImageUrl, // Geriye dönük uyumluluk
                 images: {
                     create: imagesData

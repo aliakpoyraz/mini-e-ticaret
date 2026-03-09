@@ -30,7 +30,10 @@ export default async function Home() {
         where: { status: 'APPROVED' }
       }
     },
-    orderBy: { id: 'desc' }
+    orderBy: [
+      { sortOrder: 'asc' },
+      { id: 'desc' }
+    ]
   });
 
   const globalDiscounts = await prisma.discount.findMany({
@@ -97,6 +100,10 @@ export default async function Home() {
                     ) : hasDiscount ? (
                       <span className="bg-red-600 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
                         İndirim
+                      </span>
+                    ) : product.isNew ? (
+                      <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-slate-900 shadow-sm">
+                        Yeni
                       </span>
                     ) : null}
                   </div>

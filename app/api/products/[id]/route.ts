@@ -32,7 +32,7 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
 
     try {
         const body = await request.json();
-        const { name, description, price, imageUrls, variants, slug: manualSlug } = body;
+        const { name, description, price, imageUrls, variants, slug: manualSlug, isNew } = body;
 
         const mainImageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : null;
 
@@ -75,6 +75,7 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
                     slug: finalSlug,
                     description,
                     price,
+                    isNew: isNew ?? false,
                     imageUrl: mainImageUrl
                 }
             });
