@@ -70,6 +70,10 @@ export default function Navbar({
             router.push(`/urunler?q=${encodeURIComponent(searchQuery.trim())}`);
             setIsSearchOpen(false);
             setSearchQuery('');
+            // Klavyeyi kapat
+            if (typeof document !== 'undefined') {
+                (document.activeElement as HTMLElement)?.blur();
+            }
         }
     };
 
@@ -242,7 +246,7 @@ export default function Navbar({
 
                 {/* Arama arayüzü */}
                 {mounted && isSearchOpen && createPortal(
-                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+                    <div className="fixed inset-0 z-[110] flex items-start pt-24 justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in md:items-center md:pt-4">
                         <button
                             onClick={() => setIsSearchOpen(false)}
                             className="absolute top-4 right-4 md:top-8 md:right-8 p-3 text-white hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-colors animate-fade-in"
