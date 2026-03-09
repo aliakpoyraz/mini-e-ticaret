@@ -215,14 +215,25 @@ export default function CartPage() {
             if (expiryParts.length === 2) {
                 const month = parseInt(expiryParts[0], 10);
                 const year = parseInt(expiryParts[1], 10);
-                const currentYear = new Date().getFullYear() % 100;
+                const currentDate = new Date();
+                const currentYear = currentDate.getFullYear() % 100;
+                const currentMonth = currentDate.getMonth() + 1;
 
+                // 1. Ay formatı kontrolü
                 if (month < 1 || month > 12) {
                     showError('Lütfen geçerli bir ay girin (01-12).');
                     return;
                 }
+
+                // 2. Genel yıl kontrolü (Geçmiş yıllar veya çok uzak gelecek reddedilir)
                 if (year < currentYear || year > currentYear + 20) {
                     showError('Lütfen geçerli bir yıl girin.');
+                    return;
+                }
+
+                // 3. Geçmiş ay kontrolü (Eğer bulunduğumuz yıldaysak, girilen ay şimdiki aydan küçük olmamalı)
+                if (year === currentYear && month < currentMonth) {
+                    showError('Kredi kartınızın son kullanma tarihi geçmiş olamaz.');
                     return;
                 }
             } else {
