@@ -8,7 +8,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
 
-Next.js ve modern web teknolojilerini öğrenmek ve uygulamak amacıyla geliştirdiğim, hem müşteriler hem de yöneticiler için pratik özellikleri barındıran işlevsel bir e-ticaret (portfolyo) projesi.
+Next.js ve modern web teknolojilerini öğrenmek ve uygulamak amacıyla geliştirdiğim aynı zamanda YZL321 dersi kapsamındaki proje ödevim yerine geçmesi amacıyla geliştirdiğim, hem müşteriler hem de yöneticiler için pratik özellikleri barındıran işlevsel bir e-ticaret projesi.
 
 [Canlı Demo](https://e-ticaret.aliakpoyraz.com) · [Hata Bildir](https://github.com/aliakpoyraz/mini-e-ticaret/issues/new) · [Özellik İste](https://github.com/aliakpoyraz/mini-e-ticaret/issues/new)
 
@@ -118,9 +118,8 @@ Hazırlanan ilk başlatma mekanizması ile giriş ekranından `admin@store.com` 
 
 ---
 
-## 🔒 Sipariş & Stok Durum Makinesi (State Machine)
+## 🔒 Sipariş & Stok Durum
 
-Bu proje, bir e-ticaret senaryosunun bel kemiği olan veri tutarlılığını sağlamak için katı bir durum akışı izler:
 - Kapıda Ödemeli siparişler **`CREATED`** (Oluşturuldu), Kredi Kartlı siparişler **`PAID`** (Ödendi) statüsü ile başlar.
 - Kargodan önce **`CANCELLED`** (İptal) veya ürün geri geldiğinde **`RETURNED`** (İade Edildi) statüsüne geçildiğinde; o siparişteki tüm **stoklar milisaniyeler içinde sisteme otomatik olarak geri işlenir**.
 - Her statü değişiminde kullanıcıya özel, dinamik hesaplanmış e-posta bilgilendirmeleri gönderilir.
