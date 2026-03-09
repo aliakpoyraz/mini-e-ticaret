@@ -19,37 +19,37 @@ export default async function TrackOrderPage({
 
     if (orderId) {
         try {
-            const parsedId = parseInt(orderId);
-            if (isNaN(parsedId)) {
-                error = "Geçersiz sipariş numarası.";
-            } else {
-                order = await prisma.order.findUnique({
-                    where: { id: parsedId },
-                    include: {
-                        items: {
-                            include: {
-                                variant: {
-                                    include: { product: true }
-                                }
+            order = await prisma.order.findFirst({
+                where: {
+                    OR: [
+                        { id: isNaN(parseInt(orderId)) ? -1 : parseInt(orderId) },
+                        { orderNumber: orderId }
+                    ]
+                },
+                include: {
+                    items: {
+                        include: {
+                            variant: {
+                                include: { product: true }
                             }
                         }
                     }
-                });
+                }
+            });
 
-                if (!order) {
-                    error = "Sipariş bulunamadı. Lütfen bilgileri kontrol edin.";
-                } else {
-                    let isAuthorized = false;
-                    if (isLoggedIn && order.userId === session.userId) {
-                        isAuthorized = true;
-                    } else if (!isLoggedIn && orderEmail && order.customerEmail === orderEmail) {
-                        isAuthorized = true;
-                    }
+            if (!order) {
+                error = "Sipariş bulunamadı. Lütfen bilgileri kontrol edin.";
+            } else {
+                let isAuthorized = false;
+                if (isLoggedIn && order.userId === session.userId) {
+                    isAuthorized = true;
+                } else if (!isLoggedIn && orderEmail && order.customerEmail === orderEmail) {
+                    isAuthorized = true;
+                }
 
-                    if (!isAuthorized) {
-                        error = "Bu siparişi görüntüleme yetkiniz yok veya e-posta adresi eşleşmedi.";
-                        order = null;
-                    }
+                if (!isAuthorized) {
+                    error = "Bu siparişi görüntüleme yetkiniz yok veya e-posta adresi eşleşmedi.";
+                    order = null;
                 }
             }
         } catch (e) {
@@ -144,7 +144,7 @@ export default async function TrackOrderPage({
                             <input
                                 type="text"
                                 name="id"
-                                placeholder="Sipariş Numaranız (Örn: 123)"
+                                placeholder="Sipariş Numaranız (Örn: A1B2C3D4)"
                                 defaultValue={orderId || ''}
                                 required
                                 className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
@@ -180,7 +180,7 @@ export default async function TrackOrderPage({
                         <div className="flex justify-between items-start mb-8 pb-8 border-b border-slate-100">
                             <div>
                                 <p className="text-sm text-slate-500 mb-1">Sipariş No</p>
-                                <h2 className="text-2xl font-bold text-slate-900">#{order.id}</h2>
+                                <h2 className="text-2xl font-bold text-slate-900">#{order.orderNumber || order.id}</h2>
                             </div>
                             <div className="text-right">
                                 <p className="text-sm text-slate-500 mb-1">Sipariş Tarihi</p>

@@ -118,7 +118,7 @@ export default async function AdminOrdersPage() {
                                     <tr key={order.id} className="hover:bg-slate-50 transition-colors group">
                                         <td className="px-4 py-4 font-bold text-slate-900 align-top text-sm">
                                             <Link href={`/admin/orders/${order.id}`} className="hover:text-blue-600 transition-colors">
-                                                #{order.id}
+                                                #{order.orderNumber || order.id}
                                             </Link>
                                         </td>
                                         <td className="px-4 py-4 align-top">

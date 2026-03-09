@@ -108,7 +108,7 @@ export default async function OrdersPage() {
                                     </div>
                                     <div className="flex-1 sm:hidden"></div>
                                     <Link
-                                        href={`/siparis-takibi?id=${order.id}`}
+                                        href={`/siparis-takibi?id=${order.orderNumber || order.id}`}
                                         className="text-brand-600 hover:text-brand-700 font-medium text-sm flex items-center gap-1 whitespace-nowrap bg-brand-50 hover:bg-brand-100 px-4 py-2 rounded-xl transition-colors"
                                     >
                                         Detaylar
@@ -119,14 +119,13 @@ export default async function OrdersPage() {
 
                             <div className="p-4 sm:p-5">
                                 <div className="flex gap-4 overflow-x-auto pb-2 snap-x">
-                                    {order.items.map((item) => (
+                                    {order.items.map((item: any) => (
                                         <div key={item.id} className="flex-none w-20 h-20 sm:w-24 sm:h-24 relative rounded-xl border border-slate-100 overflow-hidden bg-slate-50 snap-start group">
                                             {item.variant.product.imageUrl ? (
-                                                <Image
+                                                <img
                                                     src={item.variant.product.imageUrl}
                                                     alt={item.variant.product.name}
-                                                    fill
-                                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-slate-400">

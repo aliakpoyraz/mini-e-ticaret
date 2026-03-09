@@ -58,7 +58,7 @@ export const getForgotPasswordEmailHtml = (resetUrl: string) => layout(`
   </p>
 `);
 
-export const getOrderConfirmationEmailHtml = (orderId: number, total: string, customerName: string) => layout(`
+export const getOrderConfirmationEmailHtml = (orderId: string | number, total: string, customerName: string) => layout(`
   <h1 style="font-size: 24px; font-weight: 700; color: #0f172a; margin: 0 0 16px 0; text-align: center;">
     Siparişiniz Alındı!
   </h1>
@@ -80,7 +80,7 @@ export const getOrderConfirmationEmailHtml = (orderId: number, total: string, cu
   </p>
 `);
 
-export const getOrderStatusUpdateEmailHtml = (orderId: number, statusLabel: string, customerName: string) => layout(`
+export const getOrderStatusUpdateEmailHtml = (orderId: string | number, statusLabel: string, customerName: string) => layout(`
   <h1 style="font-size: 24px; font-weight: 700; color: #0f172a; margin: 0 0 16px 0; text-align: center;">
     Siparişinde Güncelleme Var!
   </h1>

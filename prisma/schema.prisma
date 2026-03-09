@@ -41,6 +41,7 @@ model Variant {
 
 model Order {
   id              Int         @id @default(autoincrement())
+  orderNumber     String?     @unique
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   status          String      @default("CREATED")

@@ -3,6 +3,7 @@
 import { useCart } from '../context/cart-context';
 import { useRouter } from 'next/navigation';
 import { Trash2, ArrowRight, CreditCard, Wallet, Truck, User, MapPin, Phone, Mail, Building, Tag, Check } from 'lucide-react';
+import { Toast } from '../components/Toast';
 import { useState, useEffect } from 'react';
 
 const TURKISH_CITIES = [
@@ -22,6 +23,9 @@ export default function CartPage() {
     const { items, updateQuantity, removeFromCart, clearCart } = useCart();
     const router = useRouter();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
+    const [toastConfig, setToastConfig] = useState<{ show: boolean, message: string, type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
+
+    const showError = (msg: string) => setToastConfig({ show: true, message: msg, type: 'error' });
 
     const [isGuest, setIsGuest] = useState<boolean | null>(null);
     const [userData, setUserData] = useState<{ firstName: string, lastName: string, email: string, phone: string } | null>(null);
@@ -195,15 +199,15 @@ export default function CartPage() {
 
         if (formData.paymentMethod === 'CREDIT_CARD') {
             if (!cardData.cardNumber || !cardData.cardName || !cardData.expiryDate || !cardData.cvv) {
-                alert('Lütfen kredi kartı bilgilerini eksiksiz doldurun.');
+                showError('Lütfen kredi kartı bilgilerini eksiksiz doldurun.');
                 return;
             }
             if (cardData.cardNumber.replace(/\s/g, '').length < 16) {
-                alert('Geçerli bir kredi kartı numarası girin.');
+                showError('Geçerli bir kredi kartı numarası girin.');
                 return;
             }
             if (cardData.expiryDate.length < 5) {
-                alert('Lütfen son kullanma tarihini AA/YY formatında girin.');
+                showError('Lütfen son kullanma tarihini AA/YY formatında girin.');
                 return;
             }
 
@@ -214,20 +218,20 @@ export default function CartPage() {
                 const currentYear = new Date().getFullYear() % 100;
 
                 if (month < 1 || month > 12) {
-                    alert('Lütfen geçerli bir ay girin (01-12).');
+                    showError('Lütfen geçerli bir ay girin (01-12).');
                     return;
                 }
                 if (year < currentYear || year > currentYear + 20) {
-                    alert('Lütfen geçerli bir yıl girin.');
+                    showError('Lütfen geçerli bir yıl girin.');
                     return;
                 }
             } else {
-                alert('Lütfen son kullanma tarihini AA/YY formatında girin.');
+                showError('Lütfen son kullanma tarihini AA/YY formatında girin.');
                 return;
             }
 
             if (cardData.cvv.length < 3) {
-                alert('Lütfen geçerli bir CVV girin.');
+                showError('Lütfen geçerli bir CVV girin.');
                 return;
             }
         }
@@ -270,7 +274,7 @@ export default function CartPage() {
             clearCart();
             router.push(`/siparislerim/${order.id}`);
         } catch (error: any) {
-            alert(error.message);
+            showError(error.message);
             setIsCheckingOut(false);
         }
     };
@@ -671,7 +675,7 @@ export default function CartPage() {
                                             required={formData.paymentMethod === 'CREDIT_CARD'}
                                             placeholder="Ad Soyad"
                                             value={cardData.cardName}
-                                            onChange={(e) => setCardData({ ...cardData, cardName: e.target.value })}
+                                            onChange={(e) => setCardData({ ...cardData, cardName: e.target.value.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ\s]/g, '') })}
                                             className="w-full border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition bg-slate-50/50 text-slate-900 font-medium placeholder:font-normal placeholder:text-slate-400"
                                         />
                                     </div>
@@ -748,6 +752,13 @@ export default function CartPage() {
                     </div>
                 </div>
             </div>
+
+            <Toast
+                show={toastConfig.show}
+                message={toastConfig.message}
+                type={toastConfig.type}
+                onClose={() => setToastConfig({ ...toastConfig, show: false })}
+            />
         </div>
     );
 }

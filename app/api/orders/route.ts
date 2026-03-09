@@ -100,8 +100,12 @@ export async function POST(request: Request) {
 
             const session = await getSession();
 
+            // Generate an 8-character order number
+            const orderNumber = Math.random().toString(36).substring(2, 10).toUpperCase();
+
             return await tx.order.create({
                 data: {
+                    orderNumber,
                     userId: session?.userId ? Number(session.userId) : null,
                     customerName,
                     customerAddress,
@@ -119,10 +123,11 @@ export async function POST(request: Request) {
         });
 
         // Sipariş onayı e-postasını gönder
+        const displayOrderNumber = order.orderNumber || order.id.toString();
         await sendEmail({
             to: customerEmail,
-            subject: `Siparişiniz Alındı | YZL321 Store #${order.id}`,
-            html: getOrderConfirmationEmailHtml(order.id, Number(order.total).toFixed(2), customerName)
+            subject: `Siparişiniz Alındı | YZL321 Store #${displayOrderNumber}`,
+            html: getOrderConfirmationEmailHtml(displayOrderNumber, Number(order.total).toFixed(2), customerName)
         });
 
         return NextResponse.json(order);

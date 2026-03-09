@@ -5,9 +5,10 @@ interface ToastProps {
     message: string;
     show: boolean;
     onClose: () => void;
+    type?: 'success' | 'error';
 }
 
-export function Toast({ message, show, onClose }: ToastProps) {
+export function Toast({ message, show, onClose, type = 'success' }: ToastProps) {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -36,7 +37,11 @@ export function Toast({ message, show, onClose }: ToastProps) {
                     : 'translate-y-8 opacity-0 scale-95'
                 }
             `}>
-                <CheckCircle2 size={20} className="text-emerald-400" />
+                {type === 'error' ? (
+                    <X className="text-red-400" size={20} />
+                ) : (
+                    <CheckCircle2 size={20} className="text-emerald-400" />
+                )}
                 <p className="text-sm font-semibold tracking-wide pr-2">
                     {message}
                 </p>

@@ -53,7 +53,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                     <p className="text-slate-600 text-lg">Siparişiniz için teşekkür ederiz. Hazırlıklara başladık.</p>
                     <div className="mt-4 inline-block bg-white px-4 py-2 rounded-full border border-slate-200">
                         <span className="text-slate-500 text-sm">Sipariş No: </span>
-                        <span className="text-slate-900 font-mono font-bold">#{order.id}</span>
+                        <span className="text-slate-900 font-mono font-bold">#{order.orderNumber || order.id}</span>
                     </div>
                 </div>
 

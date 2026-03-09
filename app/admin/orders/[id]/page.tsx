@@ -51,7 +51,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                     </Link>
                     <div>
                         <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-                            Sipariş No #{order.id}
+                            Sipariş No #{order.orderNumber || order.id}
                             <span className={`px-3 py-1 rounded-full text-xs font-bold border ${order.status === 'PAID' ? 'bg-green-50 text-green-700 border-green-200' :
                                 order.status === 'SHIPPED' ? 'bg-blue-50 text-blue-700 border-blue-200' :
                                     order.status === 'DELIVERED' ? 'bg-purple-50 text-purple-700 border-purple-200' :
@@ -88,7 +88,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                     <div className="flex justify-between items-start">
                         <div>
                             <h2 className="text-2xl font-bold text-slate-900">FATURA</h2>
-                            <p className="text-slate-500 text-sm mt-1">Sipariş No #{order.id}</p>
+                            <p className="text-slate-500 text-sm mt-1">Sipariş No #{order.orderNumber || order.id}</p>
                         </div>
                         <div className="text-right">
                             <h3 className="font-bold text-slate-900 text-lg">YZL321 Store</h3>
