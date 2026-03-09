@@ -41,7 +41,7 @@ export default async function TrackOrderPage({
                 error = "Sipariş bulunamadı. Lütfen bilgileri kontrol edin.";
             } else {
                 let isAuthorized = false;
-                if (isLoggedIn && order.userId && order.userId === Number(session.userId)) {
+                if (isLoggedIn && order.userId && Number(order.userId) === Number(session?.userId)) {
                     isAuthorized = true;
                 } else if (!isLoggedIn && orderEmail && order.customerEmail === orderEmail) {
                     isAuthorized = true;

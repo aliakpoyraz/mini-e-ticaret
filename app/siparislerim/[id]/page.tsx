@@ -21,7 +21,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
     // Güvenlik: Siparişin bu kullanıcıya ait olup olmadığını kontrol et
     // Eğer sipariş bir kullanıcıya bağlıysa ve o kullanıcı oturum açmış kullanıcı değilse (admin hariç) erişimi engelle
     const isAdmin = session?.role === 'ADMIN';
-    const isOwner = session?.userId === (order as any).userId;
+    const isOwner = session?.userId && (order as any).userId && Number(session.userId) === Number((order as any).userId);
     const isAnonymousMatching = !(order as any).userId && session === null;
 
     // Detaylı kontrol: Siparişin bir userId'si varsa, session'daki userId ile eşleşmeli (veya admin olmalı)
