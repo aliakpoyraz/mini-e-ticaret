@@ -10,7 +10,9 @@ export default async function TrackOrderPage({
 }: {
     searchParams: Promise<{ id?: string, email?: string }>;
 }) {
-    const { id: orderId, email: orderEmail } = await searchParams;
+    const { id: rawOrderId, email: rawOrderEmail } = await searchParams;
+    const orderId = rawOrderId?.trim();
+    const orderEmail = rawOrderEmail?.trim();
     const session = await getSession();
     const isLoggedIn = !!session;
 
@@ -41,9 +43,12 @@ export default async function TrackOrderPage({
                 error = "Sipariş bulunamadı. Lütfen bilgileri kontrol edin.";
             } else {
                 let isAuthorized = false;
-                if (isLoggedIn && order.userId && Number(order.userId) === Number(session?.userId)) {
+
+                if (session?.role === 'ADMIN') {
                     isAuthorized = true;
-                } else if (!isLoggedIn && orderEmail && order.customerEmail === orderEmail) {
+                } else if (isLoggedIn && order.userId && Number(order.userId) === Number(session?.userId)) {
+                    isAuthorized = true;
+                } else if (orderEmail && order.customerEmail && order.customerEmail.toLowerCase().trim() === orderEmail.toLowerCase().trim()) {
                     isAuthorized = true;
                 }
 
@@ -149,16 +154,14 @@ export default async function TrackOrderPage({
                                 required
                                 className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
                             />
-                            {!isLoggedIn && (
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder="Sipariş E-postanız"
-                                    defaultValue={orderEmail || ''}
-                                    required
-                                    className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
-                                />
-                            )}
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder={isLoggedIn ? "Sipariş E-postanız (Misafir siparişi ise)" : "Sipariş E-postanız"}
+                                defaultValue={orderEmail || ''}
+                                required={!isLoggedIn}
+                                className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                            />
                             <button
                                 type="submit"
                                 className="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors whitespace-nowrap"
